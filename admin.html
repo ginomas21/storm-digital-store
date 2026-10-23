@@ -131,7 +131,7 @@
           tr.innerHTML = `<td></td><td></td><td></td><td></td><td></td><td></td>`;
           const cells = tr.querySelectorAll("td");
           cells[0].textContent = o.id; cells[1].textContent = `${o.product_name} ×${o.qty}`;
-          cells[2].textContent = rp(o.total); cells[3].textContent = `${o.buyer_name || "-"} / ${o.contact || "-"}`;
+          cells[2].textContent = rp(o.total); cells[3].textContent = `${o.buyer_name || "-"} / ${o.contact || "-"}${o.phone ? " / " + o.phone : ""}`;
           cells[4].textContent = o.status; cells[5].textContent = new Date(o.created_at).toLocaleString("id-ID");
           tb.appendChild(tr);
         }

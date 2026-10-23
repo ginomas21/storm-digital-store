@@ -11,7 +11,10 @@ export default async function handler(req, res) {
   const contact = String(req.query.contact || "").trim();
   const order = await getOrder(id);
   if (!order) return bad(res, 404, "Pesanan tidak ditemukan");
-  if (!contact || contact.toLowerCase() !== String(order.contact).toLowerCase())
+  const c = contact.toLowerCase();
+  const matchEmail = c && c === String(order.contact).toLowerCase();
+  const matchPhone = c && order.phone && c === String(order.phone).toLowerCase();
+  if (!matchEmail && !matchPhone)
     return bad(res, 403, "Kontak tidak cocok dengan pesanan ini");
   let o = order;
   if (o.status === "pending" && o.txid) {

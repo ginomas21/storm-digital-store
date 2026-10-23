@@ -7,112 +7,55 @@
     <link rel="icon" href="data:," />
     <title>Storm Digital Store</title>
     <style>
-      :root {
-        --bg: #ffffff;
-        --surface: #f7f7f5;
-        --text: #1c1c1e;
-        --muted: #5c5c60;
-        --line: #e3e3e0;
-        --accent: #1f4e5f;
-        --accent-text: #ffffff;
-      }
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --bg: #16181a;
-          --surface: #202326;
-          --text: #f2f2f0;
-          --muted: #a7abae;
-          --line: #33373b;
-          --accent: #7fc4d8;
-          --accent-text: #10222a;
-        }
-      }
+      :root { --bg:#ffffff; --surface:#f7f7f5; --text:#1c1c1e; --muted:#5c5c60; --line:#e3e3e0; --accent:#1f4e5f; --accent-text:#ffffff; --ok:#157347; --warn:#9a6a00; --err:#b02a2a; }
+      @media (prefers-color-scheme: dark) { :root { --bg:#16181a; --surface:#202326; --text:#f2f2f0; --muted:#a7abae; --line:#33373b; --accent:#7fc4d8; --accent-text:#10222a; } }
       * { box-sizing: border-box; }
       html { scroll-behavior: smooth; }
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--text);
-        font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
-      }
-      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px; }
-
-      header {
-        border-bottom: 1px solid var(--line);
-      }
-      .nav {
-        display: flex; align-items: center; justify-content: space-between;
-        gap: 16px; padding: 16px 0; flex-wrap: wrap;
-      }
-      .brand { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
-      .brand span { color: var(--accent); }
-      .nav-links { display: flex; gap: 20px; flex-wrap: wrap; }
-      .nav-links a {
-        color: var(--muted); text-decoration: none; font-size: 0.95rem;
-      }
-      .nav-links a:hover { color: var(--text); }
-
-      .hero { padding: 72px 0 56px; }
-      .hero h1 {
-        font-size: clamp(2rem, 6vw, 3.1rem);
-        line-height: 1.15; letter-spacing: -0.02em;
-        margin: 0 0 16px; font-weight: 800;
-      }
-      .hero p {
-        font-size: 1.1rem; color: var(--muted);
-        max-width: 560px; margin: 0 0 28px;
-      }
-      .btn {
-        display: inline-block; background: var(--accent); color: var(--accent-text);
-        padding: 12px 24px; border-radius: 8px; text-decoration: none;
-        font-weight: 600; font-size: 0.98rem;
-      }
-      .btn:hover { opacity: 0.88; }
-
-      section { padding: 48px 0; border-top: 1px solid var(--line); }
-      section h2 {
-        font-size: 1.5rem; letter-spacing: -0.01em; margin: 0 0 8px; font-weight: 700;
-      }
-      section .lead { color: var(--muted); margin: 0 0 28px; max-width: 600px; }
-
-      .grid {
-        display: grid; gap: 16px;
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      }
-      .card {
-        background: var(--surface); border: 1px solid var(--line);
-        border-radius: 10px; padding: 22px;
-      }
-      .card h3 { margin: 0 0 6px; font-size: 1.05rem; }
-      .card p { margin: 0; color: var(--muted); font-size: 0.95rem; }
-
-      .steps { counter-reset: step; list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
-      .steps li {
-        display: flex; gap: 16px; align-items: flex-start;
-        background: var(--surface); border: 1px solid var(--line);
-        border-radius: 10px; padding: 18px 20px;
-      }
-      .steps li::before {
-        counter-increment: step; content: counter(step);
-        flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%;
-        background: var(--accent); color: var(--accent-text);
-        display: flex; align-items: center; justify-content: center;
-        font-weight: 700; font-size: 0.9rem; margin-top: 2px;
-      }
-      .steps strong { display: block; margin-bottom: 2px; }
-      .steps p { margin: 0; color: var(--muted); font-size: 0.95rem; }
-
-      footer {
-        border-top: 1px solid var(--line); padding: 28px 0 40px;
-        color: var(--muted); font-size: 0.9rem;
-        display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-      }
-      @media (max-width: 560px) {
-        .hero { padding: 48px 0 40px; }
-        section { padding: 36px 0; }
-      }
+      body { margin:0; background:var(--bg); color:var(--text); font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif; line-height:1.6; -webkit-font-smoothing:antialiased; }
+      .wrap { max-width:880px; margin:0 auto; padding:0 20px; }
+      header { border-bottom:1px solid var(--line); }
+      .nav { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 0; flex-wrap:wrap; }
+      .brand { font-size:1.15rem; font-weight:700; } .brand span { color:var(--accent); }
+      .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
+      .nav-links a { color:var(--muted); text-decoration:none; font-size:.95rem; }
+      .nav-links a:hover { color:var(--text); }
+      .hero { padding:72px 0 56px; }
+      .hero h1 { font-size:clamp(2rem,6vw,3.1rem); line-height:1.15; margin:0 0 16px; font-weight:800; }
+      .hero p { font-size:1.1rem; color:var(--muted); max-width:560px; margin:0 0 28px; }
+      .btn { display:inline-block; background:var(--accent); color:var(--accent-text); padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:600; font-size:.98rem; border:0; cursor:pointer; }
+      .btn:hover { opacity:.88; } .btn:disabled { opacity:.45; cursor:default; }
+      .btn.ghost { background:transparent; color:var(--text); border:1px solid var(--line); }
+      .btn.danger { background:transparent; color:var(--err); border:1px solid var(--line); }
+      section { padding:48px 0; border-top:1px solid var(--line); }
+      section h2 { font-size:1.5rem; margin:0 0 8px; font-weight:700; }
+      section .lead { color:var(--muted); margin:0 0 28px; max-width:600px; }
+      .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); }
+      .card { background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:22px; display:flex; flex-direction:column; gap:6px; }
+      .card h3 { margin:0; font-size:1.05rem; }
+      .card p { margin:0; color:var(--muted); font-size:.95rem; white-space:pre-line; }
+      .price { font-size:1.2rem; font-weight:800; }
+      .stock { font-size:.85rem; color:var(--muted); } .stock.out { color:var(--err); font-weight:600; }
+      .card .btn { margin-top:auto; text-align:center; }
+      .steps { counter-reset:step; list-style:none; margin:0; padding:0; display:grid; gap:14px; }
+      .steps li { display:flex; gap:16px; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:18px 20px; }
+      .steps li::before { counter-increment:step; content:counter(step); flex:0 0 auto; width:30px; height:30px; border-radius:50%; background:var(--accent); color:var(--accent-text); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.9rem; margin-top:2px; }
+      .steps strong { display:block; margin-bottom:2px; } .steps p { margin:0; color:var(--muted); font-size:.95rem; }
+      footer { border-top:1px solid var(--line); padding:28px 0 40px; color:var(--muted); font-size:.9rem; }
+      .banner { padding:12px 16px; border-radius:8px; margin:20px 0 0; font-size:.92rem; background:var(--surface); border:1px solid var(--warn); color:var(--warn); display:none; }
+      dialog { border:1px solid var(--line); background:var(--bg); color:var(--text); border-radius:12px; max-width:440px; width:calc(100% - 32px); padding:24px; }
+      dialog::backdrop { background:rgba(0,0,0,.45); }
+      label { display:block; font-size:.9rem; font-weight:600; margin:14px 0 4px; }
+      input, select, textarea { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--text); font:inherit; }
+      .hint { font-size:.82rem; color:var(--muted); margin-top:4px; }
+      .err { color:var(--err); font-size:.9rem; min-height:1.2em; margin-top:10px; }
+      .qrbox { text-align:center; } .qrbox img { width:260px; height:260px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+      .total { font-size:1.35rem; font-weight:800; text-align:center; }
+      .countdown { text-align:center; color:var(--muted); }
+      .delivered { background:var(--surface); border:1px solid var(--ok); border-radius:8px; padding:14px; white-space:pre-wrap; word-break:break-all; font-family:ui-monospace,monospace; font-size:.92rem; }
+      .ok-msg { color:var(--ok); font-weight:700; text-align:center; }
+      .row { display:flex; gap:10px; margin-top:18px; } .row .btn { flex:1; text-align:center; }
+      .lookup { display:flex; gap:10px; flex-wrap:wrap; } .lookup input { flex:1; min-width:170px; }
+      @media (max-width:560px){ .hero{padding:48px 0 40px} section{padding:36px 0} }
     </style>
   </head>
   <body>
@@ -120,85 +63,204 @@
       <div class="wrap nav">
         <div class="brand">Storm <span>Digital Store</span></div>
         <nav class="nav-links">
-          <a href="#kategori">Kategori</a>
+          <a href="#produk">Produk</a>
           <a href="#cara-pesan">Cara Pesan</a>
+          <a href="#cek-pesanan">Cek Pesanan</a>
           <a href="#tentang">Tentang</a>
         </nav>
       </div>
     </header>
-
     <main class="wrap">
       <div class="hero">
         <h1>Storm Digital Store</h1>
-        <p>Toko produk digital — proses cepat, harga bersahabat, dan produk langsung dikirim setelah pembayaran terkonfirmasi.</p>
-        <a class="btn" href="#kategori">Lihat Kategori Produk</a>
+        <p>Toko akun premium — pilih produk, bayar pakai QRIS, akun langsung terkirim otomatis. Tanpa daftar, tanpa login.</p>
+        <a class="btn" href="#produk">Lihat Produk</a>
+        <div class="banner" id="demoBanner">Mode demo: database belum terhubung — produk & stok contoh, pembayaran belum aktif penuh.</div>
+        <div class="banner" id="payBanner">Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.</div>
       </div>
 
-      <section id="kategori">
-        <h2>Kategori Produk</h2>
-        <p class="lead">Kategori utama yang tersedia di Storm Digital Store. Katalog lengkap dan daftar harga menyusul di halaman ini.</p>
-        <div class="grid">
-          <div class="card">
-            <h3>Akun &amp; Langganan Premium</h3>
-            <p>Langganan aplikasi streaming, musik, dan layanan premium lainnya dengan masa aktif yang jelas.</p>
-          </div>
-          <div class="card">
-            <h3>Top Up Game</h3>
-            <p>Isi ulang diamond, UC, dan mata uang game favorit — cukup kirim ID akun, top up langsung diproses.</p>
-          </div>
-          <div class="card">
-            <h3>Pulsa &amp; Paket Data</h3>
-            <p>Pulsa reguler dan paket data semua operator, dikirim otomatis ke nomor tujuan.</p>
-          </div>
-          <div class="card">
-            <h3>Voucher &amp; E-Money</h3>
-            <p>Voucher game, voucher belanja, dan saldo e-wallet untuk berbagai kebutuhan digital.</p>
-          </div>
-        </div>
+      <section id="produk">
+        <h2>Akun Premium</h2>
+        <p class="lead">Semua produk kategori Akun Premium. Stok terlihat real-time — kalau habis, tombol beli mati sendiri.</p>
+        <div class="grid" id="productGrid"><p style="color:var(--muted)">Memuat produk…</p></div>
       </section>
 
       <section id="cara-pesan">
         <h2>Cara Pesan</h2>
-        <p class="lead">Empat langkah sederhana dari pilih produk sampai produk diterima.</p>
+        <p class="lead">Empat langkah, semuanya otomatis — kamu tidak perlu login sama sekali.</p>
         <ol class="steps">
-          <li>
-            <div>
-              <strong>Pilih produk</strong>
-              <p>Tentukan produk dan paket yang kamu mau dari kategori di atas.</p>
-            </div>
-          </li>
-          <li>
-            <div>
-              <strong>Hubungi admin</strong>
-              <p>Sampaikan pesananmu ke admin dan pastikan detail akun atau nomor tujuan sudah benar.</p>
-            </div>
-          </li>
-          <li>
-            <div>
-              <strong>Lakukan pembayaran</strong>
-              <p>Bayar sesuai instruksi yang diberikan admin, lalu kirim bukti pembayarannya.</p>
-            </div>
-          </li>
-          <li>
-            <div>
-              <strong>Produk dikirim</strong>
-              <p>Setelah pembayaran terkonfirmasi, produk langsung diproses dan dikirim ke kamu.</p>
-            </div>
-          </li>
+          <li><div><strong>Pilih produk</strong><p>Tentukan akun premium yang kamu mau, atur jumlahnya (maksimal 10).</p></div></li>
+          <li><div><strong>Isi catatan pengiriman</strong><p>Tulis nama + email atau nomor telepon yang bisa dihubungi. Ke situlah akunmu dikirim.</p></div></li>
+          <li><div><strong>Bayar pakai QRIS</strong><p>Scan QRIS dengan e-wallet / m-banking apa saja, bayar persis sampai digit terakhir (batas 10 menit).</p></div></li>
+          <li><div><strong>Akun terkirim otomatis</strong><p>Begitu pembayaran terdeteksi, akun tampil di layar dan dikirim ke email kamu (bila mengisi email).</p></div></li>
         </ol>
+      </section>
+
+      <section id="cek-pesanan">
+        <h2>Cek Pesanan</h2>
+        <p class="lead">Sudah bayar tapi halaman terutup? Masukkan kode pesanan (contoh SDS-0001) dan kontak yang kamu pakai saat pesan.</p>
+        <div class="lookup">
+          <input id="lookupId" placeholder="Kode pesanan, contoh SDS-0001" />
+          <input id="lookupContact" placeholder="Email / nomor telepon saat pesan" />
+        </div>
+        <div class="row"><button class="btn" id="lookupBtn">Cek Pesanan</button></div>
+        <p class="err" id="lookupErr"></p>
+        <div id="lookupResult"></div>
       </section>
 
       <section id="tentang">
         <h2>Tentang Storm Digital Store</h2>
-        <p class="lead" style="margin-bottom:0">Storm Digital Store adalah toko online yang menjual berbagai produk digital — dari langganan premium, top up game, sampai pulsa dan voucher. Fokus kami sederhana: transaksi yang cepat, aman, dan harga yang masuk akal.</p>
+        <p class="lead" style="margin-bottom:0">Storm Digital Store menjual akun premium dengan proses otomatis 24 jam: pembayaran QRIS terverifikasi sistem, akun langsung dikirim tanpa menunggu admin online. Kendala? Hubungi owner: @arkasettt (Telegram).</p>
       </section>
     </main>
-
     <footer>
-      <div class="wrap" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;width:100%">
-        <span>© 2026 Storm Digital Store</span>
-        <span>Toko produk digital — cepat, aman, terpercaya.</span>
+      <div class="wrap" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <span>© 2026 Storm Digital Store</span><span>Toko produk digital — cepat, aman, terpercaya.</span>
       </div>
     </footer>
+
+    <dialog id="buyDlg">
+      <h3 id="dlgTitle" style="margin-top:0">Beli</h3>
+      <div id="stepForm">
+        <label>Jumlah (akun)</label>
+        <select id="fQty"></select>
+        <label>Nama kamu</label>
+        <input id="fName" placeholder="Contoh: Budi" />
+        <label>Email atau nomor telepon (untuk pengiriman)</label>
+        <input id="fContact" placeholder="email@contoh.com atau 081234567890" />
+        <p class="hint">Produk dikirim otomatis ke sini setelah pembayaran lunas. Kalau mengisi email, akun juga dikirim ke email itu.</p>
+        <p class="hint" id="dlgTotal"></p>
+        <p class="err" id="formErr"></p>
+        <div class="row"><button class="btn ghost" id="btnClose1">Batal</button><button class="btn" id="btnPay">Buat Tagihan QRIS</button></div>
+      </div>
+      <div id="stepPay" style="display:none">
+        <p class="total" id="payTotal"></p>
+        <div class="qrbox"><img id="payQr" alt="QRIS" /></div>
+        <p class="countdown">Kode pesanan <strong id="payOrderId"></strong> · sisa waktu <strong id="payTimer">10:00</strong></p>
+        <p class="hint" style="text-align:center">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Halaman ini mengecek pembayaran otomatis — jangan ditutup dulu.</p>
+        <p class="err" id="payErr"></p>
+        <div class="row"><button class="btn danger" id="btnCancelOrder">Batalkan Pesanan</button></div>
+      </div>
+      <div id="stepDone" style="display:none">
+        <p class="ok-msg">🎉 Pembayaran diterima!</p>
+        <p style="text-align:center" id="doneInfo"></p>
+        <div class="delivered" id="doneItems"></div>
+        <p class="hint" id="doneEmail"></p>
+        <div class="row"><button class="btn" id="btnClose3">Selesai</button></div>
+      </div>
+    </dialog>
+
+    <script>
+      const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
+      const $ = id => document.getElementById(id);
+      let products = [], current = null, order = null, pollTimer = null, countTimer = null;
+
+      async function loadProducts() {
+        const r = await fetch("/api/products"); const d = await r.json();
+        products = d.products || [];
+        $("demoBanner").style.display = d.demo ? "block" : "none";
+        $("payBanner").style.display = (!d.demo && !d.payment_active) ? "block" : "none";
+        const g = $("productGrid");
+        if (!products.length) { g.innerHTML = '<p style="color:var(--muted)">Katalog masih kosong. Cek lagi nanti ya.</p>'; return; }
+        g.innerHTML = "";
+        for (const p of products) {
+          const out = p.stock_count <= 0;
+          const el = document.createElement("div"); el.className = "card";
+          el.innerHTML = `<h3></h3><p></p><div class="price">${rp(p.price)}</div>` +
+            `<div class="stock ${out ? "out" : ""}">${out ? "Stok habis" : "Stok: " + p.stock_count + " akun"}</div>` +
+            `<button class="btn" ${out ? "disabled" : ""}>${out ? "Habis" : "Beli Sekarang"}</button>`;
+          el.querySelector("h3").textContent = p.name;
+          el.querySelector("p").textContent = p.descr || "";
+          el.querySelector("button").onclick = () => openBuy(p);
+          g.appendChild(el);
+        }
+      }
+      function openBuy(p) {
+        current = p;
+        $("dlgTitle").textContent = p.name;
+        const sel = $("fQty"); sel.innerHTML = "";
+        for (let i = 1; i <= Math.min(p.stock_count, 10); i++) { const o = document.createElement("option"); o.value = i; o.textContent = i + " akun"; sel.appendChild(o); }
+        const upd = () => $("dlgTotal").textContent = "Total: " + rp(p.price * Number(sel.value));
+        sel.onchange = upd; upd();
+        $("formErr").textContent = "";
+        $("stepForm").style.display = "block"; $("stepPay").style.display = "none"; $("stepDone").style.display = "none";
+        $("buyDlg").showModal();
+      }
+      async function createInvoice() {
+        const contact = $("fContact").value.trim();
+        if (!contact) { $("formErr").textContent = "Isi dulu email atau nomor telepon untuk pengiriman."; return; }
+        $("btnPay").disabled = true;
+        try {
+          const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ productId: current.id, qty: Number($("fQty").value), name: $("fName").value.trim(), contact }) });
+          const d = await r.json();
+          if (!r.ok) throw new Error(d.error || "Gagal membuat tagihan");
+          order = { id: d.order_id, contact };
+          $("payTotal").textContent = rp(d.total);
+          $("payOrderId").textContent = d.order_id;
+          if (d.qris_image) $("payQr").src = d.qris_image; else if (d.payment_url) { $("payQr").outerHTML = '<a class="btn" href="' + d.payment_url + '" target="_blank">Buka Halaman Bayar</a>'; }
+          $("stepForm").style.display = "none"; $("stepPay").style.display = "block";
+          startCountdown(d.timeout_ms || 600000); startPolling();
+        } catch (e) { $("formErr").textContent = e.message; }
+        $("btnPay").disabled = false;
+      }
+      function startCountdown(ms) {
+        let left = Math.floor(ms / 1000);
+        clearInterval(countTimer);
+        countTimer = setInterval(() => {
+          left -= 1;
+          if (left < 0) { clearInterval(countTimer); stopPolling(); $("payErr").textContent = "Waktu habis. Pesanan kedaluwarsa — silakan pesan lagi."; return; }
+          $("payTimer").textContent = String(Math.floor(left / 60)).padStart(2, "0") + ":" + String(left % 60).padStart(2, "0");
+        }, 1000);
+      }
+      function startPolling() {
+        stopPolling();
+        pollTimer = setInterval(checkStatus, 5000);
+      }
+      function stopPolling() { if (pollTimer) clearInterval(pollTimer); pollTimer = null; }
+      async function checkStatus() {
+        if (!order) return;
+        try {
+          const r = await fetch(`/api/order-status?id=${encodeURIComponent(order.id)}&contact=${encodeURIComponent(order.contact)}`);
+          const d = await r.json();
+          if (!r.ok) return;
+          if (String(d.status).startsWith("sukses")) {
+            stopPolling(); clearInterval(countTimer);
+            $("stepPay").style.display = "none"; $("stepDone").style.display = "block";
+            $("doneInfo").textContent = `Pesanan ${d.id} — ${d.product_name} (${d.qty} akun)`;
+            $("doneItems").textContent = d.delivered || "Stok baru saja habis — admin sudah diberi tahu dan akan menghubungimu untuk pengiriman manual atau pengembalian dana.";
+            $("doneEmail").textContent = d.email_sent ? "Salinan akun juga sudah dikirim ke email kamu." : "";
+            loadProducts();
+          } else if (d.status !== "pending") {
+            stopPolling(); clearInterval(countTimer);
+            $("payErr").textContent = "Pesanan berakhir dengan status: " + d.status + ". Tidak ada dana yang terpotong.";
+          }
+        } catch {}
+      }
+      async function cancelOrder() {
+        if (!order) return;
+        stopPolling(); clearInterval(countTimer);
+        try { await fetch("/api/order-cancel", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(order) }); } catch {}
+        $("buyDlg").close(); loadProducts();
+      }
+      async function lookup() {
+        const id = $("lookupId").value.trim(), contact = $("lookupContact").value.trim();
+        $("lookupErr").textContent = ""; $("lookupResult").innerHTML = "";
+        if (!id || !contact) { $("lookupErr").textContent = "Isi kode pesanan dan kontaknya dulu."; return; }
+        const r = await fetch(`/api/order-status?id=${encodeURIComponent(id)}&contact=${encodeURIComponent(contact)}`);
+        const d = await r.json();
+        if (!r.ok) { $("lookupErr").textContent = d.error || "Tidak ditemukan"; return; }
+        let html = `<p>Status pesanan <strong>${d.id}</strong> (${d.product_name}): <strong>${d.status}</strong> · total ${rp(d.total)}</p>`;
+        if (String(d.status).startsWith("sukses") && d.delivered) html += `<div class="delivered"></div>`;
+        $("lookupResult").innerHTML = html;
+        const dv = $("lookupResult .delivered"); if (dv) dv.textContent = d.delivered;
+      }
+      $("btnPay").onclick = createInvoice;
+      $("btnClose1").onclick = () => $("buyDlg").close();
+      $("btnClose3").onclick = () => $("buyDlg").close();
+      $("btnCancelOrder").onclick = cancelOrder;
+      $("lookupBtn").onclick = lookup;
+      loadProducts();
+    </script>
   </body>
 </html>

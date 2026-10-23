@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="icon" href="data:," />
+    <title>Panel Admin — Storm Digital Store</title>
+    <style>
+      :root { --bg:#ffffff; --surface:#f7f7f5; --text:#1c1c1e; --muted:#5c5c60; --line:#e3e3e0; --accent:#1f4e5f; --accent-text:#ffffff; --err:#b02a2a; --warn:#9a6a00; }
+      @media (prefers-color-scheme: dark) { :root { --bg:#16181a; --surface:#202326; --text:#f2f2f0; --muted:#a7abae; --line:#33373b; --accent:#7fc4d8; --accent-text:#10222a; } }
+      * { box-sizing:border-box; }
+      body { margin:0; background:var(--bg); color:var(--text); font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; line-height:1.55; }
+      .wrap { max-width:880px; margin:0 auto; padding:24px 20px 60px; }
+      h1 { font-size:1.5rem; } h2 { font-size:1.15rem; margin-top:36px; }
+      .card { background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:18px; margin-bottom:14px; }
+      label { display:block; font-size:.88rem; font-weight:600; margin:12px 0 4px; }
+      input, textarea, select { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--text); font:inherit; }
+      textarea { min-height:90px; font-family:ui-monospace,monospace; font-size:.9rem; }
+      .btn { display:inline-block; background:var(--accent); color:var(--accent-text); padding:10px 18px; border-radius:8px; font-weight:600; border:0; cursor:pointer; font-size:.95rem; }
+      .btn.ghost { background:transparent; color:var(--text); border:1px solid var(--line); }
+      .btn.danger { background:transparent; color:var(--err); border:1px solid var(--line); }
+      .btn.small { padding:6px 12px; font-size:.85rem; }
+      .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; align-items:center; }
+      .err { color:var(--err); font-size:.9rem; min-height:1.2em; }
+      .banner { border:1px solid var(--warn); color:var(--warn); border-radius:8px; padding:10px 14px; font-size:.9rem; display:none; margin-bottom:16px; }
+      table { width:100%; border-collapse:collapse; font-size:.9rem; }
+      th, td { text-align:left; padding:8px; border-bottom:1px solid var(--line); vertical-align:top; }
+      .muted { color:var(--muted); font-size:.88rem; }
+      .prod-head { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:baseline; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>🔐 Panel Admin — Storm Digital Store</h1>
+      <div class="banner" id="demoBanner">Mode demo: database belum terhubung (DATABASE_URL kosong). Perubahan di sini tidak permanen.</div>
+
+      <div id="loginBox" class="card">
+        <h2 style="margin-top:0">Login Admin</h2>
+        <label>Username</label><input id="u" autocomplete="username" />
+        <label>Password</label><input id="p" type="password" autocomplete="current-password" />
+        <p class="err" id="loginErr"></p>
+        <div class="row"><button class="btn" id="btnLogin">Masuk</button></div>
+      </div>
+
+      <div id="panel" style="display:none">
+        <div class="row" style="justify-content:space-between">
+          <span class="muted">Login sebagai <strong id="who"></strong></span>
+          <button class="btn ghost small" id="btnLogout">Keluar</button>
+        </div>
+
+        <h2>➕ Tambah Produk Baru</h2>
+        <div class="card">
+          <p class="muted" style="margin-top:0">Kategori otomatis: <strong>Akun Premium</strong> (sama seperti bot Telegram).</p>
+          <label>Nama produk</label><input id="npName" placeholder="Contoh: Netflix 1 bulan" />
+          <label>Harga (Rp, angka saja)</label><input id="npPrice" type="number" min="1" placeholder="30000" />
+          <label>Deskripsi (boleh kosong — otomatis terisi template)</label><input id="npDesc" placeholder="Kosongkan untuk template bawaan" />
+          <label>Stok awal (satu akun per baris, boleh kosong)</label><textarea id="npStock" placeholder="email1:password1&#10;email2:password2"></textarea>
+          <p class="err" id="npErr"></p>
+          <div class="row"><button class="btn" id="btnAddProduct">Simpan Produk</button></div>
+        </div>
+
+        <h2>📦 Produk & Stok</h2>
+        <div id="prodList"></div>
+
+        <h2>🧾 Transaksi Terakhir</h2>
+        <div class="card">
+          <p class="muted" style="margin-top:0">Omzet dari daftar ini: <strong id="omzet"></strong></p>
+          <div style="overflow-x:auto"><table><thead><tr><th>Kode</th><th>Produk</th><th>Total</th><th>Pembeli / Kontak</th><th>Status</th><th>Waktu</th></tr></thead><tbody id="orderRows"></tbody></table></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const rp = n => "Rp" + Number(n || 0).toLocaleString("id-ID");
+      const $ = id => document.getElementById(id);
+      async function api(path, opts) {
+        const r = await fetch(path, opts);
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || ("HTTP " + r.status));
+        return d;
+      }
+      async function init() {
+        try {
+          const me = await api("/api/admin/me");
+          if (me.logged_in) { $("who").textContent = me.username; showPanel(); loadAll(); return; }
+        } catch {}
+        $("loginBox").style.display = "block";
+      }
+      function showPanel() { $("loginBox").style.display = "none"; $("panel").style.display = "block"; }
+      async function doLogin() {
+        $("loginErr").textContent = "";
+        try {
+          const d = await api("/api/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: $("u").value.trim(), password: $("p").value }) });
+          $("who").textContent = d.username; showPanel(); loadAll();
+        } catch (e) { $("loginErr").textContent = e.message; }
+      }
+      async function loadAll() { loadProducts(); loadOrders(); }
+      async function loadProducts() {
+        const d = await api("/api/admin/products");
+        $("demoBanner").style.display = d.demo ? "block" : "none";
+        const box = $("prodList"); box.innerHTML = "";
+        if (!d.products.length) { box.innerHTML = '<div class="card muted">Belum ada produk.</div>'; return; }
+        for (const p of d.products) {
+          const el = document.createElement("div"); el.className = "card";
+          el.innerHTML = `<div class="prod-head"><strong></strong><span>${rp(p.price)} · stok ${p.stock_count} · ${p.active ? "aktif" : "nonaktif"}</span></div>
+            <p class="muted" style="white-space:pre-line"></p>
+            <label>Tambah stok (satu akun per baris)</label><textarea class="stk"></textarea>
+            <div class="row">
+              <button class="btn small addstk">Tambah Stok</button>
+              <button class="btn ghost small toggle">${p.active ? "Nonaktifkan" : "Aktifkan"}</button>
+              <button class="btn danger small del">Hapus Produk</button>
+              <span class="muted msg"></span>
+            </div>`;
+          el.querySelector("strong").textContent = p.name + " (" + p.id + ")";
+          el.querySelector("p").textContent = p.descr || "";
+          el.querySelector(".addstk").onclick = async () => {
+            const msg = el.querySelector(".msg");
+            try { const r = await api("/api/admin/stock", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productId: p.id, stock: el.querySelector(".stk").value }) }); msg.textContent = `+${r.added} stok, total ${r.stock_count}`; loadProducts(); }
+            catch (e) { msg.textContent = e.message; }
+          };
+          el.querySelector(".toggle").onclick = async () => { await api("/api/admin/products", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id, active: !p.active }) }); loadProducts(); };
+          el.querySelector(".del").onclick = async () => { if (!confirm("Hapus produk " + p.name + "? Stoknya ikut terhapus.")) return; await api("/api/admin/products", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id }) }); loadProducts(); };
+          box.appendChild(el);
+        }
+      }
+      async function loadOrders() {
+        const d = await api("/api/admin/orders");
+        $("omzet").textContent = rp(d.omzet_recent);
+        const tb = $("orderRows"); tb.innerHTML = "";
+        for (const o of d.orders) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td></td><td></td><td></td><td></td><td></td><td></td>`;
+          const cells = tr.querySelectorAll("td");
+          cells[0].textContent = o.id; cells[1].textContent = `${o.product_name} ×${o.qty}`;
+          cells[2].textContent = rp(o.total); cells[3].textContent = `${o.buyer_name || "-"} / ${o.contact || "-"}`;
+          cells[4].textContent = o.status; cells[5].textContent = new Date(o.created_at).toLocaleString("id-ID");
+          tb.appendChild(tr);
+        }
+        if (!d.orders.length) tb.innerHTML = '<tr><td colspan="6" class="muted">Belum ada transaksi.</td></tr>';
+      }
+      async function addProduct() {
+        $("npErr").textContent = "";
+        try {
+          await api("/api/admin/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: $("npName").value.trim(), price: Number($("npPrice").value), descr: $("npDesc").value.trim(), stock: $("npStock").value }) });
+          $("npName").value = ""; $("npPrice").value = ""; $("npDesc").value = ""; $("npStock").value = "";
+          loadProducts();
+        } catch (e) { $("npErr").textContent = e.message; }
+      }
+      $("btnLogin").onclick = doLogin;
+      $("p").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+      $("btnLogout").onclick = async () => { await fetch("/api/admin/logout", { method: "POST" }); location.reload(); };
+      $("btnAddProduct").onclick = addProduct;
+      init();
+    </script>
+  </body>
+</html>

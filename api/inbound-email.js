@@ -1,5 +1,6 @@
 import { verifySvix } from "../lib/svix.js";
 import { telegramMailConfigured, forwardEmailToTelegram } from "../lib/telegram-mail.js";
+import { resolveRecipient, DOMAIN } from "../lib/temp-mail.js";
 
 // POST /api/inbound-email — webhook Resend Receiving (event email.received).
 // Alur: verifikasi tanda tangan Svix -> ambil isi email lengkap via Receiving API
@@ -67,11 +68,43 @@ export default async function handler(req, res) {
     console.error("TELEGRAM_MAIL_BOT_TOKEN / TELEGRAM_MAIL_CHAT_ID belum diatur");
     return res.status(200).json({ ok: false, reason: "telegram-belum-diatur" });
   }
-  try {
-    await forwardEmailToTelegram(email, meta, fetchAttachmentUrl);
-    return res.status(200).json({ ok: true });
-  } catch (e) {
-    console.error("Gagal teruskan ke Telegram:", e.message);
-    return res.status(200).json({ ok: false, reason: "telegram-gagal" });
+
+  // Routing temp-mail: tiap alamat tujuan dicocokkan pemiliknya.
+  // - alamat terdaftar & aktif -> HANYA ke pemiliknya
+  // - alamat kedaluwarsa -> tidak diteruskan ke siapa pun
+  // - alamat tak terdaftar (termasuk orders@) / domain lain -> ke owner
+  const owner = String(process.env.TELEGRAM_MAIL_CHAT_ID);
+  const rawTo = [
+    ...(email && Array.isArray(email.to) ? email.to : []),
+    ...(Array.isArray(meta.to) ? meta.to : meta.to ? [meta.to] : []),
+  ];
+  const recipients = [...new Set(rawTo.map((s) => String(s).trim().toLowerCase()).filter(Boolean))];
+  const targets = new Set();
+  if (!recipients.length) targets.add(owner);
+  for (const rcpt of recipients) {
+    const at = rcpt.lastIndexOf("@");
+    const local = at > 0 ? rcpt.slice(0, at) : "";
+    const domain = at > 0 ? rcpt.slice(at + 1) : "";
+    if (!local || domain !== DOMAIN) { targets.add(owner); continue; }
+    let r = { kind: "unclaimed" };
+    try {
+      r = await resolveRecipient(local);
+    } catch (e) {
+      console.error("Routing temp-mail gagal, fallback owner:", e.message);
+    }
+    if (r.kind === "user") targets.add(String(r.chatId));
+    else if (r.kind === "unclaimed") targets.add(owner);
+    else console.log(`Alamat ${rcpt} sudah kedaluwarsa — email tidak diteruskan ke siapa pun`);
   }
+
+  let sent = 0;
+  for (const chatId of targets) {
+    try {
+      await forwardEmailToTelegram(email, meta, fetchAttachmentUrl, chatId);
+      sent++;
+    } catch (e) {
+      console.error(`Gagal teruskan ke Telegram chat ${chatId}:`, e.message);
+    }
+  }
+  return res.status(200).json({ ok: true, forwarded_to: sent });
 }

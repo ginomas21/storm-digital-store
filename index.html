@@ -323,7 +323,7 @@
       async function cancelOrder() {
         if (!order) return;
         stopPolling(); clearInterval(countTimer);
-        try { await fetch("/api/order-cancel", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(order) }); } catch {}
+        try { await fetch("/api/order-status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...order, action: "cancel" }) }); } catch {}
         $("buyDlg").close(); loadProducts();
       }
       async function lookup() {
@@ -340,7 +340,7 @@
       }
       async function loadReseller() {
         try {
-          const r = await fetch("/api/reseller/me"); const d = await r.json();
+          const r = await fetch("/api/reseller?action=me"); const d = await r.json();
           if (d.logged_in) {
             reseller = d;
             $("resName").textContent = d.username; $("resDisc").textContent = d.discount + "%";
@@ -354,7 +354,7 @@
       $("btnClose3").onclick = () => $("buyDlg").close();
       $("btnCancelOrder").onclick = cancelOrder;
       $("lookupBtn").onclick = lookup;
-      $("btnResLogout").onclick = async () => { await fetch("/api/reseller/logout", { method: "POST" }); location.reload(); };
+      $("btnResLogout").onclick = async () => { await fetch("/api/reseller?action=logout", { method: "POST" }); location.reload(); };
       loadProducts();
       loadReseller();
     </script>

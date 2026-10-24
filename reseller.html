@@ -69,7 +69,7 @@
       }
       async function init() {
         try {
-          const me = await api("/api/reseller/me");
+          const me = await api("/api/reseller?action=me");
           if (me.logged_in) { showPanel(me); loadOrders(); return; }
         } catch {}
         $("loginBox").style.display = "block";
@@ -82,12 +82,12 @@
       async function doLogin() {
         $("loginErr").textContent = "";
         try {
-          const d = await api("/api/reseller/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: $("u").value.trim(), password: $("p").value }) });
-          const me = await api("/api/reseller/me"); showPanel(me); loadOrders();
+          const d = await api("/api/reseller?action=login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: $("u").value.trim(), password: $("p").value }) });
+          const me = await api("/api/reseller?action=me"); showPanel(me); loadOrders();
         } catch (e) { $("loginErr").textContent = e.message; }
       }
       async function loadOrders() {
-        const d = await api("/api/reseller/orders");
+        const d = await api("/api/reseller?action=orders");
         const tb = $("orderRows"); tb.innerHTML = "";
         for (const o of d.orders) {
           const tr = document.createElement("tr");
@@ -102,7 +102,7 @@
       }
       $("btnLogin").onclick = doLogin;
       $("p").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
-      $("btnLogout").onclick = async () => { await fetch("/api/reseller/logout", { method: "POST" }); location.reload(); };
+      $("btnLogout").onclick = async () => { await fetch("/api/reseller?action=logout", { method: "POST" }); location.reload(); };
       init();
     </script>
   </body>

@@ -1,12 +1,26 @@
 import { getOrder, setOrderFields, finalizePaid } from "../lib/db.js";
-import { bad } from "../lib/http.js";
-import { btzStatus } from "../lib/btz.js";
+import { readJson, bad } from "../lib/http.js";
+import { btzStatus, btzCancel } from "../lib/btz.js";
 import { sendDeliveryEmail } from "../lib/mail.js";
 
 // GET /api/order-status?id=SDS-0001&contact=xxx — halaman pembayaran polling ke sini
 // tiap 5 detik (bot: 10 detik). Saat BTZ bilang sukses: stok dikunci, akun
 // dikirim (tampil di halaman + email bila contact berupa email & email aktif).
+// POST /api/order-status {id, contact, action:"cancel"} — batalkan pesanan
+// (dulu endpoint /api/order-cancel sendiri; digabung ke sini agar jumlah
+// Serverless Function tetap di bawah batas 12 paket Hobby Vercel).
 export default async function handler(req, res) {
+  if (req.method === "POST") {
+    const body = await readJson(req);
+    if (body.action !== "cancel") return bad(res, 405, "Method tidak diizinkan");
+    const o = await getOrder(String(body.id || ""));
+    if (!o) return bad(res, 404, "Pesanan tidak ditemukan");
+    if (String(body.contact || "").trim().toLowerCase() !== String(o.contact).toLowerCase()) return bad(res, 403, "Kontak tidak cocok");
+    if (o.status !== "pending") return bad(res, 400, "Pesanan sudah tidak bisa dibatalkan");
+    if (o.txid) btzCancel(o.txid);
+    await setOrderFields(o.id, { status: "dibatalkan" });
+    return res.status(200).json({ ok: true });
+  }
   const id = String(req.query.id || "");
   const contact = String(req.query.contact || "").trim();
   const order = await getOrder(id);

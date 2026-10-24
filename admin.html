@@ -93,7 +93,7 @@
       }
       async function init() {
         try {
-          const me = await api("/api/admin/me");
+          const me = await api("/api/admin?action=me");
           if (me.logged_in) { $("who").textContent = me.username; showPanel(); loadAll(); return; }
         } catch {}
         $("loginBox").style.display = "block";
@@ -102,13 +102,13 @@
       async function doLogin() {
         $("loginErr").textContent = "";
         try {
-          const d = await api("/api/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: $("u").value.trim(), password: $("p").value }) });
+          const d = await api("/api/admin?action=login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: $("u").value.trim(), password: $("p").value }) });
           $("who").textContent = d.username; showPanel(); loadAll();
         } catch (e) { $("loginErr").textContent = e.message; }
       }
       async function loadAll() { loadProducts(); loadOrders(); loadResellers(); }
       async function loadResellers() {
-        const d = await api("/api/admin/resellers");
+        const d = await api("/api/admin?action=resellers");
         $("defDisc").value = d.default_discount;
         const box = $("resList"); box.innerHTML = "";
         if (!d.resellers.length) { box.innerHTML = '<div class="card muted">Belum ada reseller.</div>'; return; }
@@ -129,23 +129,23 @@
             try {
               const body = { id: r.id, discount: el.querySelector(".rsd").value === "" ? null : Number(el.querySelector(".rsd").value) };
               const pw = el.querySelector(".rsp").value; if (pw) body.password = pw;
-              await api("/api/admin/resellers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+              await api("/api/admin?action=resellers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
               msg.textContent = "Tersimpan"; loadResellers();
             } catch (e) { msg.textContent = e.message; }
           };
-          el.querySelector(".toggle").onclick = async () => { await api("/api/admin/resellers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: r.id, active: !r.active }) }); loadResellers(); };
+          el.querySelector(".toggle").onclick = async () => { await api("/api/admin?action=resellers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: r.id, active: !r.active }) }); loadResellers(); };
           box.appendChild(el);
         }
       }
       async function addReseller() {
         $("rsErr").textContent = "";
         try {
-          await api("/api/admin/resellers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: $("rsUser").value.trim(), password: $("rsPass").value, discount: $("rsDisc").value === "" ? null : Number($("rsDisc").value) }) });
+          await api("/api/admin?action=resellers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: $("rsUser").value.trim(), password: $("rsPass").value, discount: $("rsDisc").value === "" ? null : Number($("rsDisc").value) }) });
           $("rsUser").value = ""; $("rsPass").value = ""; $("rsDisc").value = ""; loadResellers();
         } catch (e) { $("rsErr").textContent = e.message; }
       }
       async function loadProducts() {
-        const d = await api("/api/admin/products");
+        const d = await api("/api/admin?action=products");
         $("demoBanner").style.display = d.demo ? "block" : "none";
         const box = $("prodList"); box.innerHTML = "";
         if (!d.products.length) { box.innerHTML = '<div class="card muted">Belum ada produk.</div>'; return; }
@@ -164,16 +164,16 @@
           el.querySelector("p").textContent = p.descr || "";
           el.querySelector(".addstk").onclick = async () => {
             const msg = el.querySelector(".msg");
-            try { const r = await api("/api/admin/stock", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productId: p.id, stock: el.querySelector(".stk").value }) }); msg.textContent = `+${r.added} stok, total ${r.stock_count}`; loadProducts(); }
+            try { const r = await api("/api/admin?action=stock", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productId: p.id, stock: el.querySelector(".stk").value }) }); msg.textContent = `+${r.added} stok, total ${r.stock_count}`; loadProducts(); }
             catch (e) { msg.textContent = e.message; }
           };
-          el.querySelector(".toggle").onclick = async () => { await api("/api/admin/products", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id, active: !p.active }) }); loadProducts(); };
-          el.querySelector(".del").onclick = async () => { if (!confirm("Hapus produk " + p.name + "? Stoknya ikut terhapus.")) return; await api("/api/admin/products", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id }) }); loadProducts(); };
+          el.querySelector(".toggle").onclick = async () => { await api("/api/admin?action=products", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id, active: !p.active }) }); loadProducts(); };
+          el.querySelector(".del").onclick = async () => { if (!confirm("Hapus produk " + p.name + "? Stoknya ikut terhapus.")) return; await api("/api/admin?action=products", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id }) }); loadProducts(); };
           box.appendChild(el);
         }
       }
       async function loadOrders() {
-        const d = await api("/api/admin/orders");
+        const d = await api("/api/admin?action=orders");
         $("omzet").textContent = rp(d.omzet_recent);
         const tb = $("orderRows"); tb.innerHTML = "";
         for (const o of d.orders) {
@@ -190,18 +190,18 @@
       async function addProduct() {
         $("npErr").textContent = "";
         try {
-          await api("/api/admin/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: $("npName").value.trim(), price: Number($("npPrice").value), descr: $("npDesc").value.trim(), stock: $("npStock").value }) });
+          await api("/api/admin?action=products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: $("npName").value.trim(), price: Number($("npPrice").value), descr: $("npDesc").value.trim(), stock: $("npStock").value }) });
           $("npName").value = ""; $("npPrice").value = ""; $("npDesc").value = ""; $("npStock").value = "";
           loadProducts();
         } catch (e) { $("npErr").textContent = e.message; }
       }
       $("btnLogin").onclick = doLogin;
       $("p").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
-      $("btnLogout").onclick = async () => { await fetch("/api/admin/logout", { method: "POST" }); location.reload(); };
+      $("btnLogout").onclick = async () => { await fetch("/api/admin?action=logout", { method: "POST" }); location.reload(); };
       $("btnAddProduct").onclick = addProduct;
       $("btnAddReseller").onclick = addReseller;
       $("btnDefDisc").onclick = async () => {
-        try { const d = await api("/api/admin/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reseller_default_discount: Number($("defDisc").value) }) }); $("defDiscMsg").textContent = "Default jadi " + d.reseller_default_discount + "%"; loadResellers(); }
+        try { const d = await api("/api/admin?action=settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reseller_default_discount: Number($("defDisc").value) }) }); $("defDiscMsg").textContent = "Default jadi " + d.reseller_default_discount + "%"; loadResellers(); }
         catch (e) { $("defDiscMsg").textContent = e.message; }
       };
       init();

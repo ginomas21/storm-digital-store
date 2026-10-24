@@ -2,7 +2,7 @@ import QRCode from "qrcode";
 import { getProduct, createOrder, setOrderFields, getResellerById, getResellerDefaultDiscount, effectiveDiscount } from "../lib/db.js";
 import { readJson, bad } from "../lib/http.js";
 import { readResellerSession } from "../lib/auth.js";
-import { btzCreate, btzConfigured, INVOICE_TIMEOUT_MS } from "../lib/btz.js";
+import { agCreate, agConfigured, INVOICE_TIMEOUT_MS, AG_MAX_AMOUNT } from "../lib/autogopay.js";
 
 // POST /api/checkout {productId, qty, name, email, phone} — pembeli TAMU, tanpa login.
 // Email WAJIB (akun dikirim ke sana); nomor telepon OPSIONAL sebagai cadangan.
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
   const qty = Math.max(1, Math.min(Number(qtyRaw || 1), 10));
   if (p.stock_count < qty) return bad(res, 400, `Stok tidak cukup (sisa ${p.stock_count})`);
   if (!EMAIL_RE.test(email)) return bad(res, 400, "Masukkan alamat email yang benar — akun akan dikirim ke email itu");
-  if (!btzConfigured()) return bad(res, 503, "Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.");
+  if (!agConfigured()) return bad(res, 503, "Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.");
   // Diskon reseller dihitung DI SERVER dari sesi login — harga katalog tidak
   // pernah berubah dan klien tidak bisa mengatur diskonnya sendiri.
   // Aturan reseller (berlaku untuk SEMUA reseller, langsung aktif):
@@ -39,6 +39,7 @@ export default async function handler(req, res) {
   }
   const unitPrice = discount > 0 ? Math.floor(p.price * (100 - discount) / 100) : p.price;
   const total = unitPrice * qty;
+  if (total < 1 || total > AG_MAX_AMOUNT) return bad(res, 400, "Nominal pesanan di luar jangkauan pembayaran QRIS (maks Rp10.000.000) — kurangi jumlah akunnya");
   const provisional = await createOrder({
     product_id: p.id, product_name: p.name, price: p.price, qty,
     total, buyer_name: String(name || "Pembeli").slice(0, 60),
@@ -46,7 +47,7 @@ export default async function handler(req, res) {
     txid: "", access_key: "",
   });
   try {
-    const data = await btzCreate(provisional.id, total, p.name, provisional.buyer_name, email, phone);
+    const data = await agCreate(provisional.id, total, p.name, provisional.buyer_name, email, phone);
     const finalTotal = Number(data.totalAmount || total);
     const order = await setOrderFields(provisional.id, { txid: data.transactionId || "", access_key: data.accessKey || "", total: finalTotal });
     let qr = "";

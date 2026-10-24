@@ -67,6 +67,19 @@
           <p class="muted" style="margin-top:0">Omzet dari daftar ini: <strong id="omzet"></strong></p>
           <div style="overflow-x:auto"><table><thead><tr><th>Kode</th><th>Produk</th><th>Total</th><th>Pembeli / Kontak</th><th>Status</th><th>Waktu</th></tr></thead><tbody id="orderRows"></tbody></table></div>
         </div>
+
+        <h2>👥 Reseller</h2>
+        <div class="card">
+          <p class="muted" style="margin-top:0">Akun reseller cuma bisa dibuat di sini (tidak ada daftar mandiri). Diskon kosong = pakai diskon default. Diskon dihitung server saat checkout reseller — harga katalog tetap harga normal.</p>
+          <label>Diskon default reseller (%)</label>
+          <div class="row" style="margin-top:0"><input id="defDisc" type="number" min="0" max="90" style="max-width:140px" /><button class="btn small" id="btnDefDisc">Simpan Default</button><span class="muted" id="defDiscMsg"></span></div>
+          <label>Username reseller baru</label><input id="rsUser" placeholder="Contoh: reseller_jakarta" />
+          <label>Password reseller baru</label><input id="rsPass" type="password" placeholder="Minimal 6 karakter" />
+          <label>Diskon khusus (%) — kosongkan = pakai default</label><input id="rsDisc" type="number" min="0" max="90" placeholder="Kosong = default" />
+          <p class="err" id="rsErr"></p>
+          <div class="row"><button class="btn" id="btnAddReseller">Buat Akun Reseller</button></div>
+        </div>
+        <div id="resList"></div>
       </div>
     </div>
     <script>
@@ -93,7 +106,44 @@
           $("who").textContent = d.username; showPanel(); loadAll();
         } catch (e) { $("loginErr").textContent = e.message; }
       }
-      async function loadAll() { loadProducts(); loadOrders(); }
+      async function loadAll() { loadProducts(); loadOrders(); loadResellers(); }
+      async function loadResellers() {
+        const d = await api("/api/admin/resellers");
+        $("defDisc").value = d.default_discount;
+        const box = $("resList"); box.innerHTML = "";
+        if (!d.resellers.length) { box.innerHTML = '<div class="card muted">Belum ada reseller.</div>'; return; }
+        for (const r of d.resellers) {
+          const el = document.createElement("div"); el.className = "card";
+          el.innerHTML = `<div class="prod-head"><strong></strong><span>${r.active ? "aktif" : "nonaktif"} · diskon ${r.discount === null ? "default (" + d.default_discount + "%)" : r.discount + "%"}</span></div>
+            <label>Diskon khusus (%) — kosongkan = pakai default</label><input class="rsd" type="number" min="0" max="90" />
+            <label>Password baru (kosongkan = tidak diubah)</label><input class="rsp" type="password" />
+            <div class="row">
+              <button class="btn small save">Simpan</button>
+              <button class="btn ghost small toggle">${r.active ? "Nonaktifkan" : "Aktifkan"}</button>
+              <span class="muted msg"></span>
+            </div>`;
+          el.querySelector("strong").textContent = r.username + " (" + r.id + ")";
+          if (r.discount !== null) el.querySelector(".rsd").value = r.discount;
+          el.querySelector(".save").onclick = async () => {
+            const msg = el.querySelector(".msg");
+            try {
+              const body = { id: r.id, discount: el.querySelector(".rsd").value === "" ? null : Number(el.querySelector(".rsd").value) };
+              const pw = el.querySelector(".rsp").value; if (pw) body.password = pw;
+              await api("/api/admin/resellers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+              msg.textContent = "Tersimpan"; loadResellers();
+            } catch (e) { msg.textContent = e.message; }
+          };
+          el.querySelector(".toggle").onclick = async () => { await api("/api/admin/resellers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: r.id, active: !r.active }) }); loadResellers(); };
+          box.appendChild(el);
+        }
+      }
+      async function addReseller() {
+        $("rsErr").textContent = "";
+        try {
+          await api("/api/admin/resellers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: $("rsUser").value.trim(), password: $("rsPass").value, discount: $("rsDisc").value === "" ? null : Number($("rsDisc").value) }) });
+          $("rsUser").value = ""; $("rsPass").value = ""; $("rsDisc").value = ""; loadResellers();
+        } catch (e) { $("rsErr").textContent = e.message; }
+      }
       async function loadProducts() {
         const d = await api("/api/admin/products");
         $("demoBanner").style.display = d.demo ? "block" : "none";
@@ -149,6 +199,11 @@
       $("p").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
       $("btnLogout").onclick = async () => { await fetch("/api/admin/logout", { method: "POST" }); location.reload(); };
       $("btnAddProduct").onclick = addProduct;
+      $("btnAddReseller").onclick = addReseller;
+      $("btnDefDisc").onclick = async () => {
+        try { const d = await api("/api/admin/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reseller_default_discount: Number($("defDisc").value) }) }); $("defDiscMsg").textContent = "Default jadi " + d.reseller_default_discount + "%"; loadResellers(); }
+        catch (e) { $("defDiscMsg").textContent = e.message; }
+      };
       init();
     </script>
   </body>

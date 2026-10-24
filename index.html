@@ -101,6 +101,12 @@
       .ok-msg { color:var(--ok); font-weight:800; text-align:center; font-size:1.15rem; }
       .row { display:flex; gap:10px; margin-top:20px; } .row .btn { flex:1; text-align:center; }
       .lookup { display:flex; gap:10px; flex-wrap:wrap; } .lookup input { flex:1; min-width:170px; }
+      .res-panel { background:rgba(139,92,246,.14); border:1px solid rgba(139,92,246,.5); border-radius:var(--radius); padding:18px 20px; margin:26px 0 0; }
+      .res-panel .res-stats { display:flex; gap:18px; flex-wrap:wrap; color:var(--muted); font-size:.9rem; margin-top:6px; }
+      .res-panel .res-stats b { color:var(--text); }
+      .disc-row { background:rgba(52,211,153,.10); border:1px solid rgba(52,211,153,.45); border-radius:12px; padding:10px 14px; font-size:.9rem; margin-top:12px; display:none; }
+      .disc-row s { color:var(--muted); } .disc-row b { color:var(--ok); }
+      .res-link { margin-top:18px; font-size:.9rem; } .res-link a { color:#a5b4fc; font-weight:700; text-decoration:none; }
       @media (max-width:560px){ .hero{padding:52px 0 42px} section{padding:38px 0} }
     </style>
   </head>
@@ -124,6 +130,16 @@
         <a class="btn" href="#produk">Lihat Produk ⚡</a>
         <div class="banner" id="demoBanner">Mode demo: database belum terhubung — produk & stok contoh, pembayaran belum aktif penuh.</div>
         <div class="banner" id="payBanner">Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.</div>
+        <div class="res-panel" id="resPanel" style="display:none">
+          <div>👥 Login sebagai reseller <strong id="resName"></strong> · diskon <strong id="resDisc"></strong> aktif di checkout</div>
+          <div class="res-stats">
+            <span><b id="resTx">0</b> transaksi lunas</span>
+            <span>Total belanja <b id="resSpent">Rp0</b></span>
+            <span>Total hemat <b id="resSaved">Rp0</b></span>
+          </div>
+          <div class="row" style="margin-top:14px"><a class="btn ghost" href="/reseller" style="text-decoration:none;text-align:center">Pesanan Saya</a><button class="btn ghost" id="btnResLogout">Keluar</button></div>
+        </div>
+        <div class="res-link" id="resLoginLink">Reseller? <a href="/reseller">Login di sini →</a> diskon otomatis berlaku setelah login.</div>
       </div>
 
       <section id="produk">
@@ -178,12 +194,14 @@
         <p class="hint mail">📩 Produk akan dikirim otomatis melalui email, jadi masukkan alamat email dengan benar.</p>
         <label>Nomor telepon <span class="opt">(opsional)</span></label>
         <input id="fPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="081234567890 — boleh dikosongkan" />
+        <div class="disc-row" id="discRow"></div>
         <p class="hint" id="dlgTotal"></p>
         <p class="err" id="formErr"></p>
         <div class="row"><button class="btn ghost" id="btnClose1">Batal</button><button class="btn" id="btnPay">Buat Tagihan QRIS</button></div>
       </div>
       <div id="stepPay" style="display:none">
         <p class="total" id="payTotal"></p>
+        <p class="hint" id="payDisc" style="text-align:center;display:none"></p>
         <div class="qrbox"><img id="payQr" alt="QRIS" /></div>
         <p class="countdown">Kode pesanan <strong id="payOrderId"></strong> · sisa waktu <strong id="payTimer">10:00</strong></p>
         <p class="hint" style="text-align:center">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Halaman ini mengecek pembayaran otomatis — jangan ditutup dulu.</p>
@@ -203,6 +221,7 @@
       const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
       const $ = id => document.getElementById(id);
       let products = [], current = null, order = null, pollTimer = null, countTimer = null;
+      let reseller = null; // {discount, stats} kalau login reseller — harga katalog tetap normal, diskon cuma di checkout (server yang hitung).
 
       async function loadProducts() {
         const r = await fetch("/api/products"); const d = await r.json();
@@ -229,7 +248,18 @@
         $("dlgTitle").textContent = p.name;
         const sel = $("fQty"); sel.innerHTML = "";
         for (let i = 1; i <= Math.min(p.stock_count, 10); i++) { const o = document.createElement("option"); o.value = i; o.textContent = i + " akun"; sel.appendChild(o); }
-        const upd = () => $("dlgTotal").textContent = "Total: " + rp(p.price * Number(sel.value));
+        const upd = () => {
+          const qty = Number(sel.value), normal = p.price * qty;
+          if (reseller && reseller.discount > 0) {
+            const disc = Math.floor(normal * reseller.discount / 100);
+            $("discRow").style.display = "block";
+            $("discRow").innerHTML = `Harga normal <s>${rp(normal)}</s> · diskon reseller ${reseller.discount}% (−${rp(disc)}) · <b>Total bayar ${rp(normal - disc)}</b>`;
+            $("dlgTotal").textContent = "Total bayar: " + rp(normal - disc);
+          } else {
+            $("discRow").style.display = "none";
+            $("dlgTotal").textContent = "Total: " + rp(normal);
+          }
+        };
         sel.onchange = upd; upd();
         $("formErr").textContent = "";
         $("stepForm").style.display = "block"; $("stepPay").style.display = "none"; $("stepDone").style.display = "none";
@@ -248,6 +278,8 @@
           if (!r.ok) throw new Error(d.error || "Gagal membuat tagihan");
           order = { id: d.order_id, contact: email };
           $("payTotal").textContent = rp(d.total);
+          if (d.discount_pct > 0) { $("payDisc").style.display = "block"; $("payDisc").innerHTML = `Harga normal <s>${rp(d.normal_total)}</s> · diskon reseller ${d.discount_pct}% sudah diterapkan`; }
+          else $("payDisc").style.display = "none";
           $("payOrderId").textContent = d.order_id;
           if (d.qris_image) $("payQr").src = d.qris_image; else if (d.payment_url) { $("payQr").outerHTML = '<a class="btn" href="' + d.payment_url + '" target="_blank">Buka Halaman Bayar</a>'; }
           $("stepForm").style.display = "none"; $("stepPay").style.display = "block";
@@ -306,12 +338,25 @@
         $("lookupResult").innerHTML = html;
         const dv = $("lookupResult .delivered"); if (dv) dv.textContent = d.delivered;
       }
+      async function loadReseller() {
+        try {
+          const r = await fetch("/api/reseller/me"); const d = await r.json();
+          if (d.logged_in) {
+            reseller = d;
+            $("resName").textContent = d.username; $("resDisc").textContent = d.discount + "%";
+            $("resTx").textContent = d.stats.tx_count; $("resSpent").textContent = rp(d.stats.total_spent); $("resSaved").textContent = rp(d.stats.total_saved);
+            $("resPanel").style.display = "block"; $("resLoginLink").style.display = "none";
+          }
+        } catch {}
+      }
       $("btnPay").onclick = createInvoice;
       $("btnClose1").onclick = () => $("buyDlg").close();
       $("btnClose3").onclick = () => $("buyDlg").close();
       $("btnCancelOrder").onclick = cancelOrder;
       $("lookupBtn").onclick = lookup;
+      $("btnResLogout").onclick = async () => { await fetch("/api/reseller/logout", { method: "POST" }); location.reload(); };
       loadProducts();
+      loadReseller();
     </script>
   </body>
 </html>

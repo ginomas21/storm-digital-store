@@ -137,6 +137,7 @@
             <span>Total belanja <b id="resSpent">Rp0</b></span>
             <span>Total hemat <b id="resSaved">Rp0</b></span>
           </div>
+          <p class="hint" style="margin-bottom:0">Aturan reseller: minimal 3 akun per pesanan · beli &gt;5 akun dapat bonus diskon +10%.</p>
           <div class="row" style="margin-top:14px"><a class="btn ghost" href="/reseller" style="text-decoration:none;text-align:center">Pesanan Saya</a><button class="btn ghost" id="btnResLogout">Keluar</button></div>
         </div>
         <div class="res-link" id="resLoginLink">Reseller? <a href="/reseller">Login di sini →</a> diskon otomatis berlaku setelah login.</div>
@@ -246,14 +247,22 @@
       function openBuy(p) {
         current = p;
         $("dlgTitle").textContent = p.name;
+        const minQty = reseller ? 3 : 1;
         const sel = $("fQty"); sel.innerHTML = "";
-        for (let i = 1; i <= Math.min(p.stock_count, 10); i++) { const o = document.createElement("option"); o.value = i; o.textContent = i + " akun"; sel.appendChild(o); }
+        for (let i = minQty; i <= Math.min(p.stock_count, 10); i++) { const o = document.createElement("option"); o.value = i; o.textContent = i + " akun"; sel.appendChild(o); }
+        $("btnPay").disabled = sel.options.length === 0;
         const upd = () => {
+          if (!sel.value) { $("formErr").textContent = "Stok produk ini di bawah minimum reseller (3 akun)."; $("dlgTotal").textContent = ""; $("discRow").style.display = "none"; return; }
+          $("formErr").textContent = "";
           const qty = Number(sel.value), normal = p.price * qty;
-          if (reseller && reseller.discount > 0) {
-            const disc = Math.floor(normal * reseller.discount / 100);
+          const bonus0 = reseller ? (qty > 5 ? 10 : 0) : 0;
+          const totalDisc0 = reseller ? Math.min(90, reseller.discount + bonus0) : 0;
+          if (reseller && totalDisc0 > 0) {
+            const bonus = bonus0;
+            const totalDisc = totalDisc0;
+            const disc = Math.floor(normal * totalDisc / 100);
             $("discRow").style.display = "block";
-            $("discRow").innerHTML = `Harga normal <s>${rp(normal)}</s> · diskon reseller ${reseller.discount}% (−${rp(disc)}) · <b>Total bayar ${rp(normal - disc)}</b>`;
+            $("discRow").innerHTML = `Harga normal <s>${rp(normal)}</s> · diskon reseller ${reseller.discount}%${bonus ? " + bonus volume " + bonus + "%" : ""} (−${rp(disc)}) · <b>Total bayar ${rp(normal - disc)}</b>`;
             $("dlgTotal").textContent = "Total bayar: " + rp(normal - disc);
           } else {
             $("discRow").style.display = "none";
@@ -278,7 +287,7 @@
           if (!r.ok) throw new Error(d.error || "Gagal membuat tagihan");
           order = { id: d.order_id, contact: email };
           $("payTotal").textContent = rp(d.total);
-          if (d.discount_pct > 0) { $("payDisc").style.display = "block"; $("payDisc").innerHTML = `Harga normal <s>${rp(d.normal_total)}</s> · diskon reseller ${d.discount_pct}% sudah diterapkan`; }
+          if (d.discount_pct > 0) { $("payDisc").style.display = "block"; $("payDisc").innerHTML = `Harga normal <s>${rp(d.normal_total)}</s> · diskon reseller ${d.discount_pct - (d.bonus_pct || 0)}%${d.bonus_pct ? " + bonus volume " + d.bonus_pct + "%" : ""} sudah diterapkan`; }
           else $("payDisc").style.display = "none";
           $("payOrderId").textContent = d.order_id;
           if (d.qris_image) $("payQr").src = d.qris_image; else if (d.payment_url) { $("payQr").outerHTML = '<a class="btn" href="' + d.payment_url + '" target="_blank">Buka Halaman Bayar</a>'; }

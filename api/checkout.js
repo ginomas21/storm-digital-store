@@ -23,11 +23,19 @@ export default async function handler(req, res) {
   if (!btzConfigured()) return bad(res, 503, "Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.");
   // Diskon reseller dihitung DI SERVER dari sesi login — harga katalog tidak
   // pernah berubah dan klien tidak bisa mengatur diskonnya sendiri.
-  let discount = 0, resellerId = "";
+  // Aturan reseller (berlaku untuk SEMUA reseller, langsung aktif):
+  //   - minimal pembelian 3 akun per pesanan
+  //   - qty > 5 akun dapat bonus diskon +10 poin persen di atas diskon dasar
+  let discount = 0, bonus = 0, resellerId = "";
   const rs = readResellerSession(req);
   if (rs) {
     const r = await getResellerById(rs.rid);
-    if (r && r.active) { discount = effectiveDiscount(r, await getResellerDefaultDiscount()); resellerId = r.id; }
+    if (r && r.active) {
+      resellerId = r.id;
+      if (qty < 3) return bad(res, 400, "Reseller minimal pembelian 3 akun per pesanan");
+      bonus = qty > 5 ? 10 : 0;
+      discount = Math.min(90, effectiveDiscount(r, await getResellerDefaultDiscount()) + bonus);
+    }
   }
   const unitPrice = discount > 0 ? Math.floor(p.price * (100 - discount) / 100) : p.price;
   const total = unitPrice * qty;
@@ -47,7 +55,7 @@ export default async function handler(req, res) {
       order_id: order.id, total: finalTotal, txid: order.txid,
       qris_image: qr, payment_url: data.paymentUrl || "",
       timeout_ms: INVOICE_TIMEOUT_MS,
-      discount_pct: discount, normal_total: p.price * qty, unit_price: unitPrice,
+      discount_pct: discount, bonus_pct: bonus, normal_total: p.price * qty, unit_price: unitPrice,
     });
   } catch (e) {
     await setOrderFields(provisional.id, { status: "gagal" });

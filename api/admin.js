@@ -6,12 +6,14 @@ import stock from "../lib/handlers/admin/stock.js";
 import orders from "../lib/handlers/admin/orders.js";
 import resellers from "../lib/handlers/admin/resellers.js";
 import settings from "../lib/handlers/admin/settings.js";
+import stats from "../lib/handlers/admin/stats.js";
+import clearStock from "../lib/handlers/admin/clearstock.js";
 import { bad } from "../lib/http.js";
 
 // Satu file = satu Serverless Function di paket Hobby Vercel (maks 12).
 // Semua aksi admin lama (/api/admin/login, /products, dst.) kini lewat sini:
-//   /api/admin?action=login | logout | me | products | stock | orders | resellers | settings
-const ACTIONS = { login, logout, me, products, stock, orders, resellers, settings };
+//   /api/admin?action=login | logout | me | products | stock | orders | resellers | settings | stats | clear-stock
+const ACTIONS = { login, logout, me, products, stock, orders, resellers, settings, stats, "clear-stock": clearStock };
 export default async function handler(req, res) {
   const h = ACTIONS[String(req.query.action || "")];
   if (!h) return bad(res, 404, "Aksi admin tidak dikenal");

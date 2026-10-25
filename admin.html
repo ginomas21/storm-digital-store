@@ -6,13 +6,13 @@
     <link rel="icon" href="data:," />
     <title>Panel Admin — Storm Digital Store</title>
     <style>
-      :root { --bg:#ffffff; --surface:#f7f7f5; --text:#1c1c1e; --muted:#5c5c60; --line:#e3e3e0; --accent:#1f4e5f; --accent-text:#ffffff; --err:#b02a2a; --warn:#9a6a00; }
-      @media (prefers-color-scheme: dark) { :root { --bg:#16181a; --surface:#202326; --text:#f2f2f0; --muted:#a7abae; --line:#33373b; --accent:#7fc4d8; --accent-text:#10222a; } }
+      :root { --bg:#ffffff; --surface:#f7f7f5; --surface2:#ffffff; --text:#1c1c1e; --muted:#5c5c60; --line:#e3e3e0; --accent:#6366f1; --accent2:#22d3ee; --accent-text:#ffffff; --err:#b02a2a; --warn:#9a6a00; --ok:#1e8e4f; }
+      @media (prefers-color-scheme: dark) { :root { --bg:#16181a; --surface:#202326; --surface2:#26292d; --text:#f2f2f0; --muted:#a7abae; --line:#33373b; --accent:#8b5cf6; --accent2:#22d3ee; --accent-text:#ffffff; --ok:#3dff88; } }
       * { box-sizing:border-box; }
       body { margin:0; background:var(--bg); color:var(--text); font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; line-height:1.55; }
-      .wrap { max-width:880px; margin:0 auto; padding:24px 20px 60px; }
-      h1 { font-size:1.5rem; } h2 { font-size:1.15rem; margin-top:36px; }
-      .card { background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:18px; margin-bottom:14px; }
+      .wrap { max-width:960px; margin:0 auto; padding:24px 20px 60px; }
+      h1 { font-size:1.5rem; } h2 { font-size:1.15rem; margin-top:8px; }
+      .card { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:14px; }
       label { display:block; font-size:.88rem; font-weight:600; margin:12px 0 4px; }
       input, textarea, select { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--text); font:inherit; }
       textarea { min-height:90px; font-family:ui-monospace,monospace; font-size:.9rem; }
@@ -27,6 +27,26 @@
       th, td { text-align:left; padding:8px; border-bottom:1px solid var(--line); vertical-align:top; }
       .muted { color:var(--muted); font-size:.88rem; }
       .prod-head { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:baseline; }
+      /* Menu tab */
+      .tabs { display:flex; gap:8px; flex-wrap:wrap; margin:20px 0 4px; border-bottom:1px solid var(--line); padding-bottom:12px; }
+      .tabbtn { background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:999px; padding:9px 18px; font-weight:700; font-size:.92rem; cursor:pointer; }
+      .tabbtn.active { background:linear-gradient(92deg,#8b5cf6,#6366f1 45%,#22d3ee); color:#fff; border-color:transparent; }
+      .tabpage { display:none; padding-top:10px; }
+      .tabpage.active { display:block; }
+      /* Kartu statistik */
+      .statgrid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); }
+      .stat { background:var(--surface2); border:1px solid var(--line); border-radius:14px; padding:16px; }
+      .stat .num { font-size:1.55rem; font-weight:700; line-height:1.2; }
+      .stat .lbl { color:var(--muted); font-size:.85rem; margin-top:2px; }
+      .stat.hero { background:linear-gradient(135deg,#8b5cf6,#6366f1 45%,#22d3ee); color:#fff; border-color:transparent; }
+      .stat.hero .lbl { color:rgba(255,255,255,.85); }
+      /* Badge status pesanan */
+      .st { display:inline-block; padding:2px 10px; border-radius:999px; font-size:.8rem; font-weight:700; }
+      .st-sukses { background:rgba(30,142,79,.14); color:var(--ok); }
+      .st-pending { background:rgba(154,106,0,.14); color:var(--warn); }
+      .st-batal { background:rgba(176,42,42,.12); color:var(--err); }
+      .filters { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+      .filters input, .filters select { flex:1; min-width:160px; }
     </style>
   </head>
   <body>
@@ -48,38 +68,83 @@
           <button class="btn ghost small" id="btnLogout">Keluar</button>
         </div>
 
-        <h2>➕ Tambah Produk Baru</h2>
-        <div class="card">
-          <p class="muted" style="margin-top:0">Kategori otomatis: <strong>Akun Premium</strong> (sama seperti bot Telegram).</p>
-          <label>Nama produk</label><input id="npName" placeholder="Contoh: Netflix 1 bulan" />
-          <label>Harga (Rp, angka saja)</label><input id="npPrice" type="number" min="1" placeholder="30000" />
-          <label>Deskripsi (boleh kosong — otomatis terisi template)</label><input id="npDesc" placeholder="Kosongkan untuk template bawaan" />
-          <label>Stok awal (satu akun per baris, boleh kosong)</label><textarea id="npStock" placeholder="email1:password1&#10;email2:password2"></textarea>
-          <p class="err" id="npErr"></p>
-          <div class="row"><button class="btn" id="btnAddProduct">Simpan Produk</button></div>
+        <nav class="tabs">
+          <button class="tabbtn active" data-tab="stats">📊 Statistik</button>
+          <button class="tabbtn" data-tab="produk">📦 Produk</button>
+          <button class="tabbtn" data-tab="pesanan">🧾 Pesanan</button>
+          <button class="tabbtn" data-tab="reseller">👥 Reseller</button>
+        </nav>
+
+        <!-- ============ STATISTIK ============ -->
+        <div class="tabpage active" id="tab-stats">
+          <h2>Ringkasan Usaha</h2>
+          <p class="muted" style="margin-top:0">Pendapatan = akumulasi semua pesanan berstatus sukses (termasuk sukses sebagian / tanpa stok). Data dihitung server, bukan cuma dari daftar di bawah.</p>
+          <div class="statgrid">
+            <div class="stat hero"><div class="num" id="stRevenue">Rp0</div><div class="lbl">Total pendapatan (sukses)</div></div>
+            <div class="stat"><div class="num" id="stSukses">0</div><div class="lbl">Transaksi sukses</div></div>
+            <div class="stat"><div class="num" id="stTotal">0</div><div class="lbl">Total pesanan</div></div>
+            <div class="stat"><div class="num" id="stPending">0</div><div class="lbl">Menunggu bayar</div></div>
+            <div class="stat"><div class="num" id="stBatal">0</div><div class="lbl">Dibatalkan / kedaluwarsa</div></div>
+            <div class="stat"><div class="num" id="stSaved">Rp0</div><div class="lbl">Total hemat reseller</div></div>
+            <div class="stat"><div class="num" id="stProducts">0</div><div class="lbl">Produk aktif / total</div></div>
+            <div class="stat"><div class="num" id="stStock">0</div><div class="lbl">Stok tersedia (akun)</div></div>
+          </div>
+          <h2>🏆 Produk Terlaris</h2>
+          <div class="card">
+            <div style="overflow-x:auto"><table><thead><tr><th>Produk</th><th>Terjual</th><th>Transaksi</th><th>Pendapatan</th></tr></thead><tbody id="topRows"></tbody></table></div>
+          </div>
         </div>
 
-        <h2>📦 Produk & Stok</h2>
-        <div id="prodList"></div>
+        <!-- ============ PRODUK ============ -->
+        <div class="tabpage" id="tab-produk">
+          <h2>➕ Tambah Produk Baru</h2>
+          <div class="card">
+            <p class="muted" style="margin-top:0">Kategori otomatis: <strong>Akun Premium</strong> (sama seperti bot Telegram).</p>
+            <label>Nama produk</label><input id="npName" placeholder="Contoh: Netflix 1 bulan" />
+            <label>Harga (Rp, angka saja)</label><input id="npPrice" type="number" min="1" placeholder="30000" />
+            <label>Deskripsi (boleh kosong — otomatis terisi template)</label><input id="npDesc" placeholder="Kosongkan untuk template bawaan" />
+            <label>Stok awal (satu akun per baris, boleh kosong)</label><textarea id="npStock" placeholder="email1:password1&#10;email2:password2"></textarea>
+            <p class="err" id="npErr"></p>
+            <div class="row"><button class="btn" id="btnAddProduct">Simpan Produk</button></div>
+          </div>
 
-        <h2>🧾 Transaksi Terakhir</h2>
-        <div class="card">
-          <p class="muted" style="margin-top:0">Omzet dari daftar ini: <strong id="omzet"></strong></p>
-          <div style="overflow-x:auto"><table><thead><tr><th>Kode</th><th>Produk</th><th>Total</th><th>Pembeli / Kontak</th><th>Status</th><th>Waktu</th></tr></thead><tbody id="orderRows"></tbody></table></div>
+          <h2>📦 Produk & Stok</h2>
+          <div id="prodList"></div>
         </div>
 
-        <h2>👥 Reseller</h2>
-        <div class="card">
-          <p class="muted" style="margin-top:0">Akun reseller cuma bisa dibuat di sini (tidak ada daftar mandiri). Diskon kosong = pakai diskon default. Diskon dihitung server saat checkout reseller — harga katalog tetap harga normal. Aturan untuk semua reseller: minimal 3 akun per pesanan; beli &gt;5 akun dapat bonus diskon +10%.</p>
-          <label>Diskon default reseller (%)</label>
-          <div class="row" style="margin-top:0"><input id="defDisc" type="number" min="0" max="90" style="max-width:140px" /><button class="btn small" id="btnDefDisc">Simpan Default</button><span class="muted" id="defDiscMsg"></span></div>
-          <label>Username reseller baru</label><input id="rsUser" placeholder="Contoh: reseller_jakarta" />
-          <label>Password reseller baru</label><input id="rsPass" type="password" placeholder="Minimal 6 karakter" />
-          <label>Diskon khusus (%) — kosongkan = pakai default</label><input id="rsDisc" type="number" min="0" max="90" placeholder="Kosong = default" />
-          <p class="err" id="rsErr"></p>
-          <div class="row"><button class="btn" id="btnAddReseller">Buat Akun Reseller</button></div>
+        <!-- ============ PESANAN ============ -->
+        <div class="tabpage" id="tab-pesanan">
+          <h2>🧾 Riwayat Pesanan</h2>
+          <div class="card">
+            <p class="muted" style="margin-top:0">100 transaksi terakhir. Omzet dari daftar ini: <strong id="omzet"></strong></p>
+            <div class="filters">
+              <input id="orderSearch" placeholder="Cari kode / produk / nama / kontak…" />
+              <select id="orderFilter">
+                <option value="all">Semua status</option>
+                <option value="sukses">Sukses</option>
+                <option value="pending">Menunggu bayar</option>
+                <option value="batal">Dibatalkan / kedaluwarsa</option>
+              </select>
+            </div>
+            <div style="overflow-x:auto"><table><thead><tr><th>Kode</th><th>Produk</th><th>Total</th><th>Pembeli / Kontak</th><th>Status</th><th>Waktu</th></tr></thead><tbody id="orderRows"></tbody></table></div>
+          </div>
         </div>
-        <div id="resList"></div>
+
+        <!-- ============ RESELLER ============ -->
+        <div class="tabpage" id="tab-reseller">
+          <h2>👥 Reseller</h2>
+          <div class="card">
+            <p class="muted" style="margin-top:0">Akun reseller cuma bisa dibuat di sini (tidak ada daftar mandiri). Diskon kosong = pakai diskon default. Diskon dihitung server saat checkout reseller — harga katalog tetap harga normal. Aturan untuk semua reseller: minimal 3 akun per pesanan; beli &gt;5 akun dapat bonus diskon +10%.</p>
+            <label>Diskon default reseller (%)</label>
+            <div class="row" style="margin-top:0"><input id="defDisc" type="number" min="0" max="90" style="max-width:140px" /><button class="btn small" id="btnDefDisc">Simpan Default</button><span class="muted" id="defDiscMsg"></span></div>
+            <label>Username reseller baru</label><input id="rsUser" placeholder="Contoh: reseller_jakarta" />
+            <label>Password reseller baru</label><input id="rsPass" type="password" placeholder="Minimal 6 karakter" />
+            <label>Diskon khusus (%) — kosongkan = pakai default</label><input id="rsDisc" type="number" min="0" max="90" placeholder="Kosong = default" />
+            <p class="err" id="rsErr"></p>
+            <div class="row"><button class="btn" id="btnAddReseller">Buat Akun Reseller</button></div>
+          </div>
+          <div id="resList"></div>
+        </div>
       </div>
     </div>
     <script>
@@ -91,6 +156,11 @@
         if (!r.ok) throw new Error(d.error || ("HTTP " + r.status));
         return d;
       }
+      function showTab(name) {
+        document.querySelectorAll(".tabbtn").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
+        document.querySelectorAll(".tabpage").forEach(p => p.classList.toggle("active", p.id === "tab-" + name));
+      }
+      document.querySelectorAll(".tabbtn").forEach(b => b.onclick = () => showTab(b.dataset.tab));
       async function init() {
         try {
           const me = await api("/api/admin?action=me");
@@ -106,7 +176,29 @@
           $("who").textContent = d.username; showPanel(); loadAll();
         } catch (e) { $("loginErr").textContent = e.message; }
       }
-      async function loadAll() { loadProducts(); loadOrders(); loadResellers(); }
+      async function loadAll() { loadStats(); loadProducts(); loadOrders(); loadResellers(); }
+      async function loadStats() {
+        try {
+          const s = await api("/api/admin?action=stats");
+          $("stRevenue").textContent = rp(s.orders.revenue);
+          $("stSukses").textContent = s.orders.sukses;
+          $("stTotal").textContent = s.orders.total;
+          $("stPending").textContent = s.orders.pending;
+          $("stBatal").textContent = s.orders.batal;
+          $("stSaved").textContent = rp(s.orders.saved);
+          $("stProducts").textContent = s.products.active + " / " + s.products.total;
+          $("stStock").textContent = s.products.stock;
+          const tb = $("topRows"); tb.innerHTML = "";
+          if (!s.topProducts.length) tb.innerHTML = '<tr><td colspan="4" class="muted">Belum ada penjualan sukses.</td></tr>';
+          for (const t of s.topProducts) {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td></td><td></td><td></td><td></td>`;
+            const c = tr.querySelectorAll("td");
+            c[0].textContent = t.product_name; c[1].textContent = t.qty + " akun"; c[2].textContent = t.orders + " transaksi"; c[3].textContent = rp(t.revenue);
+            tb.appendChild(tr);
+          }
+        } catch (e) { /* statistik gagal dimuat — tab lain tetap jalan */ }
+      }
       async function loadResellers() {
         const d = await api("/api/admin?action=resellers");
         $("defDisc").value = d.default_discount;
@@ -150,49 +242,89 @@
         const box = $("prodList"); box.innerHTML = "";
         if (!d.products.length) { box.innerHTML = '<div class="card muted">Belum ada produk.</div>'; return; }
         for (const p of d.products) {
+          const custom = p.sold_custom !== null && p.sold_custom !== undefined;
           const el = document.createElement("div"); el.className = "card";
-          el.innerHTML = `<div class="prod-head"><strong></strong><span>${rp(p.price)} · stok ${p.stock_count} · ${p.active ? "aktif" : "nonaktif"}</span></div>
+          el.innerHTML = `<div class="prod-head"><strong></strong><span>${rp(p.price)} · stok ${p.stock_count} · terjual ${p.terjual}${custom ? " (custom)" : ""} · ${p.active ? "aktif" : "nonaktif"}</span></div>
             <p class="muted" style="white-space:pre-line"></p>
             <label>Tambah stok (satu akun per baris)</label><textarea class="stk"></textarea>
+            <label>Total terjual (custom, tampil di publik — kosongkan = otomatis dari penjualan asli)</label><input class="trj" type="number" min="0" />
             <div class="row">
               <button class="btn small addstk">Tambah Stok</button>
+              <button class="btn small savetrj">Simpan Terjual</button>
               <button class="btn ghost small toggle">${p.active ? "Nonaktifkan" : "Aktifkan"}</button>
+              <button class="btn danger small clearstk">Habiskan Stok</button>
               <button class="btn danger small del">Hapus Produk</button>
               <span class="muted msg"></span>
             </div>`;
           el.querySelector("strong").textContent = p.name + " (" + p.id + ")";
           el.querySelector("p").textContent = p.descr || "";
+          if (custom) el.querySelector(".trj").value = p.sold_custom;
           el.querySelector(".addstk").onclick = async () => {
             const msg = el.querySelector(".msg");
-            try { const r = await api("/api/admin?action=stock", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productId: p.id, stock: el.querySelector(".stk").value }) }); msg.textContent = `+${r.added} stok, total ${r.stock_count}`; loadProducts(); }
+            try { const r = await api("/api/admin?action=stock", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productId: p.id, stock: el.querySelector(".stk").value }) }); msg.textContent = `+${r.added} stok, total ${r.stock_count}`; loadProducts(); loadStats(); }
             catch (e) { msg.textContent = e.message; }
           };
-          el.querySelector(".toggle").onclick = async () => { await api("/api/admin?action=products", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id, active: !p.active }) }); loadProducts(); };
-          el.querySelector(".del").onclick = async () => { if (!confirm("Hapus produk " + p.name + "? Stoknya ikut terhapus.")) return; await api("/api/admin?action=products", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id }) }); loadProducts(); };
+          el.querySelector(".savetrj").onclick = async () => {
+            const msg = el.querySelector(".msg");
+            try {
+              const v = el.querySelector(".trj").value;
+              const r = await api("/api/admin?action=products", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id, sold_custom: v === "" ? null : Number(v) }) });
+              msg.textContent = `Total terjual jadi ${r.product.terjual}`; loadProducts();
+            } catch (e) { msg.textContent = e.message; }
+          };
+          el.querySelector(".toggle").onclick = async () => { await api("/api/admin?action=products", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id, active: !p.active }) }); loadProducts(); loadStats(); };
+          el.querySelector(".clearstk").onclick = async () => {
+            const msg = el.querySelector(".msg");
+            if (!confirm("Habiskan stok " + p.name + "? " + p.stock_count + " akun yang ada tidak akan tampil/dijual lagi (isinya tidak dihapus, dan stok baru tetap bisa ditambah).")) return;
+            try { const r = await api("/api/admin?action=clear-stock", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productId: p.id }) }); msg.textContent = `${r.cleared} akun dihabiskan, stok sekarang ${r.stock_count}`; loadProducts(); loadStats(); }
+            catch (e) { msg.textContent = e.message; }
+          };
+          el.querySelector(".del").onclick = async () => { if (!confirm("Hapus produk " + p.name + "? Stoknya ikut terhapus.")) return; await api("/api/admin?action=products", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id }) }); loadProducts(); loadStats(); };
           box.appendChild(el);
         }
       }
-      async function loadOrders() {
-        const d = await api("/api/admin?action=orders");
-        $("omzet").textContent = rp(d.omzet_recent);
+      let allOrders = [];
+      function statusClass(st) {
+        if (String(st).startsWith("sukses")) return "st-sukses";
+        if (st === "pending") return "st-pending";
+        return "st-batal";
+      }
+      function renderOrders() {
+        const q = $("orderSearch").value.trim().toLowerCase();
+        const f = $("orderFilter").value;
         const tb = $("orderRows"); tb.innerHTML = "";
-        for (const o of d.orders) {
+        const rows = allOrders.filter(o => {
+          const st = String(o.status);
+          if (f === "sukses" && !st.startsWith("sukses")) return false;
+          if (f === "pending" && st !== "pending") return false;
+          if (f === "batal" && (st.startsWith("sukses") || st === "pending")) return false;
+          if (q && !(o.id + " " + o.product_name + " " + (o.buyer_name || "") + " " + (o.contact || "")).toLowerCase().includes(q)) return false;
+          return true;
+        });
+        for (const o of rows) {
           const tr = document.createElement("tr");
           tr.innerHTML = `<td></td><td></td><td></td><td></td><td></td><td></td>`;
           const cells = tr.querySelectorAll("td");
           cells[0].textContent = o.id; cells[1].textContent = `${o.product_name} ×${o.qty}`;
           cells[2].textContent = rp(o.total); cells[3].textContent = `${o.buyer_name || "-"} / ${o.contact || "-"}${o.phone ? " / " + o.phone : ""}`;
-          cells[4].textContent = o.status; cells[5].textContent = new Date(o.created_at).toLocaleString("id-ID");
+          cells[4].innerHTML = `<span class="st ${statusClass(o.status)}">${o.status}</span>`;
+          cells[5].textContent = new Date(o.created_at).toLocaleString("id-ID");
           tb.appendChild(tr);
         }
-        if (!d.orders.length) tb.innerHTML = '<tr><td colspan="6" class="muted">Belum ada transaksi.</td></tr>';
+        if (!rows.length) tb.innerHTML = '<tr><td colspan="6" class="muted">Tidak ada transaksi yang cocok.</td></tr>';
+      }
+      async function loadOrders() {
+        const d = await api("/api/admin?action=orders");
+        $("omzet").textContent = rp(d.omzet_recent);
+        allOrders = d.orders || [];
+        renderOrders();
       }
       async function addProduct() {
         $("npErr").textContent = "";
         try {
           await api("/api/admin?action=products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: $("npName").value.trim(), price: Number($("npPrice").value), descr: $("npDesc").value.trim(), stock: $("npStock").value }) });
           $("npName").value = ""; $("npPrice").value = ""; $("npDesc").value = ""; $("npStock").value = "";
-          loadProducts();
+          loadProducts(); loadStats();
         } catch (e) { $("npErr").textContent = e.message; }
       }
       $("btnLogin").onclick = doLogin;
@@ -204,6 +336,8 @@
         try { const d = await api("/api/admin?action=settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reseller_default_discount: Number($("defDisc").value) }) }); $("defDiscMsg").textContent = "Default jadi " + d.reseller_default_discount + "%"; loadResellers(); }
         catch (e) { $("defDiscMsg").textContent = e.message; }
       };
+      $("orderSearch").addEventListener("input", renderOrders);
+      $("orderFilter").addEventListener("change", renderOrders);
       init();
     </script>
   </body>

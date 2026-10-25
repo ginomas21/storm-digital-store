@@ -237,6 +237,7 @@
           const el = document.createElement("div"); el.className = "card";
           el.innerHTML = `<h3></h3><p></p><div class="price">${rp(p.price)}</div>` +
             `<div class="stock ${out ? "out" : ""}">${out ? "Stok habis" : "Stok: " + p.stock_count + " akun"}</div>` +
+            (Number(p.terjual || 0) > 0 ? `<div style="font-size:.83rem;color:var(--muted)">🔥 Terjual ${Number(p.terjual).toLocaleString("id-ID")} akun</div>` : "") +
             `<button class="btn" ${out ? "disabled" : ""}>${out ? "Habis" : "⚡ Beli Sekarang"}</button>`;
           el.querySelector("h3").textContent = p.name;
           el.querySelector("p").textContent = p.descr || "";

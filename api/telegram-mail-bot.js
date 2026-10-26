@@ -1,4 +1,5 @@
 import { handleUpdate } from "../lib/telegram-bot.js";
+import { tgApi } from "../lib/telegram-mail.js";
 
 // POST /api/telegram-mail-bot — webhook Telegram untuk bot temp-mail.
 // Telegram mendaftarkan URL ini lewat setWebhook; update hanya diterima dari
@@ -42,6 +43,17 @@ export default async function handler(req, res) {
     await handleUpdate(update);
   } catch (e) {
     console.error("telegram-mail-bot handler gagal:", e.message);
+    // Jangan diam: beri tahu user bahwa update-nya gagal diproses,
+    // supaya tidak seperti "tidak ada respon" tanpa penjelasan.
+    const chatId = update.message?.chat?.id || update.callback_query?.message?.chat?.id;
+    if (chatId) {
+      try {
+        await tgApi("sendMessage", {
+          chat_id: chatId,
+          text: "Maaf, terjadi kesalahan di server saat memproses pesan itu. Silakan coba lagi.",
+        });
+      } catch { /* pengiriman pesan error pun gagal: sudah dicatat di log */ }
+    }
   }
   return res.status(200).json({ ok: true });
 }

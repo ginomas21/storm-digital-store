@@ -195,6 +195,9 @@
         <p class="hint mail">📩 Produk akan dikirim otomatis melalui email, jadi masukkan alamat email dengan benar.</p>
         <label>Nomor telepon <span class="opt">(opsional)</span></label>
         <input id="fPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="081234567890 — boleh dikosongkan" />
+        <label>Kode voucher <span class="opt">(opsional)</span></label>
+        <div style="display:flex;gap:10px"><input id="fVoucher" placeholder="Contoh: HEMAT10" style="flex:1;min-width:0" /><button class="btn ghost" id="btnVoucher" type="button" style="flex:0 0 auto">Terapkan</button></div>
+        <p class="hint" id="voucherMsg" style="margin-top:6px"></p>
         <div class="disc-row" id="discRow"></div>
         <p class="hint" id="dlgTotal"></p>
         <p class="err" id="formErr"></p>
@@ -221,7 +224,7 @@
     <script>
       const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
       const $ = id => document.getElementById(id);
-      let products = [], current = null, order = null, pollTimer = null, countTimer = null;
+      let products = [], current = null, order = null, pollTimer = null, countTimer = null, appliedVoucher = null;
       let reseller = null; // {discount, stats} kalau login reseller — harga katalog tetap normal, diskon cuma di checkout (server yang hitung).
 
       async function loadProducts() {
@@ -270,7 +273,8 @@
             $("dlgTotal").textContent = "Total: " + rp(normal);
           }
         };
-        sel.onchange = upd; upd();
+        sel.onchange = () => { appliedVoucher = null; $("voucherMsg").textContent = ""; upd(); }; upd();
+        $("fVoucher").value = ""; $("voucherMsg").textContent = ""; appliedVoucher = null;
         $("formErr").textContent = "";
         $("stepForm").style.display = "block"; $("stepPay").style.display = "none"; $("stepDone").style.display = "none";
         $("buyDlg").showModal();
@@ -283,12 +287,13 @@
         $("btnPay").disabled = true;
         try {
           const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ productId: current.id, qty: Number($("fQty").value), name: $("fName").value.trim(), email, phone }) });
+            body: JSON.stringify({ productId: current.id, qty: Number($("fQty").value), name: $("fName").value.trim(), email, phone, voucher_code: appliedVoucher || "" }) });
           const d = await r.json();
           if (!r.ok) throw new Error(d.error || "Gagal membuat tagihan");
           order = { id: d.order_id, contact: email };
           $("payTotal").textContent = rp(d.total);
           if (d.discount_pct > 0) { $("payDisc").style.display = "block"; $("payDisc").innerHTML = `Harga normal <s>${rp(d.normal_total)}</s> · diskon reseller ${d.discount_pct - (d.bonus_pct || 0)}%${d.bonus_pct ? " + bonus volume " + d.bonus_pct + "%" : ""} sudah diterapkan`; }
+          else if (d.voucher_code) { $("payDisc").style.display = "block"; $("payDisc").innerHTML = `🎟️ Voucher ${d.voucher_code} (−${rp(d.voucher_discount)}) sudah diterapkan`; }
           else $("payDisc").style.display = "none";
           $("payOrderId").textContent = d.order_id;
           if (d.qris_image) $("payQr").src = d.qris_image; else if (d.payment_url) { $("payQr").outerHTML = '<a class="btn" href="' + d.payment_url + '" target="_blank">Buka Halaman Bayar</a>'; }
@@ -359,7 +364,23 @@
           }
         } catch {}
       }
+      async function applyVoucher() {
+        const code = $("fVoucher").value.trim();
+        const msg = $("voucherMsg");
+        if (!code) { msg.textContent = "Masukkan dulu kode vouchernya."; return; }
+        if (!current) return;
+        msg.textContent = "Mengecek voucher…";
+        try {
+          const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "validate-voucher", productId: current.id, qty: Number($("fQty").value), voucher_code: code }) });
+          const d = await r.json();
+          if (!r.ok) throw new Error(d.error || "Voucher tidak valid");
+          appliedVoucher = d.code;
+          msg.textContent = `🎟️ ${d.code}: potongan ${d.discount_type === "percent" ? d.discount_value + "%" : rp(d.discount_value)} (−${rp(d.discount_amount)}) · total jadi ${rp(d.total)}`;
+        } catch (e) { appliedVoucher = null; msg.textContent = e.message; }
+      }
       $("btnPay").onclick = createInvoice;
+      $("btnVoucher").onclick = applyVoucher;
       $("btnClose1").onclick = () => $("buyDlg").close();
       $("btnClose3").onclick = () => $("buyDlg").close();
       $("btnCancelOrder").onclick = cancelOrder;

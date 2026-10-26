@@ -73,6 +73,7 @@
           <button class="tabbtn" data-tab="produk">📦 Produk</button>
           <button class="tabbtn" data-tab="pesanan">🧾 Pesanan</button>
           <button class="tabbtn" data-tab="reseller">👥 Reseller</button>
+          <button class="tabbtn" data-tab="voucher">🎟️ Voucher</button>
         </nav>
 
         <!-- ============ STATISTIK ============ -->
@@ -126,7 +127,18 @@
                 <option value="batal">Dibatalkan / kedaluwarsa</option>
               </select>
             </div>
-            <div style="overflow-x:auto"><table><thead><tr><th>Kode</th><th>Produk</th><th>Total</th><th>Pembeli / Kontak</th><th>Status</th><th>Waktu</th></tr></thead><tbody id="orderRows"></tbody></table></div>
+            <div style="overflow-x:auto"><table><thead><tr><th>Kode</th><th>Produk</th><th>Total</th><th>Pembeli / Kontak</th><th>Status</th><th>Waktu</th><th>Aksi</th></tr></thead><tbody id="orderRows"></tbody></table></div>
+          </div>
+          <div class="card" id="orderEditCard" style="display:none">
+            <h3 style="margin-top:0">✏️ Edit Pesanan <span id="oeId"></span></h3>
+            <label>Nama pembeli</label><input id="oeName" />
+            <label>Kontak (email)</label><input id="oeContact" />
+            <label>Telepon</label><input id="oePhone" />
+            <label>Status</label><select id="oeStatus"><option value="pending">pending</option><option value="batal">batal</option></select>
+            <label>Isi pengiriman (akun yang dikirim — kosongkan kalau belum terkirim)</label><textarea id="oeDelivered"></textarea>
+            <p class="muted">Harga, jumlah, dan produk tidak bisa diubah karena terkait pembayaran QRIS yang sudah dibuat. Status pesanan sukses/gagal tidak bisa diubah.</p>
+            <p class="err" id="oeErr"></p>
+            <div class="row"><button class="btn" id="btnSaveOrder">Simpan Perubahan</button><button class="btn ghost" id="btnCancelEdit">Batal</button><span class="muted" id="oeMsg"></span></div>
           </div>
         </div>
 
@@ -144,6 +156,22 @@
             <div class="row"><button class="btn" id="btnAddReseller">Buat Akun Reseller</button></div>
           </div>
           <div id="resList"></div>
+        </div>
+
+        <!-- ============ VOUCHER ============ -->
+        <div class="tabpage" id="tab-voucher">
+          <h2>🎟️ Kode Voucher</h2>
+          <div class="card">
+            <p class="muted" style="margin-top:0">Voucher hanya berlaku untuk pembelian tamu (tidak ditumpuk dengan diskon reseller). Pemakaian dihitung saat pesanan lunas, bukan saat checkout dibuat. Kode tidak peka huruf besar/kecil dan tidak bisa diubah setelah dibuat (hapus lalu buat baru kalau mau ganti kode).</p>
+            <label>Kode voucher</label><input id="vcCode" placeholder="Contoh: HEMAT10" />
+            <label>Tipe potongan</label><select id="vcType"><option value="percent">Persen (%)</option><option value="fixed">Nominal (Rp)</option></select>
+            <label>Nilai potongan</label><input id="vcValue" type="number" min="1" placeholder="10 (untuk %) atau 15000 (untuk Rp)" />
+            <label>Maks pemakaian (kosongkan = tanpa batas)</label><input id="vcMax" type="number" min="1" placeholder="Kosong = tanpa batas" />
+            <label>Kedaluwarsa (kosongkan = tanpa batas)</label><input id="vcExp" type="date" />
+            <p class="err" id="vcErr"></p>
+            <div class="row"><button class="btn" id="btnAddVoucher">Simpan Voucher</button></div>
+          </div>
+          <div id="voucherList"></div>
         </div>
       </div>
     </div>
@@ -176,7 +204,7 @@
           $("who").textContent = d.username; showPanel(); loadAll();
         } catch (e) { $("loginErr").textContent = e.message; }
       }
-      async function loadAll() { loadStats(); loadProducts(); loadOrders(); loadResellers(); }
+      async function loadAll() { loadStats(); loadProducts(); loadOrders(); loadResellers(); loadVouchers(); }
       async function loadStats() {
         try {
           const s = await api("/api/admin?action=stats");
@@ -303,21 +331,80 @@
         });
         for (const o of rows) {
           const tr = document.createElement("tr");
-          tr.innerHTML = `<td></td><td></td><td></td><td></td><td></td><td></td>`;
+          tr.innerHTML = `<td></td><td></td><td></td><td></td><td></td><td></td><td></td>`;
           const cells = tr.querySelectorAll("td");
-          cells[0].textContent = o.id; cells[1].textContent = `${o.product_name} ×${o.qty}`;
+          cells[0].textContent = o.id; cells[1].textContent = `${o.product_name} ×${o.qty}` + (o.voucher_code ? ` · 🎟️ ${o.voucher_code} (−${rp(o.voucher_discount || 0)})` : "");
           cells[2].textContent = rp(o.total); cells[3].textContent = `${o.buyer_name || "-"} / ${o.contact || "-"}${o.phone ? " / " + o.phone : ""}`;
           cells[4].innerHTML = `<span class="st ${statusClass(o.status)}">${o.status}</span>`;
           cells[5].textContent = new Date(o.created_at).toLocaleString("id-ID");
+          const eb = document.createElement("button"); eb.className = "btn ghost small"; eb.textContent = "Edit";
+          eb.onclick = () => openOrderEdit(o.id);
+          cells[6].appendChild(eb);
           tb.appendChild(tr);
         }
-        if (!rows.length) tb.innerHTML = '<tr><td colspan="6" class="muted">Tidak ada transaksi yang cocok.</td></tr>';
+        if (!rows.length) tb.innerHTML = '<tr><td colspan="7" class="muted">Tidak ada transaksi yang cocok.</td></tr>';
       }
       async function loadOrders() {
         const d = await api("/api/admin?action=orders");
         $("omzet").textContent = rp(d.omzet_recent);
         allOrders = d.orders || [];
         renderOrders();
+      }
+      async function loadVouchers() {
+        const d = await api("/api/admin?action=vouchers");
+        const box = $("voucherList"); box.innerHTML = "";
+        if (!d.vouchers.length) { box.innerHTML = '<div class="card muted">Belum ada voucher.</div>'; return; }
+        for (const v of d.vouchers) {
+          const el = document.createElement("div"); el.className = "card";
+          const exp = v.expires_at ? new Date(v.expires_at).toLocaleDateString("id-ID") : "tanpa batas";
+          const uses = v.max_uses === null ? v.used_count + "×" : v.used_count + "/" + v.max_uses;
+          el.innerHTML = `<div class="prod-head"><strong></strong><span>${v.active ? "aktif" : "nonaktif"} · terpakai ${uses} · kedaluwarsa ${exp}</span></div>
+            <p class="muted" style="margin-top:6px">Potongan: ${v.discount_type === "percent" ? v.discount_value + "%" : rp(v.discount_value)}</p>
+            <div class="row">
+              <button class="btn ghost small toggle">${v.active ? "Nonaktifkan" : "Aktifkan"}</button>
+              <button class="btn danger small del">Hapus</button>
+              <span class="muted msg"></span>
+            </div>`;
+          el.querySelector("strong").textContent = v.code;
+          el.querySelector(".toggle").onclick = async () => { await api("/api/admin?action=vouchers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: v.id, active: !v.active }) }); loadVouchers(); };
+          el.querySelector(".del").onclick = async () => { if (!confirm("Hapus voucher " + v.code + "?")) return; await api("/api/admin?action=vouchers", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: v.id }) }); loadVouchers(); };
+          box.appendChild(el);
+        }
+      }
+      async function addVoucher() {
+        $("vcErr").textContent = "";
+        try {
+          await api("/api/admin?action=vouchers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+            code: $("vcCode").value, discount_type: $("vcType").value, discount_value: Number($("vcValue").value),
+            max_uses: $("vcMax").value === "" ? null : Number($("vcMax").value),
+            expires_at: $("vcExp").value || null }) });
+          $("vcCode").value = ""; $("vcValue").value = ""; $("vcMax").value = ""; $("vcExp").value = "";
+          loadVouchers();
+        } catch (e) { $("vcErr").textContent = e.message; }
+      }
+      let editingOrderId = null;
+      async function openOrderEdit(id) {
+        const d = await api("/api/admin?action=orders&id=" + encodeURIComponent(id));
+        const o = d.order; editingOrderId = o.id;
+        $("oeId").textContent = o.id;
+        $("oeName").value = o.buyer_name || "";
+        $("oeContact").value = o.contact || "";
+        $("oePhone").value = o.phone || "";
+        $("oeDelivered").value = o.delivered || "";
+        $("oeStatus").value = (o.status === "pending" || o.status === "batal") ? o.status : "pending";
+        $("oeStatus").disabled = !(o.status === "pending" || o.status === "batal");
+        $("oeErr").textContent = ""; $("oeMsg").textContent = "";
+        $("orderEditCard").style.display = "block";
+        $("orderEditCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+      async function saveOrderEdit() {
+        $("oeErr").textContent = ""; $("oeMsg").textContent = "";
+        try {
+          const body = { id: editingOrderId, buyer_name: $("oeName").value, contact: $("oeContact").value, phone: $("oePhone").value, delivered: $("oeDelivered").value };
+          if (!$("oeStatus").disabled) body.status = $("oeStatus").value;
+          await api("/api/admin?action=orders", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+          $("oeMsg").textContent = "Tersimpan"; loadOrders();
+        } catch (e) { $("oeErr").textContent = e.message; }
       }
       async function addProduct() {
         $("npErr").textContent = "";
@@ -331,6 +418,9 @@
       $("p").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
       $("btnLogout").onclick = async () => { await fetch("/api/admin?action=logout", { method: "POST" }); location.reload(); };
       $("btnAddProduct").onclick = addProduct;
+      $("btnAddVoucher").onclick = addVoucher;
+      $("btnSaveOrder").onclick = saveOrderEdit;
+      $("btnCancelEdit").onclick = () => { $("orderEditCard").style.display = "none"; editingOrderId = null; };
       $("btnAddReseller").onclick = addReseller;
       $("btnDefDisc").onclick = async () => {
         try { const d = await api("/api/admin?action=settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reseller_default_discount: Number($("defDisc").value) }) }); $("defDiscMsg").textContent = "Default jadi " + d.reseller_default_discount + "%"; loadResellers(); }

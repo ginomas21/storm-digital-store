@@ -256,8 +256,8 @@
         for (let i = minQty; i <= Math.min(p.stock_count, 10); i++) { const o = document.createElement("option"); o.value = i; o.textContent = i + " akun"; sel.appendChild(o); }
         $("btnPay").disabled = sel.options.length === 0;
         const upd = () => {
-          if (!sel.value) { $("formErr").textContent = "Stok produk ini di bawah minimum reseller (3 akun)."; $("dlgTotal").textContent = ""; $("discRow").style.display = "none"; return; }
-          $("formErr").textContent = "";
+          if (!sel.value) { $("formErr").textContent = reseller ? `Stok produk ini tinggal ${p.stock_count} akun — di bawah minimum reseller (3 akun). Tambah stok dulu, atau keluar dari akun reseller dan checkout sebagai tamu.` : "Stok produk ini habis."; $("dlgTotal").textContent = ""; $("discRow").style.display = "none"; sel.disabled = true; return; }
+          $("formErr").textContent = ""; sel.disabled = false;
           const qty = Number(sel.value), normal = p.price * qty;
           const bonus0 = reseller ? (qty > 5 ? 10 : 0) : 0;
           const totalDisc0 = reseller ? Math.min(90, reseller.discount + bonus0) : 0;
@@ -275,7 +275,6 @@
         };
         sel.onchange = () => { appliedVoucher = null; $("voucherMsg").textContent = ""; upd(); }; upd();
         $("fVoucher").value = ""; $("voucherMsg").textContent = ""; appliedVoucher = null;
-        $("formErr").textContent = "";
         $("stepForm").style.display = "block"; $("stepPay").style.display = "none"; $("stepDone").style.display = "none";
         $("buyDlg").showModal();
       }

@@ -104,13 +104,25 @@
             <label>Nama produk</label><input id="npName" placeholder="Contoh: Netflix 1 bulan" />
             <label>Harga (Rp, angka saja)</label><input id="npPrice" type="number" min="1" placeholder="30000" />
             <label>Deskripsi (boleh kosong — otomatis terisi template)</label><input id="npDesc" placeholder="Kosongkan untuk template bawaan" />
-            <label>Stok awal (satu akun per baris, boleh kosong)</label><textarea id="npStock" placeholder="email1:password1&#10;email2:password2"></textarea>
+            <label>Stok awal — satu kotak = satu item (akun atau link, boleh banyak baris, boleh kosong)</label>
+            <div id="npAccounts"></div>
+            <div class="row"><button class="btn ghost small" id="btnAddAccount" type="button">+ Tambah Akun</button><span class="muted">Tiap item dikirim utuh ke pembeli (akun atau link, boleh banyak baris), bukan terpotong per baris.</span></div>
             <p class="err" id="npErr"></p>
             <div class="row"><button class="btn" id="btnAddProduct">Simpan Produk</button></div>
           </div>
 
           <h2>📦 Produk & Stok</h2>
           <div id="prodList"></div>
+          <div class="card" id="prodEditCard" style="display:none">
+            <h3 style="margin-top:0">✏️ Edit Produk <span id="peId"></span></h3>
+            <label>Nama produk</label><input id="peName" />
+            <label>Harga (Rp, angka saja)</label><input id="pePrice" type="number" min="1" />
+            <label>Deskripsi</label><textarea id="peDesc"></textarea>
+            <label>Status</label><select id="peActive"><option value="1">Aktif</option><option value="0">Nonaktif</option></select>
+            <p class="muted">Harga baru hanya berlaku untuk pesanan berikutnya — pesanan yang sudah dibuat tidak berubah.</p>
+            <p class="err" id="peErr"></p>
+            <div class="row"><button class="btn" id="btnSaveProd">Simpan Perubahan</button><button class="btn ghost" id="btnCancelProdEdit">Batal</button><span class="muted" id="peMsg"></span></div>
+          </div>
         </div>
 
         <!-- ============ PESANAN ============ -->
@@ -274,10 +286,11 @@
           const el = document.createElement("div"); el.className = "card";
           el.innerHTML = `<div class="prod-head"><strong></strong><span>${rp(p.price)} · stok ${p.stock_count} · terjual ${p.terjual}${custom ? " (custom)" : ""} · ${p.active ? "aktif" : "nonaktif"}</span></div>
             <p class="muted" style="white-space:pre-line"></p>
-            <label>Tambah stok (satu akun per baris)</label><textarea class="stk"></textarea>
+            <label>Tambah stok (satu item — boleh banyak baris)</label><textarea class="stk"></textarea>
             <label>Total terjual (custom, tampil di publik — kosongkan = otomatis dari penjualan asli)</label><input class="trj" type="number" min="0" />
             <div class="row">
               <button class="btn small addstk">Tambah Stok</button>
+              <button class="btn ghost small edit">Edit Produk</button>
               <button class="btn small savetrj">Simpan Terjual</button>
               <button class="btn ghost small toggle">${p.active ? "Nonaktifkan" : "Aktifkan"}</button>
               <button class="btn danger small clearstk">Habiskan Stok</button>
@@ -289,9 +302,12 @@
           if (custom) el.querySelector(".trj").value = p.sold_custom;
           el.querySelector(".addstk").onclick = async () => {
             const msg = el.querySelector(".msg");
-            try { const r = await api("/api/admin?action=stock", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productId: p.id, stock: el.querySelector(".stk").value }) }); msg.textContent = `+${r.added} stok, total ${r.stock_count}`; loadProducts(); loadStats(); }
+            const v = el.querySelector(".stk").value.trim();
+            if (!v) { msg.textContent = "Isi dulu stoknya."; return; }
+            try { const r = await api("/api/admin?action=stock", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productId: p.id, stock: [v] }) }); msg.textContent = `+${r.added} stok, total ${r.stock_count}`; loadProducts(); loadStats(); }
             catch (e) { msg.textContent = e.message; }
           };
+          el.querySelector(".edit").onclick = () => openProdEdit(p);
           el.querySelector(".savetrj").onclick = async () => {
             const msg = el.querySelector(".msg");
             try {
@@ -406,18 +422,71 @@
           $("oeMsg").textContent = "Tersimpan"; loadOrders();
         } catch (e) { $("oeErr").textContent = e.message; }
       }
+      // Satu kartu = satu item stok (teks bebas: akun email+password atau
+      // link klaim, boleh banyak baris). Sama seperti IBC: tiap item dikirim
+      // utuh ke pembeli, tidak dipotong per baris, dan tidak dipisah ke
+      // kolom email/password.
+      function addAccountCard() {
+        const box = $("npAccounts");
+        const n = box.querySelectorAll(".acct").length + 1;
+        const el = document.createElement("div"); el.className = "acct";
+        el.innerHTML = `<strong>Akun ${n}</strong>
+          <label>Isi item (akun atau link, boleh banyak baris)</label><textarea class="a-text" autocomplete="off" placeholder="email akun&#10;password akun&#10;2FA (opsional)&#10;&#10;atau tempel link klaim di sini"></textarea>
+          <div class="row"><button class="btn danger small a-del" type="button">Hapus akun ini</button></div>`;
+        el.querySelector(".a-del").onclick = () => { el.remove(); renumberAccounts(); };
+        box.appendChild(el);
+      }
+      function renumberAccounts() {
+        $("npAccounts").querySelectorAll(".acct strong").forEach((s, i) => { s.textContent = "Akun " + (i + 1); });
+      }
+      function collectAccounts() {
+        const out = [];
+        $("npAccounts").querySelectorAll(".acct").forEach(el => {
+          const v = el.querySelector(".a-text").value.trim();
+          if (v) out.push(v); // 1 kartu = 1 item utuh (boleh banyak baris)
+        });
+        return out;
+      }
       async function addProduct() {
         $("npErr").textContent = "";
+        const btn = $("btnAddProduct"); btn.disabled = true; btn.textContent = "Menyimpan…";
         try {
-          await api("/api/admin?action=products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: $("npName").value.trim(), price: Number($("npPrice").value), descr: $("npDesc").value.trim(), stock: $("npStock").value }) });
-          $("npName").value = ""; $("npPrice").value = ""; $("npDesc").value = ""; $("npStock").value = "";
+          await api("/api/admin?action=products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: $("npName").value.trim(), price: Number($("npPrice").value), descr: $("npDesc").value.trim(), stock: collectAccounts() }) });
+          $("npName").value = ""; $("npPrice").value = ""; $("npDesc").value = "";
+          $("npAccounts").innerHTML = ""; addAccountCard();
           loadProducts(); loadStats();
         } catch (e) { $("npErr").textContent = e.message; }
+        finally { btn.disabled = false; btn.textContent = "Simpan Produk"; }
+      }
+      let editingProdId = null;
+      function openProdEdit(p) {
+        editingProdId = p.id;
+        $("peId").textContent = p.id;
+        $("peName").value = p.name || "";
+        $("pePrice").value = p.price || "";
+        $("peDesc").value = p.descr || "";
+        $("peActive").value = p.active ? "1" : "0";
+        $("peErr").textContent = ""; $("peMsg").textContent = "";
+        $("prodEditCard").style.display = "block";
+        $("prodEditCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+      async function saveProdEdit() {
+        $("peErr").textContent = ""; $("peMsg").textContent = "";
+        const price = Number($("pePrice").value);
+        if (!$("peName").value.trim() || !(price > 0)) { $("peErr").textContent = "Nama dan harga (angka > 0) wajib diisi."; return; }
+        try {
+          await api("/api/admin?action=products", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: editingProdId, name: $("peName").value.trim(), price, descr: $("peDesc").value, active: $("peActive").value === "1" }) });
+          $("peMsg").textContent = "Tersimpan"; loadProducts(); loadStats();
+        } catch (e) { $("peErr").textContent = e.message; }
       }
       $("btnLogin").onclick = doLogin;
       $("p").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
       $("btnLogout").onclick = async () => { await fetch("/api/admin?action=logout", { method: "POST" }); location.reload(); };
       $("btnAddProduct").onclick = addProduct;
+      $("btnAddAccount").onclick = addAccountCard;
+      $("btnSaveProd").onclick = saveProdEdit;
+      $("btnCancelProdEdit").onclick = () => { $("prodEditCard").style.display = "none"; editingProdId = null; };
+      addAccountCard(); // mulai dengan 1 kotak akun
       $("btnAddVoucher").onclick = addVoucher;
       $("btnSaveOrder").onclick = saveOrderEdit;
       $("btnCancelEdit").onclick = () => { $("orderEditCard").style.display = "none"; editingOrderId = null; };

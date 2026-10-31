@@ -7,7 +7,7 @@
 // Aksi baca untuk menu admin bot (stats/orders/resellers/vouchers) hanya
 // mengembalikan ringkasan aman: listOrders tidak memuat isi akun (delivered),
 // listResellers tidak memuat hash kata sandi.
-import { fulfillExternalOrder, createProduct, addStock, updateProduct, getProduct, clearStock, getDashboardStats, listOrders, listResellers, listVouchers } from "../lib/db.js";
+import { fulfillExternalOrder, createProduct, addStock, updateProduct, getProduct, clearStock, getDashboardStats, listOrders, listResellers, listVouchers, createVoucher, getUsableVoucher, voucherDiscountFor } from "../lib/db.js";
 
 function auth(req, res) {
   if (!process.env.BOT_API_KEY) {
@@ -40,6 +40,8 @@ export default async function handler(req, res) {
         order_ref, product_id: String(body.product_id), qty,
         buyer_name: String(body.buyer_name || ""), contact: String(body.contact || ""),
         txid: String(body.txid || ""),
+        total: body.total ? Number(body.total) : undefined,
+        voucher_code: String(body.voucher_code || ""), voucher_discount: Number(body.voucher_discount || 0),
       });
       if (r.error === "insufficient_stock") return res.status(409).json(r);
       if (r.error) return res.status(404).json(r);
@@ -93,6 +95,22 @@ export default async function handler(req, res) {
     if (body.action === "vouchers") {
       const vouchers = await listVouchers();
       return res.status(200).json({ ok: true, vouchers });
+    }
+    if (body.action === "create-voucher") {
+      try {
+        const v = await createVoucher(body);
+        return res.status(200).json({ ok: true, voucher: v });
+      } catch (e) { return res.status(400).json({ error: e.message || "Gagal membuat voucher" }); }
+    }
+    if (body.action === "validate-voucher") {
+      const subtotal = Number(body.subtotal || 0);
+      const qty = Math.max(1, Math.min(Number(body.qty || 1), 10));
+      if (!Number.isInteger(subtotal) || subtotal <= 0) return res.status(400).json({ error: "subtotal tidak valid" });
+      const { voucher, error } = await getUsableVoucher(body.voucher_code);
+      if (error) return res.status(400).json({ error });
+      const d = voucherDiscountFor(voucher, subtotal, qty);
+      if (d.error) return res.status(400).json({ error: d.error });
+      return res.status(200).json({ ok: true, valid: true, code: voucher.code, discount_type: voucher.discount_type, discount_value: voucher.discount_value, discount_amount: d.discount, subtotal, total: subtotal - d.discount, min_total: voucher.min_total || 0, min_qty: voucher.min_qty || 0 });
     }
     return res.status(400).json({ error: "action tidak dikenal" });
   } catch (e) {

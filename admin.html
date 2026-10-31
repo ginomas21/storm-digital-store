@@ -179,6 +179,8 @@
             <label>Tipe potongan</label><select id="vcType"><option value="percent">Persen (%)</option><option value="fixed">Nominal (Rp)</option></select>
             <label>Nilai potongan</label><input id="vcValue" type="number" min="1" placeholder="10 (untuk %) atau 15000 (untuk Rp)" />
             <label>Maks pemakaian (kosongkan = tanpa batas)</label><input id="vcMax" type="number" min="1" placeholder="Kosong = tanpa batas" />
+            <label>Minimal pembelian (Rp, kosongkan = tanpa batas)</label><input id="vcMinTotal" type="number" min="0" placeholder="Contoh: 100000 — voucher hanya bisa dipakai kalau total belanja minimal ini" />
+            <label>Minimal jumlah akun (kosongkan = tanpa batas)</label><input id="vcMinQty" type="number" min="0" placeholder="Contoh: 3 — voucher hanya bisa dipakai kalau beli minimal ini akun" />
             <label>Kedaluwarsa (kosongkan = tanpa batas)</label><input id="vcExp" type="date" />
             <p class="err" id="vcErr"></p>
             <div class="row"><button class="btn" id="btnAddVoucher">Simpan Voucher</button></div>
@@ -375,7 +377,7 @@
           const exp = v.expires_at ? new Date(v.expires_at).toLocaleDateString("id-ID") : "tanpa batas";
           const uses = v.max_uses === null ? v.used_count + "×" : v.used_count + "/" + v.max_uses;
           el.innerHTML = `<div class="prod-head"><strong></strong><span>${v.active ? "aktif" : "nonaktif"} · terpakai ${uses} · kedaluwarsa ${exp}</span></div>
-            <p class="muted" style="margin-top:6px">Potongan: ${v.discount_type === "percent" ? v.discount_value + "%" : rp(v.discount_value)}</p>
+            <p class="muted" style="margin-top:6px">Potongan: ${v.discount_type === "percent" ? v.discount_value + "%" : rp(v.discount_value)}${(Number(v.min_total||0)>0 ? " · minimal belanja " + rp(v.min_total) : "") + (Number(v.min_qty||0)>0 ? " · minimal " + v.min_qty + " akun" : "")}</p>
             <div class="row">
               <button class="btn ghost small toggle">${v.active ? "Nonaktifkan" : "Aktifkan"}</button>
               <button class="btn danger small del">Hapus</button>
@@ -393,8 +395,10 @@
           await api("/api/admin?action=vouchers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
             code: $("vcCode").value, discount_type: $("vcType").value, discount_value: Number($("vcValue").value),
             max_uses: $("vcMax").value === "" ? null : Number($("vcMax").value),
+            min_total: $("vcMinTotal").value === "" ? 0 : Number($("vcMinTotal").value),
+            min_qty: $("vcMinQty").value === "" ? 0 : Number($("vcMinQty").value),
             expires_at: $("vcExp").value || null }) });
-          $("vcCode").value = ""; $("vcValue").value = ""; $("vcMax").value = ""; $("vcExp").value = "";
+          $("vcCode").value = ""; $("vcValue").value = ""; $("vcMax").value = ""; $("vcMinTotal").value = ""; $("vcMinQty").value = ""; $("vcExp").value = "";
           loadVouchers();
         } catch (e) { $("vcErr").textContent = e.message; }
       }

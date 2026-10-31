@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const { voucher, error } = await getUsableVoucher(body.voucher_code);
     if (error) return bad(res, 400, error);
     const subtotal = p.price * qty;
-    const d = voucherDiscountFor(voucher, subtotal);
+    const d = voucherDiscountFor(voucher, subtotal, qty);
     if (d.error) return bad(res, 400, d.error);
     return res.status(200).json({
       valid: true, code: voucher.code, discount_type: voucher.discount_type,
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
     const { voucher, error } = await getUsableVoucher(rawVoucher);
     if (error) return bad(res, 400, error);
     const subtotal = p.price * qty;
-    const d = voucherDiscountFor(voucher, subtotal);
+    const d = voucherDiscountFor(voucher, subtotal, qty);
     if (d.error) return bad(res, 400, d.error);
     voucherCode = voucher.code; voucherDiscount = d.discount;
   }

@@ -2,6 +2,7 @@ import QRCode from "qrcode";
 import { getProduct, createOrder, setOrderFields, getResellerById, getResellerDefaultDiscount, effectiveDiscount, getUsableVoucher, voucherDiscountFor, normalizeCode } from "../lib/db.js";
 import { readJson, bad } from "../lib/http.js";
 import { readResellerSession } from "../lib/auth.js";
+import { validateInitData } from "../lib/telegram-webapp.js";
 import { agCreate, agConfigured, INVOICE_TIMEOUT_MS, AG_MAX_AMOUNT } from "../lib/autogopay.js";
 
 // POST /api/checkout {productId, qty, name, email, phone, voucher_code?} — pembeli TAMU, tanpa login.
@@ -29,7 +30,21 @@ export default async function handler(req, res) {
       subtotal, total: subtotal - d.discount,
     });
   }
-  const { productId, qty: qtyRaw, name } = body;
+  const { productId, qty: qtyRaw } = body;
+  let name = body.name;
+  let telegramChatId = "";
+  // Mini App Telegram (level 2): kalau initData dikirim, WAJIB terverifikasi
+  // dengan token bot di server. Chat ID dari klien tanpa verifikasi TIDAK
+  // pernah dipercaya. Tanpa TELEGRAM_BOT_TOKEN di env, order Mini App ditolak
+  // (fail closed) — website tamu biasa tetap jalan seperti sebelumnya.
+  if (body.telegram_init_data) {
+    const v = validateInitData(String(body.telegram_init_data), process.env.TELEGRAM_BOT_TOKEN || "");
+    if (!v.ok) return bad(res, 403, v.error);
+    telegramChatId = String(v.user.id);
+    if (!String(name || "").trim() && v.user.first_name) {
+      name = [v.user.first_name, v.user.last_name || ""].join(" ").trim();
+    }
+  }
   const legacy = String(body.contact || "").trim();
   const email = String(body.email || (/@/.test(legacy) ? legacy : "")).trim().slice(0, 120);
   const phone = String(body.phone || "").trim().slice(0, 30);
@@ -77,6 +92,7 @@ export default async function handler(req, res) {
     total: finalTotalBeforePay, buyer_name: String(name || "Pembeli").slice(0, 60),
     contact: email, phone, reseller_id: resellerId, discount_pct: discount,
     txid: "", access_key: "", voucher_code: voucherCode, voucher_discount: voucherDiscount,
+    telegram_chat_id: telegramChatId,
   });
   try {
     const data = await agCreate(provisional.id, finalTotalBeforePay, p.name, provisional.buyer_name, email, phone);

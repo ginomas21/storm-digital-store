@@ -40,6 +40,21 @@ export default async function handler(req, res) {
           const sent = await sendDeliveryEmail(o.contact, o, o.delivered.split("\n"));
           if (sent) { await setOrderFields(o.id, { email_sent: true }); o.email_sent = true; }
         }
+        // Mini App: kirim akun juga lewat bot DN ke chat ID yang SUDAH
+        // terverifikasi saat checkout (bukan dari klien). Sekali saja
+        // (telegram_notified), dan kegagalan kirim tidak menggagalkan order —
+        // akun tetap tampil di Mini App.
+        if (o && o.delivered && o.telegram_chat_id && !o.telegram_notified && process.env.TELEGRAM_BOT_TOKEN) {
+          try {
+            const msg = `🎉 Pembayaran diterima!\nPesanan ${o.id} — ${o.product_name} (${o.qty} akun)\n\n${o.delivered}\n\nAkun juga tampil di Mini App. Simpan baik-baik ya.`;
+            const r = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ chat_id: o.telegram_chat_id, text: msg }),
+              signal: AbortSignal.timeout(15000),
+            });
+            if (r.ok) { await setOrderFields(o.id, { telegram_notified: true }); o.telegram_notified = true; }
+          } catch { /* kirim ulang tidak dipaksakan; akun tetap di Mini App */ }
+        }
       } else if (st && st !== "pending") {
         o = await setOrderFields(o.id, { status: st });
       }

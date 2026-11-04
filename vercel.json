@@ -2,6 +2,8 @@
   "rewrites": [
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/reseller", "destination": "/reseller.html" },
-    { "source": "/mini", "destination": "/mini.html" }
+    { "source": "/mini", "destination": "/mini.html" },
+    { "source": "/produk", "destination": "/produk.html" },
+    { "source": "/cek-pesanan", "destination": "/cek-pesanan.html" }
   ]
 }

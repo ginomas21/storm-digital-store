@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0b0620" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+    <title>Semua Produk — Storm Digital Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="wrap nav">
+        <div class="brand"><span class="bolt">⚡</span> Storm <span>Digital Store</span></div>
+        <nav class="nav-links">
+          <a href="/">Beranda</a>
+          <a href="/produk">Semua Produk</a>
+          <a href="/cek-pesanan">Cek Pesanan</a>
+          <a href="/reseller">Reseller</a>
+        </nav>
+      </div>
+    </header>
+    <main class="wrap">
+      <section id="produk">
+        <h2>Semua <span class="grad">Produk</span></h2>
+        <p class="lead">Semua produk kategori Akun Premium. Stok terlihat real-time — kalau habis, tombol beli mati sendiri.</p>
+        <div class="banner" id="demoBanner">Mode demo: database belum terhubung — produk & stok contoh, pembayaran belum aktif penuh.</div>
+        <div class="banner" id="payBanner">Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.</div>
+        <div class="grid" id="productGrid"><p style="color:var(--muted)">Memuat produk…</p></div>
+      </section>
+    </main>
+    <footer>
+      <div class="wrap" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <span>© 2026 Storm Digital Store ⚡</span><span>Storm Digital Store menjual akun premium dengan proses otomatis 24 jam: pembayaran QRIS terverifikasi sistem, akun langsung dikirim ke email tanpa menunggu admin online. Kendala? Hubungi owner: @arkasettt (Telegram).</span>
+      </div>
+    </footer>
+
+    <button id="toTop" title="Kembali ke atas">↑</button>
+
+    <dialog id="buyDlg">
+      <h3 id="dlgTitle" style="margin-top:0">Beli</h3>
+      <div id="stepForm">
+        <label>Jumlah (akun)</label>
+        <select id="fQty"></select>
+        <label>Nama kamu</label>
+        <input id="fName" placeholder="Contoh: Budi" />
+        <label>Email</label>
+        <input id="fEmail" type="email" inputmode="email" autocomplete="email" placeholder="email@contoh.com" />
+        <p class="hint mail">📩 Produk akan dikirim otomatis melalui email, jadi masukkan alamat email dengan benar.</p>
+        <label>Nomor telepon <span class="opt">(opsional)</span></label>
+        <input id="fPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="081234567890 — boleh dikosongkan" />
+        <label>Kode voucher <span class="opt">(opsional)</span></label>
+        <div style="display:flex;gap:10px"><input id="fVoucher" placeholder="Contoh: HEMAT10" style="flex:1;min-width:0" /><button class="btn ghost" id="btnVoucher" type="button" style="flex:0 0 auto">Terapkan</button></div>
+        <p class="hint" id="voucherMsg" style="margin-top:6px"></p>
+        <div class="disc-row" id="discRow"></div>
+        <p class="hint" id="dlgTotal"></p>
+        <p class="err" id="formErr"></p>
+        <div class="row"><button class="btn ghost" id="btnClose1">Batal</button><button class="btn" id="btnPay">Buat Tagihan QRIS</button></div>
+      </div>
+      <div id="stepPay" style="display:none">
+        <p class="total" id="payTotal"></p>
+        <p class="hint" id="payDisc" style="text-align:center;display:none"></p>
+        <div class="qrbox"><img id="payQr" alt="QRIS" /></div>
+        <p class="countdown">Kode pesanan <strong id="payOrderId"></strong> · sisa waktu <strong id="payTimer">10:00</strong></p>
+        <p class="hint" style="text-align:center">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Halaman ini mengecek pembayaran otomatis — jangan ditutup dulu.</p>
+        <p class="err" id="payErr"></p>
+        <div class="row"><button class="btn danger" id="btnCancelOrder">Batalkan Pesanan</button></div>
+      </div>
+      <div id="stepDone" style="display:none">
+        <p class="ok-msg">🎉 Pembayaran diterima!</p>
+        <p style="text-align:center" id="doneInfo"></p>
+        <div class="delivered" id="doneItems"></div>
+        <p class="hint" id="doneEmail"></p>
+        <div class="row"><button class="btn" id="btnClose3">Selesai</button></div>
+      </div>
+    </dialog>
+
+    <script src="/shop.js"></script>
+  </body>
+</html>

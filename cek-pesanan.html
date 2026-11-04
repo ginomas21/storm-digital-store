@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0b0620" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+    <title>Cek Pesanan — Storm Digital Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="wrap nav">
+        <div class="brand"><span class="bolt">⚡</span> Storm <span>Digital Store</span></div>
+        <nav class="nav-links">
+          <a href="/">Beranda</a>
+          <a href="/produk">Semua Produk</a>
+          <a href="/cek-pesanan">Cek Pesanan</a>
+          <a href="/reseller">Reseller</a>
+        </nav>
+      </div>
+    </header>
+    <main class="wrap">
+      <section id="cek-pesanan">
+        <h2>Cek <span class="grad">Pesanan</span></h2>
+        <p class="lead">Sudah bayar tapi halaman terutup? Masukkan kode pesanan (contoh SDS-0001) dan email atau nomor telepon yang kamu pakai saat pesan.</p>
+        <div class="lookup">
+          <input id="lookupId" placeholder="Kode pesanan, contoh SDS-0001" />
+          <input id="lookupContact" placeholder="Email / nomor telepon saat pesan" />
+        </div>
+        <div class="row"><button class="btn" id="lookupBtn">Cek Pesanan</button></div>
+        <p class="err" id="lookupErr"></p>
+        <div id="lookupResult"></div>
+      </section>
+    </main>
+    <footer>
+      <div class="wrap" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <span>© 2026 Storm Digital Store ⚡</span><span>Storm Digital Store menjual akun premium dengan proses otomatis 24 jam: pembayaran QRIS terverifikasi sistem, akun langsung dikirim ke email tanpa menunggu admin online. Kendala? Hubungi owner: @arkasettt (Telegram).</span>
+      </div>
+    </footer>
+
+    <script src="/shop.js"></script>
+  </body>
+</html>

@@ -10,122 +10,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
-    <style>
-      :root {
-        --bg:#0b0620; --surface:rgba(255,255,255,.055); --surface2:rgba(255,255,255,.09);
-        --text:#f4f2ff; --muted:#b3abd6; --line:rgba(255,255,255,.13);
-        --vio:#8b5cf6; --cyn:#22d3ee; --pnk:#f472b6;
-        --grad:linear-gradient(92deg,#8b5cf6,#6366f1 45%,#22d3ee);
-        --ok:#34d399; --warn:#fbbf24; --err:#fb7185;
-        --radius:20px;
-      }
-      * { box-sizing:border-box; }
-      html { scroll-behavior:smooth; }
-      body {
-        margin:0; color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased;
-        font-family:"Plus Jakarta Sans","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
-        background:
-          radial-gradient(640px 420px at 12% -6%, rgba(139,92,246,.42), transparent 62%),
-          radial-gradient(560px 380px at 96% 4%, rgba(34,211,238,.30), transparent 60%),
-          radial-gradient(700px 520px at 55% 108%, rgba(244,114,182,.16), transparent 62%),
-          var(--bg);
-        background-attachment:fixed;
-        min-height:100vh;
-      }
-      .wrap { max-width:920px; margin:0 auto; padding:0 20px; }
-      header { position:sticky; top:0; z-index:20; backdrop-filter:blur(14px); background:rgba(11,6,32,.62); border-bottom:1px solid var(--line); }
-      .nav { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 0; flex-wrap:wrap; }
-      .brand { font-size:1.18rem; font-weight:800; letter-spacing:.2px; }
-      .brand .bolt { filter:drop-shadow(0 0 8px rgba(251,191,36,.8)); }
-      .brand span { background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
-      .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
-      .nav-links a { color:var(--muted); text-decoration:none; font-size:.95rem; font-weight:600; }
-      .nav-links a:hover { color:var(--text); }
-      .perks { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); margin:26px 0 0; }
-      .perk { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; font-size:.92rem; font-weight:700; }
-      .perk span { display:block; color:var(--muted); font-weight:600; font-size:.82rem; margin-top:2px; }
-      section[id] { scroll-margin-top:72px; }
-      #toTop { position:fixed; right:18px; bottom:18px; z-index:30; width:48px; height:48px; border-radius:50%; border:1px solid var(--line); background:rgba(21,11,54,.92); color:var(--text); font-size:1.2rem; cursor:pointer; display:none; box-shadow:0 10px 28px rgba(0,0,0,.45); }
-      .hero { padding:76px 0 58px; text-align:left; }
-      .pill { display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:999px; border:1px solid var(--line); background:var(--surface); font-size:.82rem; font-weight:700; color:var(--muted); }
-      .pill .dot { width:8px; height:8px; border-radius:50%; background:var(--ok); box-shadow:0 0 0 0 rgba(52,211,153,.6); animation:pulse 1.8s infinite; }
-      @keyframes pulse { 70% { box-shadow:0 0 0 8px rgba(52,211,153,0); } 100% { box-shadow:0 0 0 0 rgba(52,211,153,0); } }
-      .hero h1 { font-size:clamp(2.3rem,7vw,3.6rem); line-height:1.08; margin:20px 0 16px; font-weight:800; letter-spacing:-.5px; }
-      .hero h1 .grad { background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
-      .hero p { font-size:1.12rem; color:var(--muted); max-width:580px; margin:0 0 30px; }
-      .btn {
-        display:inline-block; background:var(--grad); color:#fff; padding:13px 26px; border-radius:999px;
-        text-decoration:none; font-weight:700; font-size:.98rem; border:0; cursor:pointer;
-        box-shadow:0 10px 28px rgba(99,102,241,.45); transition:transform .15s ease, box-shadow .15s ease, opacity .15s;
-      }
-      .btn:hover { transform:translateY(-2px); box-shadow:0 14px 34px rgba(99,102,241,.55); }
-      .btn:active { transform:translateY(0); }
-      .btn:disabled { opacity:.45; cursor:default; transform:none; box-shadow:none; }
-      .btn.ghost { background:transparent; color:var(--text); border:1px solid var(--line); box-shadow:none; }
-      .btn.danger { background:transparent; color:var(--err); border:1px solid rgba(251,113,133,.4); box-shadow:none; }
-      .banner { padding:12px 16px; border-radius:14px; margin:22px 0 0; font-size:.92rem; background:rgba(251,191,36,.10); border:1px solid rgba(251,191,36,.45); color:var(--warn); display:none; max-width:640px; }
-      section { padding:52px 0; }
-      section h2 { font-size:1.65rem; margin:0 0 8px; font-weight:800; letter-spacing:-.3px; }
-      section h2 .grad { background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
-      section .lead { color:var(--muted); margin:0 0 28px; max-width:620px; }
-      .grid { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
-      .card {
-        background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:24px;
-        display:flex; flex-direction:column; gap:8px; backdrop-filter:blur(8px);
-        transition:transform .18s ease, border-color .18s ease, background .18s ease;
-        animation:rise .5s ease both;
-      }
-      .card:hover { transform:translateY(-4px); border-color:rgba(139,92,246,.55); background:var(--surface2); }
-      @keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
-      .card h3 { margin:0; font-size:1.08rem; font-weight:800; }
-      .card p { margin:0; color:var(--muted); font-size:.94rem; white-space:pre-line; }
-      .price { font-size:1.45rem; font-weight:800; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
-      .stock { display:inline-flex; align-items:center; gap:7px; font-size:.83rem; font-weight:700; color:var(--ok); }
-      .stock::before { content:""; width:8px; height:8px; border-radius:50%; background:var(--ok); }
-      .stock.out { color:var(--err); } .stock.out::before { background:var(--err); }
-      .card .btn { margin-top:auto; text-align:center; }
-      .steps { counter-reset:step; list-style:none; margin:0; padding:0; display:grid; gap:14px; }
-      .steps li { display:flex; gap:16px; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:20px 22px; backdrop-filter:blur(8px); }
-      .steps li::before { counter-increment:step; content:counter(step); flex:0 0 auto; width:34px; height:34px; border-radius:50%; background:var(--grad); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.95rem; margin-top:2px; box-shadow:0 6px 16px rgba(99,102,241,.4); }
-      .steps strong { display:block; margin-bottom:2px; } .steps p { margin:0; color:var(--muted); font-size:.95rem; }
-      footer { border-top:1px solid var(--line); padding:30px 0 44px; color:var(--muted); font-size:.9rem; margin-top:12px; }
-      dialog { border:1px solid var(--line); background:#150b36; color:var(--text); border-radius:24px; max-width:450px; width:calc(100% - 32px); padding:26px; box-shadow:0 30px 80px rgba(0,0,0,.6); }
-      dialog::backdrop { background:rgba(4,2,14,.66); backdrop-filter:blur(4px); }
-      label { display:block; font-size:.9rem; font-weight:700; margin:16px 0 5px; }
-      label .opt { color:var(--muted); font-weight:600; font-size:.8rem; }
-      input, select, textarea { width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.06); color:var(--text); font:inherit; }
-      input:focus, select:focus { outline:2px solid rgba(139,92,246,.65); outline-offset:1px; border-color:transparent; }
-      select option { color:#17112e; }
-      .hint { font-size:.84rem; color:var(--muted); margin-top:6px; }
-      .hint.mail { color:#c9b8ff; background:rgba(139,92,246,.13); border:1px solid rgba(139,92,246,.35); padding:9px 12px; border-radius:10px; }
-      .err { color:var(--err); font-size:.9rem; min-height:1.2em; margin-top:10px; }
-      .qrbox { text-align:center; } .qrbox img { width:260px; height:260px; border-radius:16px; background:#fff; padding:8px; }
-      .total { font-size:1.5rem; font-weight:800; text-align:center; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
-      .countdown { text-align:center; color:var(--muted); }
-      .delivered { background:rgba(52,211,153,.08); border:1px solid rgba(52,211,153,.5); border-radius:14px; padding:14px; white-space:pre-wrap; word-break:break-all; font-family:ui-monospace,monospace; font-size:.92rem; }
-      .ok-msg { color:var(--ok); font-weight:800; text-align:center; font-size:1.15rem; }
-      .row { display:flex; gap:10px; margin-top:20px; } .row .btn { flex:1; text-align:center; }
-      .lookup { display:flex; gap:10px; flex-wrap:wrap; } .lookup input { flex:1; min-width:170px; }
-      .res-panel { background:rgba(139,92,246,.14); border:1px solid rgba(139,92,246,.5); border-radius:var(--radius); padding:18px 20px; margin:26px 0 0; }
-      .res-panel .res-stats { display:flex; gap:18px; flex-wrap:wrap; color:var(--muted); font-size:.9rem; margin-top:6px; }
-      .res-panel .res-stats b { color:var(--text); }
-      .disc-row { background:rgba(52,211,153,.10); border:1px solid rgba(52,211,153,.45); border-radius:12px; padding:10px 14px; font-size:.9rem; margin-top:12px; display:none; }
-      .disc-row s { color:var(--muted); } .disc-row b { color:var(--ok); }
-      .res-link { margin-top:18px; font-size:.9rem; } .res-link a { color:#a5b4fc; font-weight:700; text-decoration:none; }
-      @media (max-width:560px){ .hero{padding:52px 0 42px} section{padding:38px 0} }
-    </style>
+    <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
     <header>
       <div class="wrap nav">
         <div class="brand"><span class="bolt">⚡</span> Storm <span>Digital Store</span></div>
         <nav class="nav-links">
-          <a href="#" id="navHome">Beranda</a>
-          <a href="#unggulan">Terpopuler</a>
-          <a href="#" id="navAll">Semua Produk</a>
-          <a href="#cara-pesan">Cara Pesan</a>
-          <a href="#cek-pesanan">Cek Pesanan</a>
-          <a href="#tentang">Tentang</a>
+          <a href="/">Beranda</a>
+          <a href="/produk">Semua Produk</a>
+          <a href="/cek-pesanan">Cek Pesanan</a>
+          <a href="/reseller">Reseller</a>
         </nav>
       </div>
     </header>
@@ -134,7 +29,7 @@
         <span class="pill"><span class="dot"></span> Online 24 jam · pengiriman otomatis</span>
         <h1>Akun premium,<br />langsung <span class="grad">meluncur ke email kamu.</span></h1>
         <p>Pilih produk, bayar pakai QRIS, akun langsung terkirim otomatis ke email — tanpa daftar, tanpa login, tanpa nunggu admin.</p>
-        <a class="btn" href="#unggulan">Lihat Produk ⚡</a>
+        <a class="btn" href="/produk">Lihat Produk ⚡</a>
         <div class="banner" id="demoBanner">Mode demo: database belum terhubung — produk & stok contoh, pembayaran belum aktif penuh.</div>
         <div class="banner" id="payBanner">Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.</div>
         <div class="res-panel" id="resPanel" style="display:none">
@@ -171,36 +66,13 @@
         <h2>🔥 Produk <span class="grad">Terpopuler</span></h2>
         <p class="lead">Paling banyak dibeli di Storm Digital Store, diurutkan dari jumlah terjual.</p>
         <div class="grid" id="featuredGrid"><p style="color:var(--muted)">Memuat produk…</p></div>
-        <div style="margin-top:22px"><button class="btn" id="btnShowAll">Lihat Semua Produk →</button></div>
+        <div style="margin-top:22px"><a class="btn" href="/produk">Lihat Semua Produk →</a></div>
       </section>
 
-      <section id="produk" style="display:none">
-        <h2>Semua <span class="grad">Produk</span></h2>
-        <p class="lead">Semua produk kategori Akun Premium. Stok terlihat real-time — kalau habis, tombol beli mati sendiri.</p>
-        <div class="grid" id="productGrid"><p style="color:var(--muted)">Memuat produk…</p></div>
-        <div style="margin-top:22px"><button class="btn ghost" id="btnHideAll">← Kembali ke Beranda</button></div>
-      </section>
-
-      <section id="cek-pesanan">
-        <h2>Cek <span class="grad">Pesanan</span></h2>
-        <p class="lead">Sudah bayar tapi halaman terutup? Masukkan kode pesanan (contoh SDS-0001) dan email atau nomor telepon yang kamu pakai saat pesan.</p>
-        <div class="lookup">
-          <input id="lookupId" placeholder="Kode pesanan, contoh SDS-0001" />
-          <input id="lookupContact" placeholder="Email / nomor telepon saat pesan" />
-        </div>
-        <div class="row"><button class="btn" id="lookupBtn">Cek Pesanan</button></div>
-        <p class="err" id="lookupErr"></p>
-        <div id="lookupResult"></div>
-      </section>
-
-      <section id="tentang">
-        <h2>Tentang <span class="grad">Storm Digital Store</span></h2>
-        <p class="lead" style="margin-bottom:0">Storm Digital Store menjual akun premium dengan proses otomatis 24 jam: pembayaran QRIS terverifikasi sistem, akun langsung dikirim ke email tanpa menunggu admin online. Kendala? Hubungi owner: @arkasettt (Telegram).</p>
-      </section>
     </main>
     <footer>
       <div class="wrap" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <span>© 2026 Storm Digital Store ⚡</span><span>Toko produk digital — cepat, aman, terpercaya.</span>
+        <span>© 2026 Storm Digital Store ⚡</span><span>Storm Digital Store menjual akun premium dengan proses otomatis 24 jam: pembayaran QRIS terverifikasi sistem, akun langsung dikirim ke email tanpa menunggu admin online. Kendala? Hubungi owner: @arkasettt (Telegram).</span>
       </div>
     </footer>
 
@@ -244,190 +116,6 @@
       </div>
     </dialog>
 
-    <script>
-      const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
-      const $ = id => document.getElementById(id);
-      let products = [], current = null, order = null, pollTimer = null, countTimer = null, appliedVoucher = null;
-      let reseller = null; // {discount, stats} kalau login reseller — harga katalog tetap normal, diskon cuma di checkout (server yang hitung).
-
-      function cardEl(p) {
-        const out = p.stock_count <= 0;
-        const el = document.createElement("div"); el.className = "card";
-        el.innerHTML = `<h3></h3><p></p><div class="price">${rp(p.price)}</div>` +
-          `<div class="stock ${out ? "out" : ""}">${out ? "Stok habis" : "Stok: " + p.stock_count + " akun"}</div>` +
-          (Number(p.terjual || 0) > 0 ? `<div style="font-size:.83rem;color:var(--muted)">🔥 Terjual ${Number(p.terjual).toLocaleString("id-ID")} akun</div>` : "") +
-          `<button class="btn" ${out ? "disabled" : ""}>${out ? "Habis" : "⚡ Beli Sekarang"}</button>`;
-        el.querySelector("h3").textContent = p.name;
-        el.querySelector("p").textContent = p.descr || "";
-        el.querySelector("button").onclick = () => openBuy(p);
-        return el;
-      }
-      async function loadProducts() {
-        const r = await fetch("/api/products"); const d = await r.json();
-        products = d.products || [];
-        $("demoBanner").style.display = d.demo ? "block" : "none";
-        $("payBanner").style.display = (!d.demo && !d.payment_active) ? "block" : "none";
-        const g = $("productGrid");
-        if (!products.length) {
-          g.innerHTML = '<p style="color:var(--muted)">Katalog masih kosong. Cek lagi nanti ya.</p>';
-          $("featuredGrid").innerHTML = '<p style="color:var(--muted)">Katalog masih kosong. Cek lagi nanti ya.</p>';
-          $("btnShowAll").style.display = "none";
-          return;
-        }
-        $("btnShowAll").style.display = "";
-        g.innerHTML = "";
-        for (const p of products) g.appendChild(cardEl(p));
-        const fg = $("featuredGrid"); fg.innerHTML = "";
-        const top = [...products].sort((a, b) => Number(b.terjual || 0) - Number(a.terjual || 0)).slice(0, 6);
-        for (const p of top) fg.appendChild(cardEl(p));
-      }
-      function openBuy(p) {
-        current = p;
-        $("dlgTitle").textContent = p.name;
-        const minQty = reseller ? 3 : 1;
-        const sel = $("fQty"); sel.innerHTML = "";
-        for (let i = minQty; i <= Math.min(p.stock_count, 10); i++) { const o = document.createElement("option"); o.value = i; o.textContent = i + " akun"; sel.appendChild(o); }
-        $("btnPay").disabled = sel.options.length === 0;
-        const upd = () => {
-          if (!sel.value) { $("formErr").textContent = reseller ? `Stok produk ini tinggal ${p.stock_count} akun — di bawah minimum reseller (3 akun). Tambah stok dulu, atau keluar dari akun reseller dan checkout sebagai tamu.` : "Stok produk ini habis."; $("dlgTotal").textContent = ""; $("discRow").style.display = "none"; sel.disabled = true; return; }
-          $("formErr").textContent = ""; sel.disabled = false;
-          const qty = Number(sel.value), normal = p.price * qty;
-          const bonus0 = reseller ? (qty > 5 ? 10 : 0) : 0;
-          const totalDisc0 = reseller ? Math.min(90, reseller.discount + bonus0) : 0;
-          if (reseller && totalDisc0 > 0) {
-            const bonus = bonus0;
-            const totalDisc = totalDisc0;
-            const disc = Math.floor(normal * totalDisc / 100);
-            $("discRow").style.display = "block";
-            $("discRow").innerHTML = `Harga normal <s>${rp(normal)}</s> · diskon reseller ${reseller.discount}%${bonus ? " + bonus volume " + bonus + "%" : ""} (−${rp(disc)}) · <b>Total bayar ${rp(normal - disc)}</b>`;
-            $("dlgTotal").textContent = "Total bayar: " + rp(normal - disc);
-          } else {
-            $("discRow").style.display = "none";
-            $("dlgTotal").textContent = "Total: " + rp(normal);
-          }
-        };
-        sel.onchange = () => { appliedVoucher = null; $("voucherMsg").textContent = ""; upd(); }; upd();
-        $("fVoucher").value = ""; $("voucherMsg").textContent = ""; appliedVoucher = null;
-        $("stepForm").style.display = "block"; $("stepPay").style.display = "none"; $("stepDone").style.display = "none";
-        $("buyDlg").showModal();
-      }
-      const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-      async function createInvoice() {
-        const email = $("fEmail").value.trim();
-        const phone = $("fPhone").value.trim();
-        if (!EMAIL_RE.test(email)) { $("formErr").textContent = "Masukkan alamat email yang benar — akun akan dikirim ke email itu."; return; }
-        $("btnPay").disabled = true;
-        try {
-          const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ productId: current.id, qty: Number($("fQty").value), name: $("fName").value.trim(), email, phone, voucher_code: appliedVoucher || "" }) });
-          const d = await r.json();
-          if (!r.ok) throw new Error(d.error || "Gagal membuat tagihan");
-          order = { id: d.order_id, contact: email };
-          $("payTotal").textContent = rp(d.total);
-          if (d.discount_pct > 0) { $("payDisc").style.display = "block"; $("payDisc").innerHTML = `Harga normal <s>${rp(d.normal_total)}</s> · diskon reseller ${d.discount_pct - (d.bonus_pct || 0)}%${d.bonus_pct ? " + bonus volume " + d.bonus_pct + "%" : ""} sudah diterapkan`; }
-          else if (d.voucher_code) { $("payDisc").style.display = "block"; $("payDisc").innerHTML = `🎟️ Voucher ${d.voucher_code} (−${rp(d.voucher_discount)}) sudah diterapkan`; }
-          else $("payDisc").style.display = "none";
-          $("payOrderId").textContent = d.order_id;
-          if (d.qris_image) $("payQr").src = d.qris_image; else if (d.payment_url) { $("payQr").outerHTML = '<a class="btn" href="' + d.payment_url + '" target="_blank">Buka Halaman Bayar</a>'; }
-          $("stepForm").style.display = "none"; $("stepPay").style.display = "block";
-          startCountdown(d.timeout_ms || 600000); startPolling();
-        } catch (e) { $("formErr").textContent = e.message; }
-        $("btnPay").disabled = false;
-      }
-      function startCountdown(ms) {
-        let left = Math.floor(ms / 1000);
-        clearInterval(countTimer);
-        countTimer = setInterval(() => {
-          left -= 1;
-          if (left < 0) { clearInterval(countTimer); stopPolling(); $("payErr").textContent = "Waktu habis. Pesanan kedaluwarsa — silakan pesan lagi."; return; }
-          $("payTimer").textContent = String(Math.floor(left / 60)).padStart(2, "0") + ":" + String(left % 60).padStart(2, "0");
-        }, 1000);
-      }
-      function startPolling() {
-        stopPolling();
-        pollTimer = setInterval(checkStatus, 5000);
-      }
-      function stopPolling() { if (pollTimer) clearInterval(pollTimer); pollTimer = null; }
-      async function checkStatus() {
-        if (!order) return;
-        try {
-          const r = await fetch(`/api/order-status?id=${encodeURIComponent(order.id)}&contact=${encodeURIComponent(order.contact)}`);
-          const d = await r.json();
-          if (!r.ok) return;
-          if (String(d.status).startsWith("sukses")) {
-            stopPolling(); clearInterval(countTimer);
-            $("stepPay").style.display = "none"; $("stepDone").style.display = "block";
-            $("doneInfo").textContent = `Pesanan ${d.id} — ${d.product_name} (${d.qty} akun)`;
-            $("doneItems").textContent = d.delivered || "Stok baru saja habis — admin sudah diberi tahu dan akan menghubungimu untuk pengiriman manual atau pengembalian dana.";
-            $("doneEmail").textContent = d.email_sent ? "Salinan akun juga sudah dikirim ke email kamu. Cek inbox / folder spam ya." : "";
-            loadProducts();
-          } else if (d.status !== "pending") {
-            stopPolling(); clearInterval(countTimer);
-            $("payErr").textContent = "Pesanan berakhir dengan status: " + d.status + ". Tidak ada dana yang terpotong.";
-          }
-        } catch {}
-      }
-      async function cancelOrder() {
-        if (!order) return;
-        stopPolling(); clearInterval(countTimer);
-        try { await fetch("/api/order-status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...order, action: "cancel" }) }); } catch {}
-        $("buyDlg").close(); loadProducts();
-      }
-      async function lookup() {
-        const id = $("lookupId").value.trim(), contact = $("lookupContact").value.trim();
-        $("lookupErr").textContent = ""; $("lookupResult").innerHTML = "";
-        if (!id || !contact) { $("lookupErr").textContent = "Isi kode pesanan dan kontaknya dulu."; return; }
-        const r = await fetch(`/api/order-status?id=${encodeURIComponent(id)}&contact=${encodeURIComponent(contact)}`);
-        const d = await r.json();
-        if (!r.ok) { $("lookupErr").textContent = d.error || "Tidak ditemukan"; return; }
-        let html = `<p>Status pesanan <strong>${d.id}</strong> (${d.product_name}): <strong>${d.status}</strong> · total ${rp(d.total)}</p>`;
-        if (String(d.status).startsWith("sukses") && d.delivered) html += `<div class="delivered"></div>`;
-        $("lookupResult").innerHTML = html;
-        const dv = $("lookupResult .delivered"); if (dv) dv.textContent = d.delivered;
-      }
-      async function loadReseller() {
-        try {
-          const r = await fetch("/api/reseller?action=me"); const d = await r.json();
-          if (d.logged_in) {
-            reseller = d;
-            $("resName").textContent = d.username; $("resDisc").textContent = d.discount + "%";
-            $("resTx").textContent = d.stats.tx_count; $("resSpent").textContent = rp(d.stats.total_spent); $("resSaved").textContent = rp(d.stats.total_saved);
-            $("resPanel").style.display = "block"; $("resLoginLink").style.display = "none";
-          }
-        } catch {}
-      }
-      async function applyVoucher() {
-        const code = $("fVoucher").value.trim();
-        const msg = $("voucherMsg");
-        if (!code) { msg.textContent = "Masukkan dulu kode vouchernya."; return; }
-        if (!current) return;
-        msg.textContent = "Mengecek voucher…";
-        try {
-          const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "validate-voucher", productId: current.id, qty: Number($("fQty").value), voucher_code: code }) });
-          const d = await r.json();
-          if (!r.ok) throw new Error(d.error || "Voucher tidak valid");
-          appliedVoucher = d.code;
-          msg.textContent = `🎟️ ${d.code}: potongan ${d.discount_type === "percent" ? d.discount_value + "%" : rp(d.discount_value)} (−${rp(d.discount_amount)}) · total jadi ${rp(d.total)}`;
-        } catch (e) { appliedVoucher = null; msg.textContent = e.message; }
-      }
-      $("btnPay").onclick = createInvoice;
-      $("btnVoucher").onclick = applyVoucher;
-      $("btnClose1").onclick = () => $("buyDlg").close();
-      $("btnClose3").onclick = () => $("buyDlg").close();
-      $("btnCancelOrder").onclick = cancelOrder;
-      $("lookupBtn").onclick = lookup;
-      $("btnResLogout").onclick = async () => { await fetch("/api/reseller?action=logout", { method: "POST" }); location.reload(); };
-      function showAll() { $("produk").style.display = "block"; $("produk").scrollIntoView({ behavior: "smooth" }); }
-      function backHome() { $("produk").style.display = "none"; window.scrollTo({ top: 0, behavior: "smooth" }); }
-      $("btnShowAll").onclick = showAll;
-      $("btnHideAll").onclick = backHome;
-      $("navAll").onclick = e => { e.preventDefault(); showAll(); };
-      $("navHome").onclick = e => { e.preventDefault(); backHome(); };
-      window.addEventListener("scroll", () => { $("toTop").style.display = window.scrollY > 600 ? "block" : "none"; }, { passive: true });
-      $("toTop").onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
-      loadProducts();
-      loadReseller();
-    </script>
+    <script src="/shop.js"></script>
   </body>
 </html>

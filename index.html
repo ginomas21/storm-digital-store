@@ -41,6 +41,11 @@
       .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
       .nav-links a { color:var(--muted); text-decoration:none; font-size:.95rem; font-weight:600; }
       .nav-links a:hover { color:var(--text); }
+      .perks { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); margin:26px 0 0; }
+      .perk { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; font-size:.92rem; font-weight:700; }
+      .perk span { display:block; color:var(--muted); font-weight:600; font-size:.82rem; margin-top:2px; }
+      section[id] { scroll-margin-top:72px; }
+      #toTop { position:fixed; right:18px; bottom:18px; z-index:30; width:48px; height:48px; border-radius:50%; border:1px solid var(--line); background:rgba(21,11,54,.92); color:var(--text); font-size:1.2rem; cursor:pointer; display:none; box-shadow:0 10px 28px rgba(0,0,0,.45); }
       .hero { padding:76px 0 58px; text-align:left; }
       .pill { display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:999px; border:1px solid var(--line); background:var(--surface); font-size:.82rem; font-weight:700; color:var(--muted); }
       .pill .dot { width:8px; height:8px; border-radius:50%; background:var(--ok); box-shadow:0 0 0 0 rgba(52,211,153,.6); animation:pulse 1.8s infinite; }
@@ -115,7 +120,9 @@
       <div class="wrap nav">
         <div class="brand"><span class="bolt">⚡</span> Storm <span>Digital Store</span></div>
         <nav class="nav-links">
-          <a href="#produk">Produk</a>
+          <a href="#" id="navHome">Beranda</a>
+          <a href="#unggulan">Terpopuler</a>
+          <a href="#" id="navAll">Semua Produk</a>
           <a href="#cara-pesan">Cara Pesan</a>
           <a href="#cek-pesanan">Cek Pesanan</a>
           <a href="#tentang">Tentang</a>
@@ -127,7 +134,7 @@
         <span class="pill"><span class="dot"></span> Online 24 jam · pengiriman otomatis</span>
         <h1>Akun premium,<br />langsung <span class="grad">meluncur ke email kamu.</span></h1>
         <p>Pilih produk, bayar pakai QRIS, akun langsung terkirim otomatis ke email — tanpa daftar, tanpa login, tanpa nunggu admin.</p>
-        <a class="btn" href="#produk">Lihat Produk ⚡</a>
+        <a class="btn" href="#unggulan">Lihat Produk ⚡</a>
         <div class="banner" id="demoBanner">Mode demo: database belum terhubung — produk & stok contoh, pembayaran belum aktif penuh.</div>
         <div class="banner" id="payBanner">Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.</div>
         <div class="res-panel" id="resPanel" style="display:none">
@@ -141,13 +148,13 @@
           <div class="row" style="margin-top:14px"><a class="btn ghost" href="/reseller" style="text-decoration:none;text-align:center">Pesanan Saya</a><button class="btn ghost" id="btnResLogout">Keluar</button></div>
         </div>
         <div class="res-link" id="resLoginLink">Reseller? <a href="/reseller">Login di sini →</a> diskon otomatis berlaku setelah login.</div>
+        <div class="perks">
+          <div class="perk">⚡ Otomatis 24 jam<span>Bayar, akun langsung terkirim</span></div>
+          <div class="perk">📱 Bayar QRIS<span>Semua e-wallet &amp; m-banking</span></div>
+          <div class="perk">✉️ Kirim ke email<span>Tanpa daftar, tanpa login</span></div>
+          <div class="perk">📦 Stok real-time<span>Habis = tombol beli mati</span></div>
+        </div>
       </div>
-
-      <section id="produk">
-        <h2>🔥 Akun <span class="grad">Premium</span></h2>
-        <p class="lead">Semua produk kategori Akun Premium. Stok terlihat real-time — kalau habis, tombol beli mati sendiri.</p>
-        <div class="grid" id="productGrid"><p style="color:var(--muted)">Memuat produk…</p></div>
-      </section>
 
       <section id="cara-pesan">
         <h2>Cara <span class="grad">Pesan</span></h2>
@@ -158,6 +165,20 @@
           <li><div><strong>Bayar pakai QRIS</strong><p>Scan QRIS dengan e-wallet / m-banking apa saja, bayar persis sampai digit terakhir (batas 10 menit).</p></div></li>
           <li><div><strong>Akun terkirim otomatis</strong><p>Begitu pembayaran terdeteksi, akun tampil di layar dan langsung dikirim ke email kamu.</p></div></li>
         </ol>
+      </section>
+
+      <section id="unggulan">
+        <h2>🔥 Produk <span class="grad">Terpopuler</span></h2>
+        <p class="lead">Paling banyak dibeli di Storm Digital Store, diurutkan dari jumlah terjual.</p>
+        <div class="grid" id="featuredGrid"><p style="color:var(--muted)">Memuat produk…</p></div>
+        <div style="margin-top:22px"><button class="btn" id="btnShowAll">Lihat Semua Produk →</button></div>
+      </section>
+
+      <section id="produk" style="display:none">
+        <h2>Semua <span class="grad">Produk</span></h2>
+        <p class="lead">Semua produk kategori Akun Premium. Stok terlihat real-time — kalau habis, tombol beli mati sendiri.</p>
+        <div class="grid" id="productGrid"><p style="color:var(--muted)">Memuat produk…</p></div>
+        <div style="margin-top:22px"><button class="btn ghost" id="btnHideAll">← Kembali ke Beranda</button></div>
       </section>
 
       <section id="cek-pesanan">
@@ -182,6 +203,8 @@
         <span>© 2026 Storm Digital Store ⚡</span><span>Toko produk digital — cepat, aman, terpercaya.</span>
       </div>
     </footer>
+
+    <button id="toTop" title="Kembali ke atas">↑</button>
 
     <dialog id="buyDlg">
       <h3 id="dlgTitle" style="margin-top:0">Beli</h3>
@@ -227,26 +250,36 @@
       let products = [], current = null, order = null, pollTimer = null, countTimer = null, appliedVoucher = null;
       let reseller = null; // {discount, stats} kalau login reseller — harga katalog tetap normal, diskon cuma di checkout (server yang hitung).
 
+      function cardEl(p) {
+        const out = p.stock_count <= 0;
+        const el = document.createElement("div"); el.className = "card";
+        el.innerHTML = `<h3></h3><p></p><div class="price">${rp(p.price)}</div>` +
+          `<div class="stock ${out ? "out" : ""}">${out ? "Stok habis" : "Stok: " + p.stock_count + " akun"}</div>` +
+          (Number(p.terjual || 0) > 0 ? `<div style="font-size:.83rem;color:var(--muted)">🔥 Terjual ${Number(p.terjual).toLocaleString("id-ID")} akun</div>` : "") +
+          `<button class="btn" ${out ? "disabled" : ""}>${out ? "Habis" : "⚡ Beli Sekarang"}</button>`;
+        el.querySelector("h3").textContent = p.name;
+        el.querySelector("p").textContent = p.descr || "";
+        el.querySelector("button").onclick = () => openBuy(p);
+        return el;
+      }
       async function loadProducts() {
         const r = await fetch("/api/products"); const d = await r.json();
         products = d.products || [];
         $("demoBanner").style.display = d.demo ? "block" : "none";
         $("payBanner").style.display = (!d.demo && !d.payment_active) ? "block" : "none";
         const g = $("productGrid");
-        if (!products.length) { g.innerHTML = '<p style="color:var(--muted)">Katalog masih kosong. Cek lagi nanti ya.</p>'; return; }
-        g.innerHTML = "";
-        for (const p of products) {
-          const out = p.stock_count <= 0;
-          const el = document.createElement("div"); el.className = "card";
-          el.innerHTML = `<h3></h3><p></p><div class="price">${rp(p.price)}</div>` +
-            `<div class="stock ${out ? "out" : ""}">${out ? "Stok habis" : "Stok: " + p.stock_count + " akun"}</div>` +
-            (Number(p.terjual || 0) > 0 ? `<div style="font-size:.83rem;color:var(--muted)">🔥 Terjual ${Number(p.terjual).toLocaleString("id-ID")} akun</div>` : "") +
-            `<button class="btn" ${out ? "disabled" : ""}>${out ? "Habis" : "⚡ Beli Sekarang"}</button>`;
-          el.querySelector("h3").textContent = p.name;
-          el.querySelector("p").textContent = p.descr || "";
-          el.querySelector("button").onclick = () => openBuy(p);
-          g.appendChild(el);
+        if (!products.length) {
+          g.innerHTML = '<p style="color:var(--muted)">Katalog masih kosong. Cek lagi nanti ya.</p>';
+          $("featuredGrid").innerHTML = '<p style="color:var(--muted)">Katalog masih kosong. Cek lagi nanti ya.</p>';
+          $("btnShowAll").style.display = "none";
+          return;
         }
+        $("btnShowAll").style.display = "";
+        g.innerHTML = "";
+        for (const p of products) g.appendChild(cardEl(p));
+        const fg = $("featuredGrid"); fg.innerHTML = "";
+        const top = [...products].sort((a, b) => Number(b.terjual || 0) - Number(a.terjual || 0)).slice(0, 6);
+        for (const p of top) fg.appendChild(cardEl(p));
       }
       function openBuy(p) {
         current = p;
@@ -385,6 +418,14 @@
       $("btnCancelOrder").onclick = cancelOrder;
       $("lookupBtn").onclick = lookup;
       $("btnResLogout").onclick = async () => { await fetch("/api/reseller?action=logout", { method: "POST" }); location.reload(); };
+      function showAll() { $("produk").style.display = "block"; $("produk").scrollIntoView({ behavior: "smooth" }); }
+      function backHome() { $("produk").style.display = "none"; window.scrollTo({ top: 0, behavior: "smooth" }); }
+      $("btnShowAll").onclick = showAll;
+      $("btnHideAll").onclick = backHome;
+      $("navAll").onclick = e => { e.preventDefault(); showAll(); };
+      $("navHome").onclick = e => { e.preventDefault(); backHome(); };
+      window.addEventListener("scroll", () => { $("toTop").style.display = window.scrollY > 600 ? "block" : "none"; }, { passive: true });
+      $("toTop").onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
       loadProducts();
       loadReseller();
     </script>

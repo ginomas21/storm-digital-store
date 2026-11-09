@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0b0620" />
+    <meta name="description" content="Email sementara @pengagumku.id — buat alamat sekali pakai, email masuk tersimpan otomatis, buka lagi dengan kode kredensial. Aktif 7 hari." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✉️</text></svg>" />
+    <title>Temp Mail — Email Sementara @pengagumku.id</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/style.css" />
+    <style>
+      .mailbox { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:24px; backdrop-filter:blur(8px); }
+      .addr-big { font-size:1.25rem; font-weight:800; word-break:break-all; }
+      .code-box { background:rgba(251,191,36,.08); border:1px solid rgba(251,191,36,.5); border-radius:14px; padding:16px; margin-top:14px; }
+      .code-box code { font-size:1.15rem; font-weight:800; letter-spacing:.5px; word-break:break-all; color:var(--warn); }
+      .msg { display:block; width:100%; text-align:left; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; color:var(--text); cursor:pointer; margin-top:10px; font:inherit; }
+      .msg:hover { border-color:rgba(139,92,246,.55); background:var(--surface2); }
+      .msg b { display:block; font-size:.98rem; }
+      .msg span { color:var(--muted); font-size:.85rem; display:block; }
+      .msg .snip { color:var(--muted); font-size:.88rem; margin-top:4px; }
+      .status-ok { color:var(--ok); font-weight:700; }
+      .status-exp { color:var(--warn); font-weight:700; }
+      .msgview { background:#fff; border-radius:14px; overflow:hidden; margin-top:14px; }
+      .msgview iframe { width:100%; min-height:320px; border:0; display:block; background:#fff; }
+      .msgview pre { white-space:pre-wrap; word-break:break-word; padding:18px; margin:0; color:#17112e; font:inherit; }
+      .att { display:inline-block; margin:6px 8px 0 0; padding:8px 14px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--text); cursor:pointer; font:inherit; font-size:.88rem; font-weight:700; }
+      .att:hover { border-color:rgba(139,92,246,.55); }
+      .tabs { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+      .hidden { display:none !important; }
+      .mono { font-family:ui-monospace,monospace; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap nav">
+        <div class="brand"><span class="bolt">✉️</span> Temp <span>Mail</span></div>
+        <nav class="nav-links">
+          <a href="#buat">Buat Email</a>
+          <a href="#inbox">Inbox</a>
+          <a href="#cara">Cara Pakai</a>
+        </nav>
+      </div>
+    </header>
+    <main class="wrap">
+      <div class="hero">
+        <span class="pill"><span class="dot"></span> Email sementara · tanpa daftar · tanpa login</span>
+        <h1>Email sekali pakai,<br /><span class="grad">tersimpan otomatis.</span></h1>
+        <p>Buat alamat <strong>@pengagumku.id</strong> buat daftar atau verifikasi apa saja. Email yang masuk tersimpan otomatis — buka lagi kapan saja dengan kode kredensialmu. Aktif 7 hari, bisa diaktifkan ulang.</p>
+      </div>
+
+      <section id="buat" style="padding-top:0">
+        <h2>📬 <span class="grad">Buat Email</span></h2>
+        <p class="lead">Alamat aktif 7 hari. Setelah kedaluwarsa, inbox tetap tersimpan 30 hari dan bisa diaktifkan lagi dengan kode.</p>
+        <div class="mailbox">
+          <label for="fName">Nama alamat <span class="opt">(opsional — kosongkan untuk nama acak)</span></label>
+          <div class="lookup">
+            <input id="fName" placeholder="contoh: budi.santai" autocomplete="off" spellcheck="false" />
+            <button class="btn" id="btnCreate" type="button">Buat Alamat</button>
+          </div>
+          <p class="hint">Nama 3–30 karakter: huruf kecil, angka, titik, - dan _. Maksimal 5 alamat aktif per perangkat.</p>
+          <p class="err" id="createErr"></p>
+          <div id="createdBox" class="hidden">
+            <div class="addr-big" id="createdAddr"></div>
+            <div class="row" style="margin-top:12px">
+              <button class="btn ghost" id="btnCopyAddr" type="button">📋 Salin Alamat</button>
+              <button class="btn" id="btnOpenCreated" type="button">Buka Inbox →</button>
+            </div>
+            <div class="code-box">
+              <strong>🔑 Kode kredensial kamu:</strong><br />
+              <code id="createdCode"></code>
+              <div class="row" style="margin-top:12px">
+                <button class="btn ghost" id="btnCopyCode" type="button">📋 Salin Kode</button>
+              </div>
+              <p class="hint" style="color:var(--warn);margin-bottom:0">Simpan kode ini baik-baik — kode ini HANYA tampil sekali di sini. Siapa pun yang punya kode bisa membuka inbox alamat ini, dan kalau kodenya hilang, alamat tidak bisa dibuka lagi.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="inbox">
+        <h2>📥 <span class="grad">Inbox</span></h2>
+        <p class="lead">Masukkan alamat dan kode kredensialmu untuk melihat email yang tersimpan.</p>
+        <div class="mailbox">
+          <label for="fAddr">Alamat email</label>
+          <input id="fAddr" placeholder="nama@pengagumku.id" autocomplete="off" spellcheck="false" inputmode="email" />
+          <label for="fCode">Kode kredensial</label>
+          <input id="fCode" placeholder="Kode 24 karakter dari saat pembuatan" autocomplete="off" spellcheck="false" />
+          <div class="row">
+            <button class="btn" id="btnOpen" type="button">Buka Inbox</button>
+            <button class="btn ghost hidden" id="btnForget" type="button">Lupakan</button>
+          </div>
+          <p class="err" id="inboxErr"></p>
+          <div id="inboxBox" class="hidden">
+            <p style="margin-bottom:4px"><strong id="inboxAddr"></strong></p>
+            <p class="hint" id="inboxStatus" style="margin-top:0"></p>
+            <div class="row" style="margin-top:10px">
+              <button class="btn ghost" id="btnRefresh" type="button">🔄 Segarkan</button>
+              <button class="btn ghost hidden" id="btnReactivate" type="button">⚡ Aktifkan Lagi (7 hari)</button>
+              <button class="btn danger" id="btnDelete" type="button">Hapus Alamat</button>
+            </div>
+            <div id="msgList"></div>
+            <div id="msgDetail" class="hidden">
+              <hr style="border-color:var(--line);margin:22px 0 14px" />
+              <button class="btn ghost" id="btnBack" type="button">← Kembali ke daftar</button>
+              <h3 id="dSubject" style="margin:16px 0 4px"></h3>
+              <p class="hint" id="dMeta" style="margin-top:0"></p>
+              <div id="dAtts"></div>
+              <div class="msgview" id="dBody"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="cara">
+        <h2>Cara <span class="grad">Pakai</span></h2>
+        <ol class="steps">
+          <li><div><strong>Buat alamat</strong><p>Klik Buat Alamat (atau tulis nama sendiri). Kamu dapat alamat @pengagumku.id + kode kredensial — simpan kodenya.</p></div></li>
+          <li><div><strong>Pakai alamatnya</strong><p>Daftarkan alamat itu di layanan apa pun. Email yang masuk tersimpan otomatis di server, tidak perlu menunggu.</p></div></li>
+          <li><div><strong>Buka inbox dengan kode</strong><p>Masukkan alamat + kode di atas untuk membaca email. Setelah 7 hari alamat nonaktif, tapi inbox tetap ada 30 hari — masukkan kode dan tekan Aktifkan Lagi untuk memperpanjang 7 hari.</p></div></li>
+        </ol>
+        <p class="hint" style="margin-top:18px">Privasi: kode kredensial hanya tersimpan di browser kamu (bukan di server kami dalam bentuk asli). Jangan bagikan kode ke siapa pun — siapa pun yang punya kode bisa membaca inbox alamat itu. Email dan lampiran dihapus permanen 30 hari setelah alamat kedaluwarsa.</p>
+      </section>
+    </main>
+    <footer>
+      <div class="wrap" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <span>© 2026 Temp Mail @pengagumku.id ✉️</span><span>Bagian dari <a href="https://store.pengagumku.id" style="color:#a5b4fc">Storm Digital Store</a> · Email sementara untuk verifikasi &amp; pendaftaran.</span>
+      </div>
+    </footer>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const state = { address: "", code: "", timer: null };
+      const fmtDate = (iso) => { try { return new Date(iso).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" }) + " WIB"; } catch { return String(iso || ""); } };
+      const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+      async function api(action, payload) {
+        const res = await fetch("/api/temp-mail", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action, ...payload }),
+        });
+        const j = await res.json().catch(() => ({}));
+        if (!j.ok) throw new Error(j.error || "Terjadi kesalahan.");
+        return j;
+      }
+      async function copyText(t, btn) {
+        try { await navigator.clipboard.writeText(t); }
+        catch {
+          const ta = document.createElement("textarea");
+          ta.value = t; document.body.appendChild(ta); ta.select();
+          document.execCommand("copy"); ta.remove();
+        }
+        if (btn) { const old = btn.textContent; btn.textContent = "✅ Disalin"; setTimeout(() => (btn.textContent = old), 1500); }
+      }
+
+      // ---------- buat alamat ----------
+      $("btnCreate").addEventListener("click", async () => {
+        const btn = $("btnCreate"); btn.disabled = true; $("createErr").textContent = "";
+        try {
+          const r = await api("create", { name: $("fName").value });
+          $("createdAddr").textContent = r.address;
+          $("createdCode").textContent = r.code;
+          $("createdBox").classList.remove("hidden");
+          state.address = r.address; state.code = r.code;
+          saveSession();
+          $("fAddr").value = r.address; $("fCode").value = r.code;
+          $("createdBox").scrollIntoView({ behavior: "smooth", block: "center" });
+        } catch (e) { $("createErr").textContent = e.message; }
+        btn.disabled = false;
+      });
+      $("btnCopyAddr").addEventListener("click", (e) => copyText($("createdAddr").textContent, e.currentTarget));
+      $("btnCopyCode").addEventListener("click", (e) => copyText($("createdCode").textContent, e.currentTarget));
+      $("btnOpenCreated").addEventListener("click", () => { openInbox(); $("inbox").scrollIntoView({ behavior: "smooth" }); });
+
+      // ---------- sesi tersimpan (hanya di browser ini) ----------
+      function saveSession() {
+        try { localStorage.setItem("tempmail", JSON.stringify({ address: state.address, code: state.code })); } catch {}
+      }
+      function loadSession() {
+        try {
+          const s = JSON.parse(localStorage.getItem("tempmail") || "null");
+          if (s && s.address && s.code) { $("fAddr").value = s.address; $("fCode").value = s.code; return true; }
+        } catch {}
+        return false;
+      }
+      $("btnForget").addEventListener("click", () => {
+        try { localStorage.removeItem("tempmail"); } catch {}
+        state.address = ""; state.code = "";
+        $("fAddr").value = ""; $("fCode").value = "";
+        $("inboxBox").classList.add("hidden"); $("btnForget").classList.add("hidden");
+        stopAuto();
+      });
+
+      // ---------- inbox ----------
+      $("btnOpen").addEventListener("click", openInbox);
+      $("btnRefresh").addEventListener("click", () => openInbox(true));
+      async function openInbox(quiet) {
+        const address = $("fAddr").value.trim(), code = $("fCode").value.trim();
+        if (!address || !code) { $("inboxErr").textContent = "Isi alamat dan kode dulu."; return; }
+        if (!quiet) $("inboxErr").textContent = "";
+        try {
+          const r = await api("inbox", { address, code });
+          state.address = r.address; state.code = code; saveSession();
+          $("inboxAddr").textContent = r.address;
+          $("inboxStatus").innerHTML = r.expired
+            ? `<span class="status-exp">⏸️ Kedaluwarsa ${fmtDate(r.expires_at)} — inbox tersimpan sampai ${fmtDate(r.retention_until)}.</span>`
+            : `<span class="status-ok">● Aktif sampai ${fmtDate(r.expires_at)}</span>`;
+          $("btnReactivate").classList.toggle("hidden", !r.expired);
+          $("btnForget").classList.remove("hidden");
+          $("inboxBox").classList.remove("hidden");
+          $("msgDetail").classList.add("hidden");
+          renderList(r.messages);
+          startAuto();
+        } catch (e) { $("inboxErr").textContent = e.message; stopAuto(); }
+      }
+      function renderList(messages) {
+        const box = $("msgList"); box.innerHTML = "";
+        if (!messages.length) { box.innerHTML = `<p class="hint" style="margin-top:14px">Belum ada email masuk. Alamat ini siap dipakai — kirim email ke alamat di atas.</p>`; return; }
+        for (const m of messages) {
+          const b = document.createElement("button");
+          b.className = "msg"; b.type = "button";
+          b.innerHTML = `<b>${esc(m.subject)}</b><span>Dari: ${esc(m.from)} · ${fmtDate(m.received_at)}${m.attachments?.length ? ` · 📎 ${m.attachments.length} lampiran` : ""}</span><span class="snip">${esc(m.snippet || "")}</span>`;
+          b.addEventListener("click", () => openMessage(m.id));
+          box.appendChild(b);
+        }
+      }
+      async function openMessage(id) {
+        try {
+          const r = await api("message", { address: state.address, code: state.code, id });
+          const m = r.message;
+          $("dSubject").textContent = m.subject;
+          $("dMeta").textContent = `Dari: ${m.from} · ${fmtDate(m.received_at)}`;
+          const atts = $("dAtts"); atts.innerHTML = "";
+          for (const a of m.attachments || []) {
+            const btn = document.createElement("button");
+            btn.className = "att"; btn.type = "button";
+            btn.textContent = `📎 ${a.filename} (${fmtSize(a.size)})${a.stored ? "" : " — tidak tersimpan"}`;
+            btn.disabled = !a.stored;
+            if (a.stored) btn.addEventListener("click", () => downloadAttachment(m.id, a));
+            atts.appendChild(btn);
+          }
+          const body = $("dBody"); body.innerHTML = "";
+          if (m.html_body) {
+            const fr = document.createElement("iframe");
+            fr.setAttribute("sandbox", ""); // tanpa allow-scripts: isi email tidak bisa menjalankan kode
+            fr.srcdoc = m.html_body;
+            body.appendChild(fr);
+          } else {
+            const pre = document.createElement("pre");
+            pre.textContent = m.text_body || "(isi email kosong)";
+            body.appendChild(pre);
+          }
+          $("msgDetail").classList.remove("hidden");
+          $("msgDetail").scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (e) { $("inboxErr").textContent = e.message; }
+      }
+      function fmtSize(b) {
+        if (!b && b !== 0) return "";
+        if (b < 1024) return `${b} B`;
+        if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
+        return `${(b / 1024 / 1024).toFixed(1)} MB`;
+      }
+      async function downloadAttachment(messageId, a) {
+        try {
+          const res = await fetch("/api/temp-mail", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "attachment", address: state.address, code: state.code, message_id: messageId, att_id: a.att_id }),
+          });
+          if (!res.ok) throw new Error("Lampiran gagal diunduh.");
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url; link.download = a.filename || "lampiran";
+          document.body.appendChild(link); link.click(); link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+        } catch (e) { $("inboxErr").textContent = e.message; }
+      }
+      $("btnBack").addEventListener("click", () => $("msgDetail").classList.add("hidden"));
+      function startAuto() {
+        stopAuto();
+        state.timer = setInterval(() => { if (!$("msgDetail").classList.contains("hidden")) return; openInbox(true); }, 30000);
+      }
+      function stopAuto() { if (state.timer) { clearInterval(state.timer); state.timer = null; } }
+
+      // ---------- reaktivasi & hapus ----------
+      $("btnReactivate").addEventListener("click", async () => {
+        const btn = $("btnReactivate"); btn.disabled = true;
+        try {
+          const r = await api("reactivate", { address: state.address, code: state.code });
+          await openInbox(true);
+          $("inboxErr").textContent = "";
+          $("inboxStatus").innerHTML = `<span class="status-ok">⚡ Alamat aktif lagi sampai ${fmtDate(r.expires_at)}</span>`;
+        } catch (e) { $("inboxErr").textContent = e.message; }
+        btn.disabled = false;
+      });
+      $("btnDelete").addEventListener("click", async () => {
+        if (!confirm("Hapus alamat ini beserta seluruh isi inbox-nya secara permanen?")) return;
+        try {
+          await api("delete", { address: state.address, code: state.code });
+          try { localStorage.removeItem("tempmail"); } catch {}
+          state.address = ""; state.code = "";
+          $("fAddr").value = ""; $("fCode").value = "";
+          $("inboxBox").classList.add("hidden"); $("btnForget").classList.add("hidden");
+          stopAuto();
+          $("inboxErr").textContent = "";
+          alert("Alamat dan inbox-nya sudah dihapus.");
+        } catch (e) { $("inboxErr").textContent = e.message; }
+      });
+
+      // Buka otomatis bila sesi tersimpan di browser ini
+      if (loadSession()) openInbox();
+    </script>
+  </body>
+</html>

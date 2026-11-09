@@ -1,9 +1,1 @@
-{
-  "rewrites": [
-    { "source": "/admin", "destination": "/admin.html" },
-    { "source": "/reseller", "destination": "/reseller.html" },
-    { "source": "/mini", "destination": "/mini.html" },
-    { "source": "/produk", "destination": "/produk.html" },
-    { "source": "/cek-pesanan", "destination": "/cek-pesanan.html" }
-  ]
-}
+{"rewrites":[{"destination":"/temp-mail.html","has":[{"type":"host","value":"temp.pengagumku.id"}],"source":"/"},{"destination":"/temp-mail.html","source":"/temp-mail"},{"destination":"/admin.html","source":"/admin"},{"destination":"/reseller.html","source":"/reseller"},{"destination":"/mini.html","source":"/mini"},{"destination":"/produk.html","source":"/produk"},{"destination":"/cek-pesanan.html","source":"/cek-pesanan"}]}

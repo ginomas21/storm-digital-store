@@ -1,10 +1,11 @@
 import { verifySvix } from "../lib/svix.js";
 import { telegramMailConfigured, forwardEmailToTelegram } from "../lib/telegram-mail.js";
-import { resolveRecipient, DOMAIN } from "../lib/temp-mail.js";
+import { resolveRecipient, storeWebMessage, DOMAIN } from "../lib/temp-mail.js";
 
 // POST /api/inbound-email — webhook Resend Receiving (event email.received).
 // Alur: verifikasi tanda tangan Svix -> ambil isi email lengkap via Receiving API
-// (webhook hanya membawa metadata) -> teruskan ke Telegram owner via bot khusus email.
+// (webhook hanya membawa metadata) -> teruskan ke Telegram owner via bot khusus email
+// DAN simpan ke inbox web bila penerimanya alamat web (temp.pengagumku.id).
 // Env: RESEND_API_KEY (sudah ada, untuk kirim — idealnya full access agar bisa baca
 // Receiving), RESEND_WEBHOOK_SECRET (dari dashboard Resend saat webhook dibuat),
 // TELEGRAM_MAIL_BOT_TOKEN + TELEGRAM_MAIL_CHAT_ID.
@@ -80,6 +81,7 @@ export default async function handler(req, res) {
   ];
   const recipients = [...new Set(rawTo.map((s) => String(s).trim().toLowerCase()).filter(Boolean))];
   const targets = new Set();
+  const webLocals = []; // alamat web: email disimpan ke inbox, bukan ke Telegram
   if (!recipients.length) targets.add(owner);
   for (const rcpt of recipients) {
     const at = rcpt.lastIndexOf("@");
@@ -93,8 +95,20 @@ export default async function handler(req, res) {
       console.error("Routing temp-mail gagal, fallback owner:", e.message);
     }
     if (r.kind === "user") targets.add(String(r.chatId));
+    else if (r.kind === "web") webLocals.push(r.local);
     else if (r.kind === "unclaimed") targets.add(owner);
     else console.log(`Alamat ${rcpt} sudah kedaluwarsa — email tidak diteruskan ke siapa pun`);
+  }
+
+  // Simpan ke inbox web (gagal simpan tidak boleh menggagalkan webhook).
+  let stored = 0;
+  for (const local of webLocals) {
+    try {
+      await storeWebMessage(local, email, meta, fetchAttachmentUrl);
+      stored++;
+    } catch (e) {
+      console.error(`Gagal simpan email web ${local}:`, e.message);
+    }
   }
 
   let sent = 0;
@@ -106,5 +120,5 @@ export default async function handler(req, res) {
       console.error(`Gagal teruskan ke Telegram chat ${chatId}:`, e.message);
     }
   }
-  return res.status(200).json({ ok: true, forwarded_to: sent });
+  return res.status(200).json({ ok: true, forwarded_to: sent, stored_to_web: stored });
 }

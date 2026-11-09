@@ -1,9 +1,9 @@
 {
-  "name": "storm-digital-store",
+  "name": "dn-digital-store",
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Storm Digital Store — website dinamis: katalog akun premium, checkout tamu, QRIS BTZ PayGate, pengiriman otomatis, panel admin.",
+  "description": "DN Digital Store — website dinamis: katalog akun premium, checkout tamu, QRIS BTZ PayGate, pengiriman otomatis, panel admin.",
   "dependencies": {
     "pg": "^8.13.1",
     "qrcode": "^1.5.4",

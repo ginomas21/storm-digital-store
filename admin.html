@@ -4,10 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <link rel="icon" href="data:," />
-    <title>Panel Admin — Storm Digital Store</title>
+    <title>Panel Admin — DN Digital Store</title>
     <style>
-      :root { --bg:#ffffff; --surface:#f7f7f5; --surface2:#ffffff; --text:#1c1c1e; --muted:#5c5c60; --line:#e3e3e0; --accent:#6366f1; --accent2:#22d3ee; --accent-text:#ffffff; --err:#b02a2a; --warn:#9a6a00; --ok:#1e8e4f; }
-      @media (prefers-color-scheme: dark) { :root { --bg:#16181a; --surface:#202326; --surface2:#26292d; --text:#f2f2f0; --muted:#a7abae; --line:#33373b; --accent:#8b5cf6; --accent2:#22d3ee; --accent-text:#ffffff; --ok:#3dff88; } }
+      :root { --bg:#ffffff; --surface:#f7f7f5; --surface2:#ffffff; --text:#1c1c1e; --muted:#5c5c60; --line:#e3e3e0; --accent:#2563eb; --accent2:#22d3ee; --accent-text:#ffffff; --err:#b02a2a; --warn:#9a6a00; --ok:#1e8e4f; }
+      @media (prefers-color-scheme: dark) { :root { --bg:#16181a; --surface:#202326; --surface2:#26292d; --text:#f2f2f0; --muted:#a7abae; --line:#33373b; --accent:#3b82f6; --accent2:#22d3ee; --accent-text:#ffffff; --ok:#3dff88; } }
       * { box-sizing:border-box; }
       body { margin:0; background:var(--bg); color:var(--text); font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; line-height:1.55; }
       .wrap { max-width:960px; margin:0 auto; padding:24px 20px 60px; }
@@ -30,7 +30,7 @@
       /* Menu tab */
       .tabs { display:flex; gap:8px; flex-wrap:wrap; margin:20px 0 4px; border-bottom:1px solid var(--line); padding-bottom:12px; }
       .tabbtn { background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:999px; padding:9px 18px; font-weight:700; font-size:.92rem; cursor:pointer; }
-      .tabbtn.active { background:linear-gradient(92deg,#8b5cf6,#6366f1 45%,#22d3ee); color:#fff; border-color:transparent; }
+      .tabbtn.active { background:linear-gradient(92deg,#3b82f6,#2563eb 45%,#22d3ee); color:#fff; border-color:transparent; }
       .tabpage { display:none; padding-top:10px; }
       .tabpage.active { display:block; }
       /* Kartu statistik */
@@ -38,7 +38,7 @@
       .stat { background:var(--surface2); border:1px solid var(--line); border-radius:14px; padding:16px; }
       .stat .num { font-size:1.55rem; font-weight:700; line-height:1.2; }
       .stat .lbl { color:var(--muted); font-size:.85rem; margin-top:2px; }
-      .stat.hero { background:linear-gradient(135deg,#8b5cf6,#6366f1 45%,#22d3ee); color:#fff; border-color:transparent; }
+      .stat.hero { background:linear-gradient(135deg,#3b82f6,#2563eb 45%,#22d3ee); color:#fff; border-color:transparent; }
       .stat.hero .lbl { color:rgba(255,255,255,.85); }
       /* Badge status pesanan */
       .st { display:inline-block; padding:2px 10px; border-radius:999px; font-size:.8rem; font-weight:700; }
@@ -51,7 +51,7 @@
   </head>
   <body>
     <div class="wrap">
-      <h1>🔐 Panel Admin — Storm Digital Store</h1>
+      <h1>🔐 Panel Admin — DN Digital Store</h1>
       <div class="banner" id="demoBanner">Mode demo: database belum terhubung (DATABASE_URL kosong). Perubahan di sini tidak permanen.</div>
 
       <div id="loginBox" class="card">

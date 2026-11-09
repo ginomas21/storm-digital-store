@@ -1,6 +1,6 @@
-# Storm Digital Store
+# DN Digital Store
 
-Website resmi Storm Digital Store — toko akun premium dengan checkout otomatis.
+Website resmi DN Digital Store — toko akun premium dengan checkout otomatis.
 
 ## Versi saat ini: v2 (dinamis)
 - Katalog produk dinamis dari database (PostgreSQL) — fallback mode demo tanpa database

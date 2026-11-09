@@ -1,4 +1,4 @@
-// API khusus bot Telegram Storm — dikunci BOT_API_KEY (env Vercel, Production).
+// API khusus bot Telegram DN — dikunci BOT_API_KEY (env Vercel, Production).
 // Bot TIDAK memakai login session admin; kunci ini cakupannya hanya aksi di bawah.
 // GET (pakai header x-bot-key) = cek kesehatan/kunci, tanpa efek samping.
 // Diadaptasi dari IBC api/bot.js. Order bot memakai prefix SDS-xxxx

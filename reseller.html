@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
-    <title>Login Reseller — Storm Digital Store</title>
+    <title>Login Reseller — DN Digital Store</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <style>
-      :root { --bg:#0b0620; --surface:rgba(255,255,255,.055); --text:#f4f2ff; --muted:#b3abd6; --line:rgba(255,255,255,.13); --grad:linear-gradient(92deg,#8b5cf6,#6366f1 45%,#22d3ee); --ok:#34d399; --err:#fb7185; }
+      :root { --bg:#050b1a; --surface:rgba(255,255,255,.055); --text:#eef4ff; --muted:#a9b8d9; --line:rgba(255,255,255,.13); --grad:linear-gradient(92deg,#3b82f6,#2563eb 45%,#22d3ee); --ok:#34d399; --err:#fb7185; }
       * { box-sizing:border-box; }
-      body { margin:0; color:var(--text); font-family:"Plus Jakarta Sans","Segoe UI",system-ui,Arial,sans-serif; line-height:1.6; background:radial-gradient(640px 420px at 12% -6%, rgba(139,92,246,.42), transparent 62%), radial-gradient(560px 380px at 96% 4%, rgba(34,211,238,.30), transparent 60%), var(--bg); background-attachment:fixed; min-height:100vh; }
+      body { margin:0; color:var(--text); font-family:"Plus Jakarta Sans","Segoe UI",system-ui,Arial,sans-serif; line-height:1.6; background:radial-gradient(640px 420px at 12% -6%, rgba(59,130,246,.42), transparent 62%), radial-gradient(560px 380px at 96% 4%, rgba(34,211,238,.30), transparent 60%), var(--bg); background-attachment:fixed; min-height:100vh; }
       .wrap { max-width:720px; margin:0 auto; padding:40px 20px 60px; }
       h1 { font-size:1.7rem; font-weight:800; } h1 span { background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
       .card { background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:24px; margin-bottom:16px; backdrop-filter:blur(8px); }
       label { display:block; font-size:.9rem; font-weight:700; margin:14px 0 5px; }
       input { width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.06); color:var(--text); font:inherit; }
-      .btn { display:inline-block; background:var(--grad); color:#fff; padding:12px 24px; border-radius:999px; font-weight:700; border:0; cursor:pointer; box-shadow:0 10px 28px rgba(99,102,241,.45); text-decoration:none; font-size:.95rem; }
+      .btn { display:inline-block; background:var(--grad); color:#fff; padding:12px 24px; border-radius:999px; font-weight:700; border:0; cursor:pointer; box-shadow:0 10px 28px rgba(59,130,246,.45); text-decoration:none; font-size:.95rem; }
       .btn.ghost { background:transparent; border:1px solid var(--line); box-shadow:none; color:var(--text); }
       .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; align-items:center; }
       .err { color:var(--err); font-size:.9rem; min-height:1.2em; }
@@ -27,13 +27,13 @@
       .stat b { display:block; font-size:1.25rem; } .stat span { color:var(--muted); font-size:.8rem; }
       table { width:100%; border-collapse:collapse; font-size:.9rem; }
       th, td { text-align:left; padding:8px; border-bottom:1px solid var(--line); vertical-align:top; }
-      a { color:#a5b4fc; }
+      a { color:#93c5fd; }
     </style>
   </head>
   <body>
     <div class="wrap">
       <h1>👥 Login <span>Reseller</span></h1>
-      <p class="muted">Akun reseller dibuat oleh admin Storm Digital Store. Begitu login, diskon reseller kamu otomatis berlaku di checkout — harga katalog tetap harga normal. Aturan reseller: minimal 3 akun per pesanan, dan beli &gt;5 akun dapat bonus diskon +10%.</p>
+      <p class="muted">Akun reseller dibuat oleh admin DN Digital Store. Begitu login, diskon reseller kamu otomatis berlaku di checkout — harga katalog tetap harga normal. Aturan reseller: minimal 3 akun per pesanan, dan beli &gt;5 akun dapat bonus diskon +10%.</p>
 
       <div id="loginBox" class="card">
         <label>Username reseller</label><input id="u" autocomplete="username" />

@@ -29,3 +29,6 @@ Tanpa variabel di atas, situs berjalan mode demo / pembayaran nonaktif
 - `lib/` — db.js (Postgres/demo), btz.js, auth.js, mail.js
 
 Hosting: Vercel, kode di GitHub (ginomas21/storm-digital-store).
+Deployment: repo tersambung ke proyek Vercel (Git) — push ke main otomatis deploy production.
+
+Urutan katalog: Adobe Creative Cloud + Claude (2 varian) paling atas, disusul ChatGPT Go & Plus (pin FEATURED di `lib/db.js`), sisanya urut tanggal dibuat.

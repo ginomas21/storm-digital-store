@@ -2,19 +2,62 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
       const $ = id => document.getElementById(id);
       let products = [], current = null, order = null, pollTimer = null, countTimer = null, appliedVoucher = null;
       let reseller = null; // {discount, stats} kalau login reseller — harga katalog tetap normal, diskon cuma di checkout (server yang hitung).
+      let selectedProductFilter = "all";
 
-      function cardEl(p) {
-        const out = p.stock_count <= 0;
-        const el = document.createElement("div"); el.className = "card";
-        el.innerHTML = `<h3></h3><p></p><div class="price">${rp(p.price)}</div>` +
-          `<div class="stock ${out ? "out" : ""}">${out ? "Stok habis" : "Stok: " + p.stock_count + " akun"}</div>` +
-          (Number(p.terjual || 0) > 0 ? `<div style="font-size:.83rem;color:var(--muted)">🔥 Terjual ${Number(p.terjual).toLocaleString("id-ID")} akun</div>` : "") +
-          `<button class="btn" ${out ? "disabled" : ""}>${out ? "Habis" : "⚡ Beli Sekarang"}</button>`;
-        el.querySelector("h3").textContent = p.name;
-        el.querySelector("p").textContent = p.descr || "";
-        el.querySelector("button").onclick = () => openBuy(p);
+      function productCategory(p) {
+        const value = `${p.name || ""} ${p.category || ""}`.toLowerCase();
+        return /(spotify|youtube|loklok|netflix|vidio|hbo|max|disney|viu|stream|musik)/.test(value) ? "entertainment" : "creator";
+      }
+      function productVisual(p) {
+        const name = String(p.name || "").toLowerCase();
+        if (name.includes("spotify")) return { art: "art-spotify", icon: "icon-spotify", label: "SOUND ON", kind: "MUSIC" };
+        if (name.includes("canva")) return { art: "art-canva", icon: "icon-canva", label: "MAKE IT YOURS", kind: "DESIGN" };
+        if (name.includes("capcut")) return { art: "art-capcut", icon: "icon-capcut", label: "CUT · CREATE · SHARE", kind: "VIDEO" };
+        if (name.includes("lovable")) return { art: "art-lovable", icon: "icon-heart", label: "BUILD SOMETHING", kind: "AI TOOLS" };
+        if (name.includes("youtube")) return { art: "art-youtube", icon: "icon-play", label: "PLAY WITHOUT LIMITS", kind: "VIDEO" };
+        if (name.includes("loklok")) return { art: "art-loklok", icon: "icon-screen", label: "YOUR NEXT STORY", kind: "STREAM" };
+        if (name.includes("claude")) return { art: "art-claude", icon: "icon-claude", label: "THINK FURTHER", kind: "AI TOOLS" };
+        if (name.includes("gemini")) return { art: "art-gemini", icon: "icon-spark", label: "MAKE A SPARK", kind: "AI TOOLS" };
+        if (name.includes("adobe")) return { art: "art-adobe", icon: "icon-spark", label: "CREATE MORE", kind: "CREATIVE" };
+        return { art: "art-generic", icon: "icon-spark", label: "DN / DIGITAL", kind: "PREMIUM" };
+      }
+      function applyProductFilter() {
+        document.querySelectorAll(".filter").forEach(button => {
+          const active = (button.dataset.filter || "all") === selectedProductFilter;
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-pressed", active ? "true" : "false");
+        });
+        document.querySelectorAll(".product-card").forEach(card => {
+          card.hidden = selectedProductFilter !== "all" && card.dataset.category !== selectedProductFilter;
+        });
+      }
+      function cardEl(p, index = 0) {
+        const stock = Number(p.stock_count || 0), out = stock <= 0;
+        const sold = Number(p.terjual || 0), category = productCategory(p), visual = productVisual(p);
+        const el = document.createElement("article");
+        el.className = "product-card"; el.dataset.category = category;
+        el.innerHTML = `<div class="product-art ${visual.art}"><span class="art-label"></span><span class="art-mark"><svg aria-hidden="true"><use href="#${visual.icon}"/></svg></span><span class="art-number"></span></div>` +
+          `<div class="product-body"><div class="product-flags"><span class="category-tag"></span><span class="sold-tag"></span></div><h3></h3><p class="product-desc"></p>` +
+          `<div class="product-bottom"><span><small class="price-label">Harga</small><strong class="price"></strong></span><button class="mini-button" type="button"></button></div>` +
+          `<div class="stock-note ${out ? "out" : ""}"><i></i><span></span></div></div>`;
+        el.querySelector(".art-label").textContent = visual.label;
+        el.querySelector(".art-number").textContent = `${String(index + 1).padStart(2, "0")} / ${visual.kind}`;
+        el.querySelector(".category-tag").textContent = category === "entertainment" ? "Musik & hiburan" : "Kreator & kerja";
+        el.querySelector(".sold-tag").textContent = sold > 0 ? `${sold.toLocaleString("id-ID")} terjual` : "Produk premium";
+        el.querySelector("h3").textContent = p.name || "Produk premium";
+        el.querySelector(".product-desc").textContent = p.descr || "Akun premium digital, praktis dan otomatis.";
+        el.querySelector(".price").textContent = rp(p.price);
+        el.querySelector(".stock-note span").textContent = out ? "Stok habis" : `Stok tercatat: ${stock} paket`;
+        const button = el.querySelector("button");
+        button.disabled = out; button.textContent = out ? "Stok habis" : "Pilih paket ↗";
+        button.setAttribute("aria-label", `${out ? "Stok habis untuk" : "Beli"} ${p.name || "produk premium"}`);
+        button.onclick = () => { if (!out) openBuy(p); };
         return el;
       }
+      document.querySelectorAll(".filter").forEach(button => button.addEventListener("click", () => {
+        selectedProductFilter = button.dataset.filter || "all";
+        applyProductFilter();
+      }));
       async function loadProducts() {
         const r = await fetch("/api/products"); const d = await r.json();
         products = d.products || [];
@@ -27,12 +70,13 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
           if (fg) fg.innerHTML = empty;
           return;
         }
-        if (g) { g.innerHTML = ""; for (const p of products) g.appendChild(cardEl(p)); }
+        if (g) { g.innerHTML = ""; for (const [i, p] of products.entries()) g.appendChild(cardEl(p, i)); }
         if (fg) {
           fg.innerHTML = "";
           const top = [...products].sort((a, b) => Number(b.terjual || 0) - Number(a.terjual || 0)).slice(0, 6);
-          for (const p of top) fg.appendChild(cardEl(p));
+          for (const [i, p] of top.entries()) fg.appendChild(cardEl(p, i));
         }
+        applyProductFilter();
       }
       function openBuy(p) {
         current = p;

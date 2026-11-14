@@ -1,47 +1,67 @@
 <!doctype html>
 <html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#050b1a" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
-    <title>Semua Produk — DN Digital Store</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/style.css" />
-  </head>
-  <body>
-    <header>
-      <div class="wrap nav">
-        <div class="brand"><span class="brand-logo"></span> DN <span>Digital Store</span></div>
-        <nav class="nav-links">
-          <a href="/">Beranda</a>
-          <a href="/produk">Semua Produk</a>
-          <a href="/cek-pesanan">Cek Pesanan</a>
-          <a href="/reseller">Reseller</a>
-        </nav>
+<head>
+  <script>if(location.hostname==='temp.pengagumku.id'){location.replace('/temp-mail');}</script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0d0b18" />
+  <meta name="description" content="Jelajahi seluruh katalog akun premium DN Digital Store. Harga dan stok diperbarui langsung." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <title>Semua Produk — DN Digital Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/store-redesign.css" />
+</head>
+<svg aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
+    <symbol id="dn-mark" viewBox="0 0 52 52">
+      <defs><linearGradient id="dn-grad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d6ff57"/><stop offset=".52" stop-color="#58e6e0"/><stop offset="1" stop-color="#ff5b9b"/></linearGradient></defs>
+      <path d="M14 2h24a12 12 0 0 1 12 12v24a12 12 0 0 1-12 12H14A12 12 0 0 1 2 38V14A12 12 0 0 1 14 2Z" fill="url(#dn-grad)"/>
+      <path d="M29 8 14 28h10l-2 16 17-23H29l4-13Z" fill="#12101c"/>
+      <path d="M6 16v22a8 8 0 0 0 8 8h22" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="icon-spotify" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#fff"/><path d="M12 18c8-2 17-1 24 3M14 24c7-2 14-1 20 2M16 30c5-1 10 0 15 2" fill="none" stroke="#178b54" stroke-width="3.4" stroke-linecap="round"/></symbol>
+    <symbol id="icon-canva" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="rgba(255,255,255,.95)"/><text x="24" y="33" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-weight="700" font-size="31" fill="#3c72d2">C</text></symbol>
+    <symbol id="icon-capcut" viewBox="0 0 48 48"><path d="M10 14h28L10 34h28M10 20l28 14" fill="none" stroke="#fff" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 10 35 38" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></symbol>
+    <symbol id="icon-heart" viewBox="0 0 48 48"><path d="M24 40S6 29 6 17c0-6 4-10 10-10 4 0 7 2 8 6 2-4 5-6 9-6 6 0 10 4 10 10 0 12-19 23-19 23Z" fill="#fff"/><path d="M14 19c1-3 3-4 6-4" fill="none" stroke="#e84b88" stroke-width="2.7" stroke-linecap="round"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="32" rx="11" fill="#fff"/><path d="m20 16 14 8-14 8V16Z" fill="#ee3c3c"/></symbol>
+    <symbol id="icon-screen" viewBox="0 0 48 48"><rect x="6" y="8" width="36" height="27" rx="5" fill="none" stroke="#fff" stroke-width="3"/><path d="M16 42h16M24 35v7" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="m20 16 10 5-10 6V16Z" fill="#fff"/></symbol>
+    <symbol id="icon-spark" viewBox="0 0 48 48"><path d="M24 3c2 12 8 18 21 21-13 2-19 8-21 21C22 32 16 26 3 24 16 22 22 16 24 3Z" fill="#fff"/><path d="M38 3c.8 4.6 3.2 7 8 8-4.8.8-7.2 3.2-8 8-.8-4.8-3.2-7.2-8-8 4.8-1 7.2-3.4 8-8Z" fill="#d6ff57"/></symbol>
+    <symbol id="icon-claude" viewBox="0 0 48 48"><path d="m24 5 4.3 12.8L41 13l-4.8 12.4L49 30l-13.4 1.2L38 45l-11-7.7L19 49l1.1-13.6L6 38l7.6-11L2 19l13.5 1.4L14 7l11 7.7L24 5Z" fill="#fff" transform="translate(0 -1) scale(.94)"/></symbol>
+  </svg>
+  <div class="topline"><div class="shell topline-inner"><span class="preview-dot"></span> Katalog premium digital · proses otomatis 24 jam</div></div>
+  <header>
+    <div class="shell nav">
+      <a class="brand" href="/#beranda" aria-label="DN Digital Store, beranda"><svg class="brand-symbol" aria-hidden="true"><use href="#dn-mark"/></svg><span class="brand-name"><strong>DN DIGITAL STORE</strong><small>PREMIUM, MADE EASY</small></span></a>
+      <nav class="nav-links" aria-label="Navigasi utama"><a href="/#beranda">Beranda</a><a href="/produk">Produk</a><a href="/cek-pesanan">Cek pesanan</a><a href="/reseller">Reseller</a></nav>
+      <a class="button nav-cta" href="/#produk">Jelajahi katalog <span class="arrow">↗</span></a>
+    </div>
+  </header>
+  <main id="produk" class="shell catalog-page">
+    <section aria-labelledby="catalog-title">
+      <div class="section-head">
+        <div><div class="section-kicker">Semua pilihan dalam satu tempat</div><h1 class="section-title" id="catalog-title">Jelajahi <span class="lime">katalog.</span></h1><p class="section-lead">Semua produk akun premium. Harga dan stok mengikuti data live; jika stok habis, tombol beli otomatis nonaktif.</p></div>
+        <div class="catalog-meta"><span class="meta-star">✦</span> Diperbarui langsung dari toko</div>
       </div>
-    </header>
-    <main class="wrap">
-      <section id="produk">
-        <h2>Semua <span class="grad">Produk</span></h2>
-        <p class="lead">Semua produk kategori Akun Premium. Stok terlihat real-time — kalau habis, tombol beli mati sendiri.</p>
-        <div class="banner" id="demoBanner">Mode demo: database belum terhubung — produk & stok contoh, pembayaran belum aktif penuh.</div>
-        <div class="banner" id="payBanner">Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.</div>
-        <div class="grid" id="productGrid"><p style="color:var(--muted)">Memuat produk…</p></div>
-      </section>
-    </main>
-    <footer>
-      <div class="wrap" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <span>© 2026 DN Digital Store ⚡</span><span>DN Digital Store menjual akun premium dengan proses otomatis 24 jam: pembayaran QRIS terverifikasi sistem, akun langsung dikirim ke email tanpa menunggu admin online. Kendala? Hubungi owner: <a class="owner-link" href="https://t.me/dndigitalbot">@danielaja2003</a> (Telegram).</span>
+      <div class="status-banner" id="demoBanner" style="display:none">Mode demo: database belum terhubung — produk dan stok contoh ditampilkan, pembayaran belum aktif.</div>
+      <div class="status-banner" id="payBanner" style="display:none">Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.</div>
+      <div class="filters" role="group" aria-label="Filter kategori produk">
+        <button class="filter active" data-filter="all" type="button" aria-pressed="true">Semua pilihan</button>
+        <button class="filter" data-filter="creator" type="button" aria-pressed="false">Kreator &amp; kerja</button>
+        <button class="filter" data-filter="entertainment" type="button" aria-pressed="false">Musik &amp; hiburan</button>
       </div>
-    </footer>
-
-    <button id="toTop" title="Kembali ke atas">↑</button>
-
-    <dialog id="buyDlg">
+      <div class="product-grid" id="productGrid"><p class="section-lead">Memuat katalog…</p></div>
+    </section>
+  </main>
+<footer id="tentang">
+    <div class="shell footer-inner">
+      <div class="footer-brand"><svg class="brand-symbol" aria-hidden="true"><use href="#dn-mark"/></svg><strong>DN DIGITAL STORE</strong></div>
+      <p class="footer-copy">Toko akun premium digital dengan proses otomatis 24 jam. Pembayaran QRIS diverifikasi sistem dan akun dikirim otomatis melalui email. Butuh bantuan? Hubungi <a class="owner-link" href="https://t.me/dndigitalbot">@danielaja2003</a> di Telegram.</p>
+    </div>
+  </footer>
+<dialog id="buyDlg">
       <h3 id="dlgTitle" style="margin-top:0">Beli</h3>
       <div id="stepForm">
         <label>Jumlah (akun)</label>
@@ -78,7 +98,7 @@
         <div class="row"><button class="btn" id="btnClose3">Selesai</button></div>
       </div>
     </dialog>
-
-    <script src="/shop.js"></script>
-  </body>
+  <button id="toTop" title="Kembali ke atas" aria-label="Kembali ke atas">↑</button>
+  <script src="/shop.js"></script>
+</body>
 </html>

@@ -10,16 +10,20 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
       }
       function productVisual(p) {
         const name = String(p.name || "").toLowerCase();
-        if (name.includes("spotify")) return { art: "art-spotify", icon: "icon-spotify", label: "SOUND ON", kind: "MUSIC" };
-        if (name.includes("canva")) return { art: "art-canva", icon: "icon-canva", label: "MAKE IT YOURS", kind: "DESIGN" };
-        if (name.includes("capcut")) return { art: "art-capcut", icon: "icon-capcut", label: "CUT · CREATE · SHARE", kind: "VIDEO" };
-        if (name.includes("lovable")) return { art: "art-lovable", icon: "icon-heart", label: "BUILD SOMETHING", kind: "AI TOOLS" };
-        if (name.includes("youtube")) return { art: "art-youtube", icon: "icon-play", label: "PLAY WITHOUT LIMITS", kind: "VIDEO" };
-        if (name.includes("loklok")) return { art: "art-loklok", icon: "icon-screen", label: "YOUR NEXT STORY", kind: "STREAM" };
-        if (name.includes("claude")) return { art: "art-claude", icon: "icon-claude", label: "THINK FURTHER", kind: "AI TOOLS" };
-        if (name.includes("gemini")) return { art: "art-gemini", icon: "icon-spark", label: "MAKE A SPARK", kind: "AI TOOLS" };
-        if (name.includes("adobe")) return { art: "art-adobe", icon: "icon-spark", label: "CREATE MORE", kind: "CREATIVE" };
-        return { art: "art-generic", icon: "icon-spark", label: "DN / DIGITAL", kind: "PREMIUM" };
+        if (name.includes("spotify")) return { art: "art-spotify", image: "/product-art/music.svg", icon: "icon-spotify", label: "SOUND ON", kind: "MUSIC" };
+        if (name.includes("canva")) return { art: "art-canva", image: "/product-art/design.svg", icon: "icon-canva", label: "MAKE IT YOURS", kind: "DESIGN" };
+        if (name.includes("capcut")) return { art: "art-capcut", image: "/product-art/video.svg", icon: "icon-capcut", label: "CUT · CREATE · SHARE", kind: "VIDEO" };
+        if (name.includes("lovable")) return { art: "art-lovable", image: "/product-art/design.svg", icon: "icon-heart", label: "BUILD SOMETHING", kind: "AI TOOLS" };
+        if (name.includes("youtube")) return { art: "art-youtube", image: "/product-art/video.svg", icon: "icon-play", label: "PLAY WITHOUT LIMITS", kind: "VIDEO" };
+        if (name.includes("claude")) return { art: "art-claude", image: "/product-art/ai.svg", icon: "icon-claude", label: "THINK FURTHER", kind: "AI TOOLS" };
+        if (name.includes("gemini")) return { art: "art-gemini", image: "/product-art/ai.svg", icon: "icon-spark", label: "MAKE A SPARK", kind: "AI TOOLS" };
+        if (/chat\s*gpt|openai/.test(name)) return { art: "art-chatgpt", image: "/product-art/ai.svg", icon: "icon-spark", label: "IDEAS INTO ACTION", kind: "AI TOOLS" };
+        if (name.includes("adobe")) return { art: "art-adobe", image: "/product-art/design.svg", icon: "icon-spark", label: "CREATE MORE", kind: "CREATIVE" };
+        if (name.includes("muse") || name.includes("token")) return { art: "art-muse", image: "/product-art/tokens.svg", icon: "icon-spark", label: "CREDITS READY", kind: "TOKENS" };
+        if (name.includes("netflix")) return { art: "art-netflix", image: "/product-art/streaming.svg", icon: "icon-play", label: "YOUR NEXT FAVORITE", kind: "STREAM" };
+        if (name.includes("vidio")) return { art: "art-vidio", image: "/product-art/streaming.svg", icon: "icon-play", label: "WATCH EVERY MOMENT", kind: "STREAM" };
+        if (/hbo|max|disney|viu|loklok/.test(name)) return { art: name.includes("loklok") ? "art-loklok" : "art-streaming", image: "/product-art/streaming.svg", icon: "icon-screen", label: "YOUR NEXT STORY", kind: "STREAM" };
+        return { art: "art-generic", image: "/product-art/premium.svg", icon: "icon-spark", label: "DN / DIGITAL", kind: "PREMIUM" };
       }
       function applyProductFilter() {
         document.querySelectorAll(".filter").forEach(button => {
@@ -36,10 +40,14 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
         const sold = Number(p.terjual || 0), category = productCategory(p), visual = productVisual(p);
         const el = document.createElement("article");
         el.className = "product-card"; el.dataset.category = category;
-        el.innerHTML = `<div class="product-art ${visual.art}"><span class="art-label"></span><span class="art-mark"><svg aria-hidden="true"><use href="#${visual.icon}"/></svg></span><span class="art-number"></span></div>` +
+        el.innerHTML = `<div class="product-art ${visual.art}"><img class="product-image" alt="" loading="lazy" decoding="async"><span class="art-label"></span><span class="art-mark"><svg aria-hidden="true"><use href="#${visual.icon}"/></svg></span><span class="art-number"></span></div>` +
           `<div class="product-body"><div class="product-flags"><span class="category-tag"></span><span class="sold-tag"></span></div><h3></h3><p class="product-desc"></p>` +
           `<div class="product-bottom"><span><small class="price-label">Harga</small><strong class="price"></strong></span><button class="mini-button" type="button"></button></div>` +
           `<div class="stock-note ${out ? "out" : ""}"><i></i><span></span></div></div>`;
+        const productImage = el.querySelector(".product-image");
+        productImage.src = visual.image;
+        productImage.alt = `Ilustrasi produk ${p.name || "premium digital"}`;
+        productImage.addEventListener("error", () => productImage.remove(), { once: true });
         el.querySelector(".art-label").textContent = visual.label;
         el.querySelector(".art-number").textContent = `${String(index + 1).padStart(2, "0")} / ${visual.kind}`;
         el.querySelector(".category-tag").textContent = category === "entertainment" ? "Musik & hiburan" : "Kreator & kerja";

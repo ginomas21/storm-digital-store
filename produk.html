@@ -79,14 +79,30 @@
         <div class="disc-row" id="discRow"></div>
         <p class="hint" id="dlgTotal"></p>
         <p class="err" id="formErr"></p>
+        <label>Metode pembayaran</label>
+        <div style="display:flex;gap:10px;margin-bottom:10px">
+          <button type="button" class="btn" id="methodQris" style="flex:1">📱 QRIS</button>
+          <button type="button" class="btn ghost" id="methodUsdt" style="flex:1">🪙 USDT (BEP20)</button>
+        </div>
         <div class="row"><button class="btn ghost" id="btnClose1">Batal</button><button class="btn" id="btnPay">Buat Tagihan QRIS</button></div>
       </div>
       <div id="stepPay" style="display:none">
         <p class="total" id="payTotal"></p>
         <p class="hint" id="payDisc" style="text-align:center;display:none"></p>
-        <div class="qrbox"><img id="payQr" alt="QRIS" /></div>
+        <div class="qrbox" id="payQrBox"><img id="payQr" alt="QRIS" /></div>
+        <div id="cryptoBox" style="display:none">
+          <p class="hint" style="text-align:center">Kirim <strong>persis</strong> sejumlah ini — salin, jangan dibulatkan:</p>
+          <p class="total" id="cryptoAmount" style="text-align:center"></p>
+          <div style="display:flex;gap:8px"><input id="cryptoAddr" readonly style="flex:1;min-width:0" /><button class="btn ghost" id="btnCopyAddr" type="button" style="flex:0 0 auto">Salin</button></div>
+          <button class="btn ghost" id="btnCopyAmount" type="button" style="width:100%;margin-top:8px">Salin Jumlah USDT</button>
+          <p class="hint" id="cryptoRate" style="text-align:center"></p>
+          <p class="hint" style="text-align:center">⚠️ Hanya jaringan <strong>BEP20 / BNB Smart Chain</strong> — kirim dari jaringan lain, dana hilang. Paling aman dari wallet pribadi (Trust Wallet, dll). Dari exchange, fee potongan bisa membuat jumlah yang sampai meleset.</p>
+          <p class="hint" style="text-align:center">Sudah kirim tapi belum terdeteksi? Tempel hash transaksinya (tx hash) di sini:</p>
+          <div style="display:flex;gap:8px"><input id="txHash" placeholder="0x…" style="flex:1;min-width:0" /><button class="btn ghost" id="btnVerifyTx" type="button" style="flex:0 0 auto">Verifikasi</button></div>
+          <p class="hint" id="txMsg" style="text-align:center"></p>
+        </div>
         <p class="countdown">Kode pesanan <strong id="payOrderId"></strong> · sisa waktu <strong id="payTimer">10:00</strong></p>
-        <p class="hint" style="text-align:center">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Halaman ini mengecek pembayaran otomatis — jangan ditutup dulu.</p>
+        <p class="hint" id="payHint" style="text-align:center">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Halaman ini mengecek pembayaran otomatis — jangan ditutup dulu.</p>
         <p class="err" id="payErr"></p>
         <div class="row"><button class="btn danger" id="btnCancelOrder">Batalkan Pesanan</button></div>
       </div>

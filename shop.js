@@ -1,6 +1,7 @@
 const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
       const $ = id => document.getElementById(id);
       let products = [], current = null, order = null, pollTimer = null, countTimer = null, appliedVoucher = null;
+      let payMethod = "qris", cryptoActive = false;
       let reseller = null; // {discount, stats} kalau login reseller — harga katalog tetap normal, diskon cuma di checkout (server yang hitung).
       let selectedProductFilter = "all";
 
@@ -71,6 +72,7 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
         products = d.products || [];
         const db = $("demoBanner"); if (db) db.style.display = d.demo ? "block" : "none";
         const pb = $("payBanner"); if (pb) pb.style.display = (!d.demo && !d.payment_active) ? "block" : "none";
+        cryptoActive = !!d.crypto_active; const mu = $("methodUsdt"); if (mu) mu.style.display = cryptoActive ? "" : "none";
         const g = $("productGrid"), fg = $("featuredGrid");
         const empty = '<p style="color:var(--muted)">Katalog masih kosong. Cek lagi nanti ya.</p>';
         if (!products.length) {
@@ -113,6 +115,7 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
         };
         sel.onchange = () => { appliedVoucher = null; $("voucherMsg").textContent = ""; upd(); }; upd();
         $("fVoucher").value = ""; $("voucherMsg").textContent = ""; appliedVoucher = null;
+        setPayMethod("qris");
         $("stepForm").style.display = "block"; $("stepPay").style.display = "none"; $("stepDone").style.display = "none";
         $("buyDlg").showModal();
       }
@@ -124,7 +127,7 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
         $("btnPay").disabled = true;
         try {
           const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ productId: current.id, qty: Number($("fQty").value), name: $("fName").value.trim(), email, phone, voucher_code: appliedVoucher || "" }) });
+            body: JSON.stringify({ productId: current.id, qty: Number($("fQty").value), name: $("fName").value.trim(), email, phone, voucher_code: appliedVoucher || "", pay_method: payMethod }) });
           const d = await r.json();
           if (!r.ok) throw new Error(d.error || "Gagal membuat tagihan");
           order = { id: d.order_id, contact: email };
@@ -133,12 +136,54 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
           else if (d.voucher_code) { $("payDisc").style.display = "block"; $("payDisc").innerHTML = `🎟️ Voucher ${d.voucher_code} (−${rp(d.voucher_discount)}) sudah diterapkan`; }
           else $("payDisc").style.display = "none";
           $("payOrderId").textContent = d.order_id;
-          if (d.qris_image) $("payQr").src = d.qris_image; else if (d.payment_url) { $("payQr").outerHTML = '<a class="btn" href="' + d.payment_url + '" target="_blank">Buka Halaman Bayar</a>'; }
+          if (d.pay_method === "usdt" && d.crypto) {
+            $("payQrBox").style.display = "none";
+            $("cryptoBox").style.display = "block";
+            $("cryptoAmount").textContent = d.crypto.amount + " USDT";
+            $("cryptoAddr").value = d.crypto.address;
+            $("cryptoRate").textContent = "Kurs saat tagihan dibuat: Rp" + Number(d.crypto.rate).toLocaleString("id-ID") + " / USDT";
+            $("payHint").textContent = "Halaman ini mengecek blockchain otomatis — jangan ditutup dulu. Akun terkirim begitu transfermu terdeteksi.";
+            $("txMsg").textContent = "";
+          } else {
+            $("cryptoBox").style.display = "none";
+            $("payQrBox").style.display = "";
+            if (d.qris_image) $("payQr").src = d.qris_image; else if (d.payment_url) { $("payQr").outerHTML = '<a class="btn" href="' + d.payment_url + '" target="_blank">Buka Halaman Bayar</a>'; }
+          }
           $("stepForm").style.display = "none"; $("stepPay").style.display = "block";
           startCountdown(d.timeout_ms || 600000); startPolling();
         } catch (e) { $("formErr").textContent = e.message; }
         $("btnPay").disabled = false;
       }
+      function setPayMethod(m) {
+        payMethod = (m === "usdt" && cryptoActive) ? "usdt" : "qris";
+        const bq = $("methodQris"), bu = $("methodUsdt");
+        if (bq && bu) {
+          bq.className = "btn" + (payMethod === "qris" ? "" : " ghost");
+          bu.className = "btn" + (payMethod === "usdt" ? "" : " ghost");
+        }
+        const bp = $("btnPay"); if (bp) bp.textContent = payMethod === "usdt" ? "Buat Tagihan USDT" : "Buat Tagihan QRIS";
+      }
+      if ($("methodQris")) $("methodQris").onclick = () => setPayMethod("qris");
+      if ($("methodUsdt")) $("methodUsdt").onclick = () => setPayMethod("usdt");
+      function copyText(txt, btn) {
+        const done = () => { if (btn) { const t = btn.textContent; btn.textContent = "Tersalin ✓"; setTimeout(() => { btn.textContent = t; }, 1500); } };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(done); else done();
+      }
+      if ($("btnCopyAddr")) $("btnCopyAddr").onclick = (e) => copyText($("cryptoAddr").value, e.target);
+      if ($("btnCopyAmount")) $("btnCopyAmount").onclick = (e) => copyText(($("cryptoAmount").textContent || "").replace(" USDT", ""), e.target);
+      if ($("btnVerifyTx")) $("btnVerifyTx").onclick = async () => {
+        const h = $("txHash").value.trim(), msg = $("txMsg");
+        if (!/^0x[0-9a-fA-F]{64}$/.test(h)) { msg.textContent = "Hash transaksi tidak valid (diawali 0x, total 66 karakter)."; return; }
+        if (!order) return;
+        msg.textContent = "Memeriksa di blockchain…";
+        try {
+          const r = await fetch("/api/order-status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: order.id, contact: order.contact, action: "verify-tx", txhash: h }) });
+          const d = await r.json();
+          if (!r.ok) throw new Error(d.error || "Verifikasi gagal");
+          msg.textContent = "✅ Terverifikasi! Akunmu sedang disiapkan…";
+          checkStatus();
+        } catch (e) { msg.textContent = e.message; }
+      };
       function startCountdown(ms) {
         let left = Math.floor(ms / 1000);
         clearInterval(countTimer);

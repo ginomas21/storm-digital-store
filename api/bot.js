@@ -7,7 +7,9 @@
 // Aksi baca untuk menu admin bot (stats/orders/resellers/vouchers) hanya
 // mengembalikan ringkasan aman: listOrders tidak memuat isi akun (delivered),
 // listResellers tidak memuat hash kata sandi.
-import { fulfillExternalOrder, createProduct, addStock, updateProduct, getProduct, clearStock, getDashboardStats, listOrders, listResellers, listVouchers, createVoucher, getUsableVoucher, voucherDiscountFor } from "../lib/db.js";
+import { fulfillExternalOrder, createProduct, addStock, updateProduct, getProduct, clearStock, getDashboardStats, listOrders, listResellers, listVouchers, createVoucher, getUsableVoucher, voucherDiscountFor, createCryptoInvoice, getCryptoInvoice, setCryptoInvoiceTx, setCryptoInvoiceStatus, cryptoAmountTaken } from "../lib/db.js";
+import { cryptoConfigured, cryptoAddress, getUsdtRateIdr, usdtBaseAmount, usdtUniqueAmount, getBlockNumber, findUsdtTransfer, amountToUnits, CRYPTO_MIN_TOTAL_IDR } from "../lib/crypto.js";
+import { INVOICE_TIMEOUT_MS } from "../lib/autogopay.js";
 
 function auth(req, res) {
   if (!process.env.BOT_API_KEY) {
@@ -111,6 +113,56 @@ export default async function handler(req, res) {
       const d = voucherDiscountFor(voucher, subtotal, qty);
       if (d.error) return res.status(400).json({ error: d.error });
       return res.status(200).json({ ok: true, valid: true, code: voucher.code, discount_type: voucher.discount_type, discount_value: voucher.discount_value, discount_amount: d.discount, subtotal, total: subtotal - d.discount, min_total: voucher.min_total || 0, min_qty: voucher.min_qty || 0 });
+    }
+    if (body.action === "crypto-create") {
+      const order_ref = String(body.order_ref || "");
+      const total = Number(body.total_idr);
+      if (!/^SDS-\d{4,}$/.test(order_ref)) return res.status(400).json({ error: "order_ref tidak valid" });
+      if (!Number.isInteger(total) || total < CRYPTO_MIN_TOTAL_IDR) return res.status(400).json({ error: "total tidak valid (USDT minimal Rp10.000)" });
+      if (!cryptoConfigured()) return res.status(503).json({ error: "crypto belum aktif" });
+      let inv = await getCryptoInvoice(order_ref);
+      if (inv && inv.txhash) return res.status(409).json({ error: "invoice sudah lunas" });
+      if (inv && inv.status === "pending" && inv.expires_at && new Date(inv.expires_at).getTime() > Date.now()) {
+        return res.status(200).json({ ok: true, address: cryptoAddress(), amount: inv.amount, base_amount: inv.base_amount, rate: inv.rate_idr, expires_at: inv.expires_at });
+      }
+      const rate = await getUsdtRateIdr();
+      const base = usdtBaseAmount(total, rate);
+      let amount = "";
+      for (let i = 0; i < 80 && !amount; i++) {
+        const cand = usdtUniqueAmount(base, 1 + Math.floor(Math.random() * 99));
+        if (!(await cryptoAmountTaken(cand))) amount = cand;
+      }
+      if (!amount) return res.status(500).json({ error: "gagal membuat nominal unik" });
+      const fromBlock = await getBlockNumber().catch(() => 0);
+      const expiresAt = new Date(Date.now() + INVOICE_TIMEOUT_MS).toISOString();
+      inv = await createCryptoInvoice(order_ref, { amount, base_amount: base, rate_idr: rate, from_block: fromBlock, expires_at: expiresAt });
+      return res.status(200).json({ ok: true, address: cryptoAddress(), amount: inv.amount, base_amount: inv.base_amount, rate: inv.rate_idr, expires_at: expiresAt });
+    }
+    if (body.action === "crypto-status") {
+      const order_ref = String(body.order_ref || "");
+      if (!/^SDS-\d{4,}$/.test(order_ref)) return res.status(400).json({ error: "order_ref tidak valid" });
+      const inv = await getCryptoInvoice(order_ref);
+      if (!inv) return res.status(404).json({ error: "invoice tidak ditemukan" });
+      if (inv.txhash || inv.status === "paid") return res.status(200).json({ ok: true, paid: true, txhash: inv.txhash });
+      if (inv.status !== "pending") return res.status(200).json({ ok: true, paid: false, status: inv.status });
+      if (inv.expires_at && new Date(inv.expires_at).getTime() < Date.now()) {
+        await setCryptoInvoiceStatus(order_ref, "expired");
+        return res.status(200).json({ ok: true, paid: false, expired: true });
+      }
+      if (!cryptoConfigured()) return res.status(503).json({ error: "crypto belum aktif" });
+      const hit = await findUsdtTransfer(cryptoAddress(), Number(inv.from_block || 0), amountToUnits(inv.amount));
+      if (hit) {
+        await setCryptoInvoiceTx(order_ref, hit.txhash);
+        return res.status(200).json({ ok: true, paid: true, txhash: hit.txhash });
+      }
+      return res.status(200).json({ ok: true, paid: false });
+    }
+    if (body.action === "crypto-cancel") {
+      const order_ref = String(body.order_ref || "");
+      if (!/^SDS-\d{4,}$/.test(order_ref)) return res.status(400).json({ error: "order_ref tidak valid" });
+      const inv = await getCryptoInvoice(order_ref);
+      if (inv && inv.status === "pending") await setCryptoInvoiceStatus(order_ref, "cancelled");
+      return res.status(200).json({ ok: true });
     }
     return res.status(400).json({ error: "action tidak dikenal" });
   } catch (e) {

@@ -55,15 +55,31 @@
     <p id="voucherMsg" style="font-size:.9rem"></p>
     <p id="buyTotal"></p>
     <p class="err" id="formErr"></p>
+    <label>Metode pembayaran</label>
+    <div class="row">
+      <button class="btn" id="methodQris" type="button" style="flex:1">📱 QRIS</button>
+      <button class="btn ghost" id="methodUsdt" type="button" style="flex:1">🪙 USDT (BEP20)</button>
+    </div>
     <button class="btn" id="btnPay">Buat Tagihan QRIS</button>
     <button class="btn ghost" id="btnBack1">← Kembali ke katalog</button>
   </div>
 
   <div id="viewPay" style="display:none">
     <p class="total" id="payTotal"></p>
-    <div class="qrbox"><img id="payQr" alt="QRIS" /></div>
+    <div class="qrbox" id="payQrBox"><img id="payQr" alt="QRIS" /></div>
+    <div id="cryptoBox" style="display:none">
+      <p style="text-align:center;font-size:.9rem">Kirim <strong>persis</strong> sejumlah ini — salin, jangan dibulatkan:</p>
+      <p class="total" id="cryptoAmount" style="text-align:center"></p>
+      <div class="row"><input id="cryptoAddr" readonly style="flex:1;min-width:0" /><button class="btn ghost" id="btnCopyAddr" type="button" style="flex:0 0 auto;width:auto;margin-top:0">Salin</button></div>
+      <button class="btn ghost" id="btnCopyAmount" type="button">Salin Jumlah USDT</button>
+      <p id="cryptoRate" style="text-align:center;font-size:.85rem;color:var(--muted)"></p>
+      <p style="text-align:center;font-size:.85rem">⚠️ Hanya jaringan <strong>BEP20 / BNB Smart Chain</strong> — jaringan lain, dana hilang. Paling aman dari wallet pribadi (Trust Wallet, dll).</p>
+      <p style="text-align:center;font-size:.9rem">Sudah kirim tapi belum terdeteksi? Tempel hash transaksinya:</p>
+      <div class="row"><input id="txHash" placeholder="0x…" style="flex:1;min-width:0" /><button class="btn ghost" id="btnVerifyTx" type="button" style="flex:0 0 auto;width:auto;margin-top:0">Verifikasi</button></div>
+      <p id="txMsg" style="text-align:center;font-size:.9rem"></p>
+    </div>
     <p style="text-align:center">Kode pesanan <strong id="payOrderId"></strong> · sisa waktu <strong id="payTimer">10:00</strong></p>
-    <p style="text-align:center;font-size:.9rem">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Jangan tutup Mini App dulu.</p>
+    <p id="payHint" style="text-align:center;font-size:.9rem">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Jangan tutup Mini App dulu.</p>
     <p class="err" id="payErr"></p>
     <button class="btn danger" id="btnCancelOrder">Batalkan Pesanan</button>
   </div>
@@ -84,6 +100,7 @@
   const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
   const $ = id => document.getElementById(id);
   let products = [], current = null, order = null, pollTimer = null, countTimer = null, appliedVoucher = null;
+  let payMethod = "qris", cryptoActive = false;
 
   if (tg) {
     try { tg.ready(); tg.expand(); } catch {}
@@ -103,6 +120,7 @@
     try {
       const r = await fetch("/api/products"); const d = await r.json();
       products = d.products || [];
+      cryptoActive = !!d.crypto_active; const mu = $("methodUsdt"); if (mu) mu.style.display = cryptoActive ? "" : "none";
       $("loadMsg").style.display = "none";
       const list = $("list"); list.innerHTML = "";
       if (!products.length) { list.innerHTML = "<p>Katalog masih kosong.</p>"; return; }
@@ -127,6 +145,7 @@
     const sel = $("fQty"); sel.innerHTML = "";
     for (let i = 1; i <= Math.min(p.stock_count, 10); i++) { const o = document.createElement("option"); o.value = i; o.textContent = i + " akun"; sel.appendChild(o); }
     if (tgUser) { $("fName").value = [tgUser.first_name || "", tgUser.last_name || ""].join(" ").trim(); }
+    setPayMethod("qris");
     const upd = () => { $("buyTotal").textContent = "Total: " + rp(p.price * Number(sel.value || 1)); };
     sel.onchange = () => { appliedVoucher = null; $("voucherMsg").textContent = ""; upd(); }; upd();
     $("formErr").textContent = ""; show("viewBuy");
@@ -140,19 +159,57 @@
     $("btnPay").disabled = true;
     try {
       const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: current.id, qty: Number($("fQty").value), name: $("fName").value.trim(), email, phone: $("fPhone").value.trim(), voucher_code: appliedVoucher || "", telegram_init_data: initData }) });
+        body: JSON.stringify({ productId: current.id, qty: Number($("fQty").value), name: $("fName").value.trim(), email, phone: $("fPhone").value.trim(), voucher_code: appliedVoucher || "", telegram_init_data: initData, pay_method: payMethod }) });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || "Gagal membuat tagihan");
       order = { id: d.order_id, contact: email };
       try { localStorage.setItem("dn_mini_order", JSON.stringify(order)); } catch {}
       $("payTotal").textContent = rp(d.total);
       $("payOrderId").textContent = d.order_id;
-      if (d.qris_image) $("payQr").src = d.qris_image;
+      if (d.pay_method === "usdt" && d.crypto) {
+        $("payQrBox").style.display = "none";
+        $("cryptoBox").style.display = "block";
+        $("cryptoAmount").textContent = d.crypto.amount + " USDT";
+        $("cryptoAddr").value = d.crypto.address;
+        $("cryptoRate").textContent = "Kurs saat tagihan dibuat: Rp" + Number(d.crypto.rate).toLocaleString("id-ID") + " / USDT";
+        $("payHint").textContent = "Mini App ini mengecek blockchain otomatis — jangan ditutup dulu. Akun terkirim begitu transfermu terdeteksi.";
+        $("txMsg").textContent = "";
+      } else if (d.qris_image) $("payQr").src = d.qris_image;
       $("payErr").textContent = ""; show("viewPay");
       startCountdown(d.timeout_ms || 600000); startPolling();
     } catch (e) { $("formErr").textContent = e.message; }
     $("btnPay").disabled = false;
   }
+  function setPayMethod(m) {
+    payMethod = (m === "usdt" && cryptoActive) ? "usdt" : "qris";
+    const bq = $("methodQris"), bu = $("methodUsdt");
+    if (bq && bu) {
+      bq.className = "btn" + (payMethod === "qris" ? "" : " ghost");
+      bu.className = "btn" + (payMethod === "usdt" ? "" : " ghost");
+    }
+    const bp = $("btnPay"); if (bp) bp.textContent = payMethod === "usdt" ? "Buat Tagihan USDT" : "Buat Tagihan QRIS";
+  }
+  if ($("methodQris")) $("methodQris").onclick = () => setPayMethod("qris");
+  if ($("methodUsdt")) $("methodUsdt").onclick = () => setPayMethod("usdt");
+  function copyText(txt, btn) {
+    const done = () => { if (btn) { const t = btn.textContent; btn.textContent = "Tersalin ✓"; setTimeout(() => { btn.textContent = t; }, 1500); } };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(done); else done();
+  }
+  if ($("btnCopyAddr")) $("btnCopyAddr").onclick = (e) => copyText($("cryptoAddr").value, e.target);
+  if ($("btnCopyAmount")) $("btnCopyAmount").onclick = (e) => copyText(($("cryptoAmount").textContent || "").replace(" USDT", ""), e.target);
+  if ($("btnVerifyTx")) $("btnVerifyTx").onclick = async () => {
+    const h = $("txHash").value.trim(), msg = $("txMsg");
+    if (!/^0x[0-9a-fA-F]{64}$/.test(h)) { msg.textContent = "Hash transaksi tidak valid (diawali 0x, total 66 karakter)."; return; }
+    if (!order) return;
+    msg.textContent = "Memeriksa di blockchain…";
+    try {
+      const r = await fetch("/api/order-status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: order.id, contact: order.contact, action: "verify-tx", txhash: h }) });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || "Verifikasi gagal");
+      msg.textContent = "✅ Terverifikasi! Akunmu sedang disiapkan…";
+      checkStatus();
+    } catch (e) { msg.textContent = e.message; }
+  };
   function startCountdown(ms) {
     let left = Math.floor(ms / 1000); clearInterval(countTimer);
     countTimer = setInterval(() => {

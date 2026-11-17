@@ -1,9 +1,10 @@
 import QRCode from "qrcode";
-import { getProduct, createOrder, setOrderFields, getResellerById, getResellerDefaultDiscount, effectiveDiscount, getUsableVoucher, voucherDiscountFor, normalizeCode } from "../lib/db.js";
+import { getProduct, createOrder, setOrderFields, getResellerById, getResellerDefaultDiscount, effectiveDiscount, getUsableVoucher, voucherDiscountFor, normalizeCode, createCryptoInvoice, cryptoAmountTaken } from "../lib/db.js";
 import { readJson, bad } from "../lib/http.js";
 import { readResellerSession } from "../lib/auth.js";
 import { validateInitData } from "../lib/telegram-webapp.js";
 import { agCreate, agConfigured, INVOICE_TIMEOUT_MS, AG_MAX_AMOUNT } from "../lib/autogopay.js";
+import { cryptoConfigured, cryptoAddress, getUsdtRateIdr, usdtBaseAmount, usdtUniqueAmount, getBlockNumber, CRYPTO_MIN_TOTAL_IDR } from "../lib/crypto.js";
 
 // POST /api/checkout {productId, qty, name, email, phone, voucher_code?} — pembeli TAMU, tanpa login.
 // Email WAJIB (akun dikirim ke sana); nomor telepon OPSIONAL sebagai cadangan.
@@ -53,7 +54,9 @@ export default async function handler(req, res) {
   const qty = Math.max(1, Math.min(Number(qtyRaw || 1), 10));
   if (p.stock_count < qty) return bad(res, 400, `Stok tidak cukup (sisa ${p.stock_count})`);
   if (!EMAIL_RE.test(email)) return bad(res, 400, "Masukkan alamat email yang benar — akun akan dikirim ke email itu");
-  if (!agConfigured()) return bad(res, 503, "Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.");
+  const payMethod = body.pay_method === "usdt" ? "usdt" : "qris";
+  if (payMethod === "qris" && !agConfigured()) return bad(res, 503, "Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.");
+  if (payMethod === "usdt" && !cryptoConfigured()) return bad(res, 503, "Pembayaran USDT belum aktif. Pakai QRIS dulu ya.");
   // Diskon reseller dihitung DI SERVER dari sesi login — harga katalog tidak
   // pernah berubah dan klien tidak bisa mengatur diskonnya sendiri.
   // Aturan reseller (berlaku untuk SEMUA reseller, langsung aktif):
@@ -86,7 +89,8 @@ export default async function handler(req, res) {
     voucherCode = voucher.code; voucherDiscount = d.discount;
   }
   const finalTotalBeforePay = voucherCode ? (p.price * qty - voucherDiscount) : total;
-  if (finalTotalBeforePay < 1 || finalTotalBeforePay > AG_MAX_AMOUNT) return bad(res, 400, "Nominal pesanan di luar jangkauan pembayaran QRIS (maks Rp10.000.000) — kurangi jumlah akunnya");
+  if (payMethod === "qris" && (finalTotalBeforePay < 1 || finalTotalBeforePay > AG_MAX_AMOUNT)) return bad(res, 400, "Nominal pesanan di luar jangkauan pembayaran QRIS (maks Rp10.000.000) — kurangi jumlah akunnya");
+  if (payMethod === "usdt" && finalTotalBeforePay < CRYPTO_MIN_TOTAL_IDR) return bad(res, 400, "Bayar pakai USDT minimal total Rp10.000 ya.");
   const provisional = await createOrder({
     product_id: p.id, product_name: p.name, price: p.price, qty,
     total: finalTotalBeforePay, buyer_name: String(name || "Pembeli").slice(0, 60),
@@ -95,6 +99,27 @@ export default async function handler(req, res) {
     telegram_chat_id: telegramChatId,
   });
   try {
+    if (payMethod === "usdt") {
+      const rate = await getUsdtRateIdr();
+      const base = usdtBaseAmount(finalTotalBeforePay, rate);
+      let amount = "";
+      for (let i = 0; i < 80 && !amount; i++) {
+        const cand = usdtUniqueAmount(base, 1 + Math.floor(Math.random() * 99));
+        if (!(await cryptoAmountTaken(cand))) amount = cand;
+      }
+      if (!amount) throw new Error("gagal membuat nominal unik USDT");
+      const fromBlock = await getBlockNumber().catch(() => 0);
+      const expiresAt = new Date(Date.now() + INVOICE_TIMEOUT_MS).toISOString();
+      await createCryptoInvoice(provisional.id, { amount, base_amount: base, rate_idr: rate, from_block: fromBlock, expires_at: expiresAt });
+      await setOrderFields(provisional.id, { pay_method: "usdt", crypto_amount: amount });
+      return res.status(200).json({
+        order_id: provisional.id, total: finalTotalBeforePay, pay_method: "usdt",
+        crypto: { address: cryptoAddress(), amount, base_amount: base, rate, network: "BEP20 (BNB Smart Chain)", expires_at: expiresAt },
+        timeout_ms: INVOICE_TIMEOUT_MS,
+        discount_pct: discount, bonus_pct: bonus, normal_total: p.price * qty, unit_price: unitPrice,
+        voucher_code: voucherCode, voucher_discount: voucherDiscount,
+      });
+    }
     const data = await agCreate(provisional.id, finalTotalBeforePay, p.name, provisional.buyer_name, email, phone);
     const finalTotal = Number(data.totalAmount || finalTotalBeforePay);
     const order = await setOrderFields(provisional.id, { txid: data.transactionId || "", access_key: data.accessKey || "", total: finalTotal });

@@ -44,6 +44,7 @@ export default async function handler(req, res) {
         txid: String(body.txid || ""),
         total: body.total ? Number(body.total) : undefined,
         voucher_code: String(body.voucher_code || ""), voucher_discount: Number(body.voucher_discount || 0),
+        buyer_lang: body.buyer_lang === "en" ? "en" : "id",
       });
       if (r.error === "insufficient_stock") return res.status(409).json(r);
       if (r.error) return res.status(404).json(r);

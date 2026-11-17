@@ -6,6 +6,7 @@
 <meta name="color-scheme" content="dark" />
 <title>DN digital Store — Mini App</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="/i18n.js"></script>
 <style>
   :root { --bg:#050b1a; --text:#eef4ff; --muted:#a9b8d9; --line:rgba(255,255,255,.13); --surface:rgba(255,255,255,.055); --vio:#3b82f6; --cyn:#22d3ee; --ok:#34d399; --err:#fb7185; --warn:#fbbf24; }
   * { box-sizing:border-box; }
@@ -34,70 +35,70 @@
 <body>
 <div class="wrap">
   <div class="top"><div style="font-size:1.6rem">⚡</div><div><h1>DN digital Store</h1><span class="badge" id="who">Mini App</span></div></div>
-  <p id="tgWarn" class="warn" style="display:none">Kamu membuka halaman ini di luar Telegram, jadi checkout Mini App belum bisa. Buka lewat tombol <b>order web</b> di kiri bawah bot DN, ya.</p>
-  <p id="resumeBox" style="display:none"><button class="btn ghost" id="btnResume">↩️ Lanjutkan pesanan terakhir</button></p>
+  <p id="tgWarn" class="warn" style="display:none" data-i18n-html="mini_warn">Kamu membuka halaman ini di luar Telegram, jadi checkout Mini App belum bisa. Buka lewat tombol <b>order web</b> di kiri bawah bot DN, ya.</p>
+  <p id="resumeBox" style="display:none"><button class="btn ghost" id="btnResume" data-i18n="mini_resume">↩️ Lanjutkan pesanan terakhir</button></p>
 
   <div id="viewCatalog">
-    <h2>🔥 Akun Premium</h2>
-    <p id="loadMsg" style="color:var(--muted)">Memuat produk…</p>
+    <h2 data-i18n="mini_premium">🔥 Akun Premium</h2>
+    <p id="loadMsg" style="color:var(--muted)" data-i18n="mini_loading">Memuat produk…</p>
     <div id="list"></div>
   </div>
 
   <div id="viewBuy" style="display:none">
-    <h2 id="buyTitle">Beli</h2>
-    <label>Jumlah (akun)</label><select id="fQty"></select>
-    <label>Nama kamu</label><input id="fName" placeholder="Contoh: Budi" />
-    <label>Email</label><input id="fEmail" type="email" inputmode="email" placeholder="email@contoh.com" />
-    <p style="font-size:.85rem">📩 Akun dikirim otomatis ke email ini, dan juga lewat bot setelah lunas.</p>
-    <label>Nomor telepon <span>(opsional)</span></label><input id="fPhone" type="tel" placeholder="081234567890" />
-    <label>Kode voucher <span>(opsional)</span></label>
-    <div class="row"><input id="fVoucher" placeholder="Contoh: HEMAT10" style="flex:1" /><button class="btn ghost" id="btnVoucher" type="button" style="flex:0 0 auto;width:auto;margin-top:0">Terapkan</button></div>
+    <h2 id="buyTitle" data-i18n="mini_buy">Beli</h2>
+    <label data-i18n="f_qty">Jumlah (akun)</label><select id="fQty"></select>
+    <label data-i18n="f_name">Nama kamu</label><input id="fName" placeholder="Contoh: Budi" data-i18n-ph="ph_name" />
+    <label data-i18n="f_email">Email</label><input id="fEmail" type="email" inputmode="email" placeholder="email@contoh.com" />
+    <p style="font-size:.85rem" data-i18n="mini_email_note">📩 Akun dikirim otomatis ke email ini, dan juga lewat bot setelah lunas.</p>
+    <label data-i18n-html="f_phone">Nomor telepon <span>(opsional)</span></label><input id="fPhone" type="tel" placeholder="081234567890" />
+    <label data-i18n-html="f_voucher">Kode voucher <span>(opsional)</span></label>
+    <div class="row"><input id="fVoucher" placeholder="Contoh: HEMAT10" style="flex:1" data-i18n-ph="ph_voucher" /><button class="btn ghost" id="btnVoucher" type="button" style="flex:0 0 auto;width:auto;margin-top:0" data-i18n="apply">Terapkan</button></div>
     <p id="voucherMsg" style="font-size:.9rem"></p>
     <p id="buyTotal"></p>
     <p class="err" id="formErr"></p>
-    <label>Metode pembayaran</label>
+    <label data-i18n="pay_method">Metode pembayaran</label>
     <div class="row">
       <button class="btn" id="methodQris" type="button" style="flex:1">📱 QRIS</button>
       <button class="btn ghost" id="methodUsdt" type="button" style="flex:1">🪙 USDT (BEP20)</button>
     </div>
-    <button class="btn" id="btnPay">Buat Tagihan QRIS</button>
-    <button class="btn ghost" id="btnBack1">← Kembali ke katalog</button>
+    <button class="btn" id="btnPay" data-i18n="pay_qris_btn">Buat Tagihan QRIS</button>
+    <button class="btn ghost" id="btnBack1" data-i18n="mini_back_catalog">← Kembali ke katalog</button>
   </div>
 
   <div id="viewPay" style="display:none">
     <p class="total" id="payTotal"></p>
     <div class="qrbox" id="payQrBox"><img id="payQr" alt="QRIS" /></div>
     <div id="cryptoBox" style="display:none">
-      <p style="text-align:center;font-size:.9rem">Kirim <strong>persis</strong> sejumlah ini — salin, jangan dibulatkan:</p>
+      <p style="text-align:center;font-size:.9rem" data-i18n-html="crypto_send_exact">Kirim <strong>persis</strong> sejumlah ini — salin, jangan dibulatkan:</p>
       <p class="total" id="cryptoAmount" style="text-align:center"></p>
-      <div class="row"><input id="cryptoAddr" readonly style="flex:1;min-width:0" /><button class="btn ghost" id="btnCopyAddr" type="button" style="flex:0 0 auto;width:auto;margin-top:0">Salin</button></div>
-      <button class="btn ghost" id="btnCopyAmount" type="button">Salin Jumlah USDT</button>
+      <div class="row"><input id="cryptoAddr" readonly style="flex:1;min-width:0" /><button class="btn ghost" id="btnCopyAddr" type="button" style="flex:0 0 auto;width:auto;margin-top:0" data-i18n="copy">Salin</button></div>
+      <button class="btn ghost" id="btnCopyAmount" type="button" data-i18n="copy_amount">Salin Jumlah USDT</button>
       <p id="cryptoRate" style="text-align:center;font-size:.85rem;color:var(--muted)"></p>
-      <p style="text-align:center;font-size:.85rem">⚠️ Hanya jaringan <strong>BEP20 / BNB Smart Chain</strong> — jaringan lain, dana hilang. Paling aman dari wallet pribadi (Trust Wallet, dll).</p>
-      <p style="text-align:center;font-size:.9rem">Sudah kirim tapi belum terdeteksi? Tempel hash transaksinya:</p>
-      <div class="row"><input id="txHash" placeholder="0x…" style="flex:1;min-width:0" /><button class="btn ghost" id="btnVerifyTx" type="button" style="flex:0 0 auto;width:auto;margin-top:0">Verifikasi</button></div>
+      <p style="text-align:center;font-size:.85rem" data-i18n-html="crypto_warn_mini">⚠️ Hanya jaringan <strong>BEP20 / BNB Smart Chain</strong> — jaringan lain, dana hilang. Paling aman dari wallet pribadi (Trust Wallet, dll).</p>
+      <p style="text-align:center;font-size:.9rem" data-i18n="crypto_tx_ask_mini">Sudah kirim tapi belum terdeteksi? Tempel hash transaksinya:</p>
+      <div class="row"><input id="txHash" placeholder="0x…" style="flex:1;min-width:0" /><button class="btn ghost" id="btnVerifyTx" type="button" style="flex:0 0 auto;width:auto;margin-top:0" data-i18n="verify">Verifikasi</button></div>
       <p id="txMsg" style="text-align:center;font-size:.9rem"></p>
     </div>
-    <p style="text-align:center">Kode pesanan <strong id="payOrderId"></strong> · sisa waktu <strong id="payTimer">10:00</strong></p>
-    <p id="payHint" style="text-align:center;font-size:.9rem">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Jangan tutup Mini App dulu.</p>
+    <p style="text-align:center"><span data-i18n="order_code">Kode pesanan</span> <strong id="payOrderId"></strong> · <span data-i18n="time_left">sisa waktu</span> <strong id="payTimer">10:00</strong></p>
+    <p id="payHint" style="text-align:center;font-size:.9rem" data-i18n-html="pay_hint_qris_mini">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Jangan tutup Mini App dulu.</p>
     <p class="err" id="payErr"></p>
-    <button class="btn danger" id="btnCancelOrder">Batalkan Pesanan</button>
+    <button class="btn danger" id="btnCancelOrder" data-i18n="cancel_order">Batalkan Pesanan</button>
   </div>
 
   <div id="viewDone" style="display:none">
-    <h2 style="text-align:center;color:var(--ok)">🎉 Pembayaran diterima!</h2>
+    <h2 style="text-align:center;color:var(--ok)" data-i18n="done_title">🎉 Pembayaran diterima!</h2>
     <p style="text-align:center" id="doneInfo"></p>
     <div class="delivered" id="doneItems"></div>
     <p id="doneEmail" style="font-size:.9rem"></p>
-    <button class="btn" id="btnClose">Selesai</button>
-    <button class="btn ghost" id="btnBack2">← Kembali ke katalog</button>
+    <button class="btn" id="btnClose" data-i18n="done_btn">Selesai</button>
+    <button class="btn ghost" id="btnBack2" data-i18n="mini_back_catalog">← Kembali ke katalog</button>
   </div>
 </div>
 <script>
   const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
   const initData = tg ? tg.initData : "";
   const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
-  const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
+  const rp = n => "Rp" + Number(n).toLocaleString(dnLocale());
   const $ = id => document.getElementById(id);
   let products = [], current = null, order = null, pollTimer = null, countTimer = null, appliedVoucher = null;
   let payMethod = "qris", cryptoActive = false;
@@ -110,7 +111,7 @@
       if (tp.text_color) document.documentElement.style.setProperty("--text", "#" + tp.text_color);
       if (tp.hint_color) document.documentElement.style.setProperty("--muted", "#" + tp.hint_color);
     } catch {}
-    if (tgUser) $("who").textContent = "Halo, " + (tgUser.first_name || tgUser.username || "kamu");
+    if (tgUser) $("who").textContent = t("mini_hello", { name: tgUser.first_name || tgUser.username || "kamu" });
   }
   if (!initData) $("tgWarn").style.display = "block";
 
@@ -123,45 +124,45 @@
       cryptoActive = !!d.crypto_active; const mu = $("methodUsdt"); if (mu) mu.style.display = cryptoActive ? "" : "none";
       $("loadMsg").style.display = "none";
       const list = $("list"); list.innerHTML = "";
-      if (!products.length) { list.innerHTML = "<p>Katalog masih kosong.</p>"; return; }
+      if (!products.length) { list.innerHTML = "<p>" + t("mini_empty") + "</p>"; return; }
       for (const p of products) {
         const out = p.stock_count <= 0;
         const el = document.createElement("div"); el.className = "card";
         el.innerHTML = "<h3></h3><p></p><div class='price'>" + rp(p.price) + "</div>" +
-          "<div class='stock " + (out ? "out" : "") + "'>" + (out ? "Stok habis" : "Stok: " + p.stock_count + " akun") + "</div>" +
-          (Number(p.terjual || 0) > 0 ? "<div style='font-size:.83rem;color:var(--muted)'>🔥 Terjual " + Number(p.terjual).toLocaleString("id-ID") + " akun</div>" : "") +
-          "<button class='btn'" + (out ? " disabled" : "") + ">" + (out ? "Habis" : "⚡ Beli Sekarang") + "</button>";
+          "<div class='stock " + (out ? "out" : "") + "'>" + (out ? t("stock_out") : t("mini_stock", { qty: dnQty(p.stock_count) })) + "</div>" +
+          (Number(p.terjual || 0) > 0 ? "<div style='font-size:.83rem;color:var(--muted)'>" + t("mini_sold", { qty: dnQty(p.terjual) }) + "</div>" : "") +
+          "<button class='btn'" + (out ? " disabled" : "") + ">" + (out ? t("mini_out_btn") : t("mini_buy_now")) + "</button>";
         el.querySelector("h3").textContent = p.name;
-        el.querySelector("p").textContent = p.descr || "";
+        el.querySelector("p").textContent = dnDescr(p);
         el.querySelector("button").onclick = () => openBuy(p);
         list.appendChild(el);
       }
-    } catch { $("loadMsg").textContent = "Gagal memuat produk. Tarik untuk refresh."; }
+    } catch { $("loadMsg").textContent = t("mini_load_fail"); }
   }
 
   function openBuy(p) {
     current = p; appliedVoucher = null; $("fVoucher").value = ""; $("voucherMsg").textContent = "";
     $("buyTitle").textContent = p.name;
     const sel = $("fQty"); sel.innerHTML = "";
-    for (let i = 1; i <= Math.min(p.stock_count, 10); i++) { const o = document.createElement("option"); o.value = i; o.textContent = i + " akun"; sel.appendChild(o); }
+    for (let i = 1; i <= Math.min(p.stock_count, 10); i++) { const o = document.createElement("option"); o.value = i; o.textContent = dnQty(i); sel.appendChild(o); }
     if (tgUser) { $("fName").value = [tgUser.first_name || "", tgUser.last_name || ""].join(" ").trim(); }
     setPayMethod("qris");
-    const upd = () => { $("buyTotal").textContent = "Total: " + rp(p.price * Number(sel.value || 1)); };
+    const upd = () => { $("buyTotal").textContent = t("total") + ": " + rp(p.price * Number(sel.value || 1)); };
     sel.onchange = () => { appliedVoucher = null; $("voucherMsg").textContent = ""; upd(); }; upd();
     $("formErr").textContent = ""; show("viewBuy");
   }
 
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   async function createInvoice() {
-    if (!initData) { $("formErr").textContent = "Buka Mini App ini lewat tombol order web di bot DN, ya — checkout butuh data Telegram yang terverifikasi."; return; }
+    if (!initData) { $("formErr").textContent = t("mini_need_tg"); return; }
     const email = $("fEmail").value.trim();
-    if (!EMAIL_RE.test(email)) { $("formErr").textContent = "Masukkan alamat email yang benar — akun akan dikirim ke email itu."; return; }
+    if (!EMAIL_RE.test(email)) { $("formErr").textContent = t("email_invalid"); return; }
     $("btnPay").disabled = true;
     try {
       const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: current.id, qty: Number($("fQty").value), name: $("fName").value.trim(), email, phone: $("fPhone").value.trim(), voucher_code: appliedVoucher || "", telegram_init_data: initData, pay_method: payMethod }) });
+        body: JSON.stringify({ productId: current.id, qty: Number($("fQty").value), name: $("fName").value.trim(), email, phone: $("fPhone").value.trim(), voucher_code: appliedVoucher || "", telegram_init_data: initData, lang: window.DN_LANG, pay_method: payMethod }) });
       const d = await r.json();
-      if (!r.ok) throw new Error(d.error || "Gagal membuat tagihan");
+      if (!r.ok) throw new Error(d.error || t("invoice_fail"));
       order = { id: d.order_id, contact: email };
       try { localStorage.setItem("dn_mini_order", JSON.stringify(order)); } catch {}
       $("payTotal").textContent = rp(d.total);
@@ -171,8 +172,8 @@
         $("cryptoBox").style.display = "block";
         $("cryptoAmount").textContent = d.crypto.amount + " USDT";
         $("cryptoAddr").value = d.crypto.address;
-        $("cryptoRate").textContent = "Kurs saat tagihan dibuat: Rp" + Number(d.crypto.rate).toLocaleString("id-ID") + " / USDT";
-        $("payHint").textContent = "Mini App ini mengecek blockchain otomatis — jangan ditutup dulu. Akun terkirim begitu transfermu terdeteksi.";
+        $("cryptoRate").textContent = t("rate_line", { n: Number(d.crypto.rate).toLocaleString(dnLocale()) });
+        $("payHint").textContent = t("pay_hint_usdt_mini");
         $("txMsg").textContent = "";
       } else if (d.qris_image) $("payQr").src = d.qris_image;
       $("payErr").textContent = ""; show("viewPay");
@@ -187,26 +188,26 @@
       bq.className = "btn" + (payMethod === "qris" ? "" : " ghost");
       bu.className = "btn" + (payMethod === "usdt" ? "" : " ghost");
     }
-    const bp = $("btnPay"); if (bp) bp.textContent = payMethod === "usdt" ? "Buat Tagihan USDT" : "Buat Tagihan QRIS";
+    const bp = $("btnPay"); if (bp) bp.textContent = payMethod === "usdt" ? t("pay_usdt_btn") : t("pay_qris_btn");
   }
   if ($("methodQris")) $("methodQris").onclick = () => setPayMethod("qris");
   if ($("methodUsdt")) $("methodUsdt").onclick = () => setPayMethod("usdt");
   function copyText(txt, btn) {
-    const done = () => { if (btn) { const t = btn.textContent; btn.textContent = "Tersalin ✓"; setTimeout(() => { btn.textContent = t; }, 1500); } };
+    const done = () => { if (btn) { const t0 = btn.textContent; btn.textContent = t("copied"); setTimeout(() => { btn.textContent = t0; }, 1500); } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(done); else done();
   }
   if ($("btnCopyAddr")) $("btnCopyAddr").onclick = (e) => copyText($("cryptoAddr").value, e.target);
   if ($("btnCopyAmount")) $("btnCopyAmount").onclick = (e) => copyText(($("cryptoAmount").textContent || "").replace(" USDT", ""), e.target);
   if ($("btnVerifyTx")) $("btnVerifyTx").onclick = async () => {
     const h = $("txHash").value.trim(), msg = $("txMsg");
-    if (!/^0x[0-9a-fA-F]{64}$/.test(h)) { msg.textContent = "Hash transaksi tidak valid (diawali 0x, total 66 karakter)."; return; }
+    if (!/^0x[0-9a-fA-F]{64}$/.test(h)) { msg.textContent = t("tx_invalid"); return; }
     if (!order) return;
-    msg.textContent = "Memeriksa di blockchain…";
+    msg.textContent = t("tx_checking");
     try {
       const r = await fetch("/api/order-status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: order.id, contact: order.contact, action: "verify-tx", txhash: h }) });
       const d = await r.json();
-      if (!r.ok) throw new Error(d.error || "Verifikasi gagal");
-      msg.textContent = "✅ Terverifikasi! Akunmu sedang disiapkan…";
+      if (!r.ok) throw new Error(d.error || t("verify_fail"));
+      msg.textContent = t("tx_verified");
       checkStatus();
     } catch (e) { msg.textContent = e.message; }
   };
@@ -214,7 +215,7 @@
     let left = Math.floor(ms / 1000); clearInterval(countTimer);
     countTimer = setInterval(() => {
       left -= 1;
-      if (left < 0) { clearInterval(countTimer); stopPolling(); $("payErr").textContent = "Waktu habis. Pesanan kedaluwarsa — silakan pesan lagi."; return; }
+      if (left < 0) { clearInterval(countTimer); stopPolling(); $("payErr").textContent = t("expired"); return; }
       $("payTimer").textContent = String(Math.floor(left / 60)).padStart(2, "0") + ":" + String(left % 60).padStart(2, "0");
     }, 1000);
   }
@@ -229,13 +230,13 @@
         stopPolling(); clearInterval(countTimer);
         try { localStorage.removeItem("dn_mini_order"); } catch {}
         try { if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success"); } catch {}
-        $("doneInfo").textContent = "Pesanan " + d.id + " — " + d.product_name + " (" + d.qty + " akun)";
-        $("doneItems").textContent = d.delivered || "Stok baru saja habis — admin sudah diberi tahu dan akan menghubungimu untuk pengiriman manual atau pengembalian dana.";
-        $("doneEmail").textContent = d.email_sent ? "Salinan akun juga sudah dikirim ke email kamu. Cek inbox / folder spam ya." : "Akun juga dikirim lewat bot DN.";
+        $("doneInfo").textContent = t("order_summary", { id: d.id, name: d.product_name, qty: dnQty(d.qty) });
+        $("doneItems").textContent = d.delivered || t("delivered_fallback");
+        $("doneEmail").textContent = d.email_sent ? t("done_email") : t("mini_done_email_bot");
         show("viewDone"); loadProducts();
       } else if (d.status !== "pending") {
         stopPolling(); clearInterval(countTimer);
-        $("payErr").textContent = "Pesanan berakhir dengan status: " + d.status + ". Tidak ada dana yang terpotong.";
+        $("payErr").textContent = t("order_ended", { status: dnStatus(d.status) });
       }
     } catch {}
   }
@@ -248,14 +249,14 @@
   }
   async function applyVoucher() {
     const code = $("fVoucher").value.trim(); const msg = $("voucherMsg");
-    if (!code) { msg.textContent = "Masukkan dulu kode vouchernya."; return; }
-    msg.textContent = "Mengecek voucher…";
+    if (!code) { msg.textContent = t("voucher_empty"); return; }
+    msg.textContent = t("voucher_checking");
     try {
       const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "validate-voucher", productId: current.id, qty: Number($("fQty").value), voucher_code: code }) });
-      const d = await r.json(); if (!r.ok) throw new Error(d.error || "Voucher tidak valid");
+      const d = await r.json(); if (!r.ok) throw new Error(d.error || t("voucher_invalid"));
       appliedVoucher = d.code;
-      msg.textContent = "🎟️ " + d.code + ": potongan " + (d.discount_type === "percent" ? d.discount_value + "%" : rp(d.discount_value)) + " (−" + rp(d.discount_amount) + ") · total jadi " + rp(d.total);
+      msg.textContent = t("voucher_ok", { code: d.code, disc: d.discount_type === "percent" ? d.discount_value + "%" : rp(d.discount_value), amt: rp(d.discount_amount), total: rp(d.total) });
     } catch (e) { appliedVoucher = null; msg.textContent = e.message; }
   }
   function resumeOrder() {
@@ -263,7 +264,7 @@
       const saved = JSON.parse(localStorage.getItem("dn_mini_order") || "null");
       if (!saved || !saved.id) return;
       order = saved; show("viewPay"); $("payOrderId").textContent = saved.id;
-      $("payTotal").textContent = "Melanjutkan pesanan…"; $("payTimer").textContent = "--:--";
+      $("payTotal").textContent = t("mini_resuming"); $("payTimer").textContent = "--:--";
       startPolling(); checkStatus();
     } catch {}
   }

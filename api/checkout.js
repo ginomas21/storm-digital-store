@@ -55,6 +55,7 @@ export default async function handler(req, res) {
   if (p.stock_count < qty) return bad(res, 400, `Stok tidak cukup (sisa ${p.stock_count})`);
   if (!EMAIL_RE.test(email)) return bad(res, 400, "Masukkan alamat email yang benar — akun akan dikirim ke email itu");
   const payMethod = body.pay_method === "usdt" ? "usdt" : "qris";
+  const buyerLang = body.lang === "en" ? "en" : "id";
   if (payMethod === "qris" && !agConfigured()) return bad(res, 503, "Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.");
   if (payMethod === "usdt" && !cryptoConfigured()) return bad(res, 503, "Pembayaran USDT belum aktif. Pakai QRIS dulu ya.");
   // Diskon reseller dihitung DI SERVER dari sesi login — harga katalog tidak
@@ -97,6 +98,7 @@ export default async function handler(req, res) {
     contact: email, phone, reseller_id: resellerId, discount_pct: discount,
     txid: "", access_key: "", voucher_code: voucherCode, voucher_discount: voucherDiscount,
     telegram_chat_id: telegramChatId,
+    buyer_lang: buyerLang,
   });
   try {
     if (payMethod === "usdt") {

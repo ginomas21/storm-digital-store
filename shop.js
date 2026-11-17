@@ -1,4 +1,4 @@
-const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
+const rp = n => "Rp" + Number(n).toLocaleString(dnLocale());
       const $ = id => document.getElementById(id);
       let products = [], current = null, order = null, pollTimer = null, countTimer = null, appliedVoucher = null;
       let payMethod = "qris", cryptoActive = false;
@@ -43,23 +43,23 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
         el.className = "product-card"; el.dataset.category = category;
         el.innerHTML = `<div class="product-art ${visual.art}"><img class="product-image" alt="" loading="lazy" decoding="async"><span class="art-label"></span><span class="art-mark"><svg aria-hidden="true"><use href="#${visual.icon}"/></svg></span><span class="art-number"></span></div>` +
           `<div class="product-body"><div class="product-flags"><span class="category-tag"></span><span class="sold-tag"></span></div><h3></h3><p class="product-desc"></p>` +
-          `<div class="product-bottom"><span><small class="price-label">Harga</small><strong class="price"></strong></span><button class="mini-button" type="button"></button></div>` +
+          `<div class="product-bottom"><span><small class="price-label">${t("price_label")}</small><strong class="price"></strong></span><button class="mini-button" type="button"></button></div>` +
           `<div class="stock-note ${out ? "out" : ""}"><i></i><span></span></div></div>`;
         const productImage = el.querySelector(".product-image");
         productImage.src = visual.image;
-        productImage.alt = `Ilustrasi produk ${p.name || "premium digital"}`;
+        productImage.alt = t("img_alt", { name: p.name || "premium digital" });
         productImage.addEventListener("error", () => productImage.remove(), { once: true });
         el.querySelector(".art-label").textContent = visual.label;
         el.querySelector(".art-number").textContent = `${String(index + 1).padStart(2, "0")} / ${visual.kind}`;
-        el.querySelector(".category-tag").textContent = category === "entertainment" ? "Musik & hiburan" : "Kreator & kerja";
-        el.querySelector(".sold-tag").textContent = sold > 0 ? `${sold.toLocaleString("id-ID")} terjual` : "Produk premium";
-        el.querySelector("h3").textContent = p.name || "Produk premium";
-        el.querySelector(".product-desc").textContent = p.descr || "Akun premium digital, praktis dan otomatis.";
+        el.querySelector(".category-tag").textContent = category === "entertainment" ? t("cat_ent") : t("cat_creator");
+        el.querySelector(".sold-tag").textContent = sold > 0 ? t("sold_tag", { n: sold.toLocaleString(dnLocale()) }) : t("premium_product");
+        el.querySelector("h3").textContent = p.name || t("premium_product");
+        el.querySelector(".product-desc").textContent = dnDescr(p) || t("desc_fallback");
         el.querySelector(".price").textContent = rp(p.price);
-        el.querySelector(".stock-note span").textContent = out ? "Stok habis" : `Stok tercatat: ${stock} paket`;
+        el.querySelector(".stock-note span").textContent = out ? t("stock_out") : t("stock_count", { n: stock });
         const button = el.querySelector("button");
-        button.disabled = out; button.textContent = out ? "Stok habis" : "Pilih paket ↗";
-        button.setAttribute("aria-label", `${out ? "Stok habis untuk" : "Beli"} ${p.name || "produk premium"}`);
+        button.disabled = out; button.textContent = out ? t("stock_out") : t("choose_pkg");
+        button.setAttribute("aria-label", (out ? t("stock_out") : t("dlg_buy")) + " " + (p.name || "produk premium"));
         button.onclick = () => { if (!out) openBuy(p); };
         return el;
       }
@@ -74,7 +74,7 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
         const pb = $("payBanner"); if (pb) pb.style.display = (!d.demo && !d.payment_active) ? "block" : "none";
         cryptoActive = !!d.crypto_active; const mu = $("methodUsdt"); if (mu) mu.style.display = cryptoActive ? "" : "none";
         const g = $("productGrid"), fg = $("featuredGrid");
-        const empty = '<p style="color:var(--muted)">Katalog masih kosong. Cek lagi nanti ya.</p>';
+        const empty = '<p style="color:var(--muted)">' + t("catalog_empty") + '</p>';
         if (!products.length) {
           if (g) g.innerHTML = empty;
           if (fg) fg.innerHTML = empty;
@@ -93,10 +93,10 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
         $("dlgTitle").textContent = p.name;
         const minQty = reseller ? 3 : 1;
         const sel = $("fQty"); sel.innerHTML = "";
-        for (let i = minQty; i <= Math.min(p.stock_count, 10); i++) { const o = document.createElement("option"); o.value = i; o.textContent = i + " akun"; sel.appendChild(o); }
+        for (let i = minQty; i <= Math.min(p.stock_count, 10); i++) { const o = document.createElement("option"); o.value = i; o.textContent = dnQty(i); sel.appendChild(o); }
         $("btnPay").disabled = sel.options.length === 0;
         const upd = () => {
-          if (!sel.value) { $("formErr").textContent = reseller ? `Stok produk ini tinggal ${p.stock_count} akun — di bawah minimum reseller (3 akun). Tambah stok dulu, atau keluar dari akun reseller dan checkout sebagai tamu.` : "Stok produk ini habis."; $("dlgTotal").textContent = ""; $("discRow").style.display = "none"; sel.disabled = true; return; }
+          if (!sel.value) { $("formErr").textContent = reseller ? t("reseller_stock_low", { n: p.stock_count }) : t("stock_out_err"); $("dlgTotal").textContent = ""; $("discRow").style.display = "none"; sel.disabled = true; return; }
           $("formErr").textContent = ""; sel.disabled = false;
           const qty = Number(sel.value), normal = p.price * qty;
           const bonus0 = reseller ? (qty > 5 ? 10 : 0) : 0;
@@ -106,11 +106,11 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
             const totalDisc = totalDisc0;
             const disc = Math.floor(normal * totalDisc / 100);
             $("discRow").style.display = "block";
-            $("discRow").innerHTML = `Harga normal <s>${rp(normal)}</s> · diskon reseller ${reseller.discount}%${bonus ? " + bonus volume " + bonus + "%" : ""} (−${rp(disc)}) · <b>Total bayar ${rp(normal - disc)}</b>`;
-            $("dlgTotal").textContent = "Total bayar: " + rp(normal - disc);
+            $("discRow").innerHTML = `${t("price_normal")} <s>${rp(normal)}</s> · ${t("disc_reseller")} ${reseller.discount}%${bonus ? " + " + t("bonus_volume") + " " + bonus + "%" : ""} (−${rp(disc)}) · <b>${t("total_pay")} ${rp(normal - disc)}</b>`;
+            $("dlgTotal").textContent = t("total_pay") + ": " + rp(normal - disc);
           } else {
             $("discRow").style.display = "none";
-            $("dlgTotal").textContent = "Total: " + rp(normal);
+            $("dlgTotal").textContent = t("total") + ": " + rp(normal);
           }
         };
         sel.onchange = () => { appliedVoucher = null; $("voucherMsg").textContent = ""; upd(); }; upd();
@@ -123,17 +123,17 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
       async function createInvoice() {
         const email = $("fEmail").value.trim();
         const phone = $("fPhone").value.trim();
-        if (!EMAIL_RE.test(email)) { $("formErr").textContent = "Masukkan alamat email yang benar — akun akan dikirim ke email itu."; return; }
+        if (!EMAIL_RE.test(email)) { $("formErr").textContent = t("email_invalid"); return; }
         $("btnPay").disabled = true;
         try {
           const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ productId: current.id, qty: Number($("fQty").value), name: $("fName").value.trim(), email, phone, voucher_code: appliedVoucher || "", pay_method: payMethod }) });
+            body: JSON.stringify({ productId: current.id, qty: Number($("fQty").value), name: $("fName").value.trim(), email, phone, voucher_code: appliedVoucher || "", lang: window.DN_LANG, pay_method: payMethod }) });
           const d = await r.json();
-          if (!r.ok) throw new Error(d.error || "Gagal membuat tagihan");
+          if (!r.ok) throw new Error(d.error || t("invoice_fail"));
           order = { id: d.order_id, contact: email };
           $("payTotal").textContent = rp(d.total);
-          if (d.discount_pct > 0) { $("payDisc").style.display = "block"; $("payDisc").innerHTML = `Harga normal <s>${rp(d.normal_total)}</s> · diskon reseller ${d.discount_pct - (d.bonus_pct || 0)}%${d.bonus_pct ? " + bonus volume " + d.bonus_pct + "%" : ""} sudah diterapkan`; }
-          else if (d.voucher_code) { $("payDisc").style.display = "block"; $("payDisc").innerHTML = `🎟️ Voucher ${d.voucher_code} (−${rp(d.voucher_discount)}) sudah diterapkan`; }
+          if (d.discount_pct > 0) { $("payDisc").style.display = "block"; $("payDisc").innerHTML = t("disc_applied", { normal: rp(d.normal_total), pct: d.discount_pct - (d.bonus_pct || 0), bonus: d.bonus_pct ? " + " + t("bonus_volume") + " " + d.bonus_pct + "%" : "" }); }
+          else if (d.voucher_code) { $("payDisc").style.display = "block"; $("payDisc").innerHTML = t("voucher_applied_pay", { code: d.voucher_code, amt: rp(d.voucher_discount) }); }
           else $("payDisc").style.display = "none";
           $("payOrderId").textContent = d.order_id;
           if (d.pay_method === "usdt" && d.crypto) {
@@ -141,13 +141,13 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
             $("cryptoBox").style.display = "block";
             $("cryptoAmount").textContent = d.crypto.amount + " USDT";
             $("cryptoAddr").value = d.crypto.address;
-            $("cryptoRate").textContent = "Kurs saat tagihan dibuat: Rp" + Number(d.crypto.rate).toLocaleString("id-ID") + " / USDT";
-            $("payHint").textContent = "Halaman ini mengecek blockchain otomatis — jangan ditutup dulu. Akun terkirim begitu transfermu terdeteksi.";
+            $("cryptoRate").textContent = t("rate_line", { n: Number(d.crypto.rate).toLocaleString(dnLocale()) });
+            $("payHint").textContent = t("pay_hint_usdt");
             $("txMsg").textContent = "";
           } else {
             $("cryptoBox").style.display = "none";
             $("payQrBox").style.display = "";
-            if (d.qris_image) $("payQr").src = d.qris_image; else if (d.payment_url) { $("payQr").outerHTML = '<a class="btn" href="' + d.payment_url + '" target="_blank">Buka Halaman Bayar</a>'; }
+            if (d.qris_image) $("payQr").src = d.qris_image; else if (d.payment_url) { $("payQr").outerHTML = '<a class="btn" href="' + d.payment_url + '" target="_blank">' + t("open_pay_page") + '</a>'; }
           }
           $("stepForm").style.display = "none"; $("stepPay").style.display = "block";
           startCountdown(d.timeout_ms || 600000); startPolling();
@@ -161,26 +161,26 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
           bq.className = "btn" + (payMethod === "qris" ? "" : " ghost");
           bu.className = "btn" + (payMethod === "usdt" ? "" : " ghost");
         }
-        const bp = $("btnPay"); if (bp) bp.textContent = payMethod === "usdt" ? "Buat Tagihan USDT" : "Buat Tagihan QRIS";
+        const bp = $("btnPay"); if (bp) bp.textContent = payMethod === "usdt" ? t("pay_usdt_btn") : t("pay_qris_btn");
       }
       if ($("methodQris")) $("methodQris").onclick = () => setPayMethod("qris");
       if ($("methodUsdt")) $("methodUsdt").onclick = () => setPayMethod("usdt");
       function copyText(txt, btn) {
-        const done = () => { if (btn) { const t = btn.textContent; btn.textContent = "Tersalin ✓"; setTimeout(() => { btn.textContent = t; }, 1500); } };
+        const done = () => { if (btn) { const t0 = btn.textContent; btn.textContent = t("copied"); setTimeout(() => { btn.textContent = t0; }, 1500); } };
         if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(done); else done();
       }
       if ($("btnCopyAddr")) $("btnCopyAddr").onclick = (e) => copyText($("cryptoAddr").value, e.target);
       if ($("btnCopyAmount")) $("btnCopyAmount").onclick = (e) => copyText(($("cryptoAmount").textContent || "").replace(" USDT", ""), e.target);
       if ($("btnVerifyTx")) $("btnVerifyTx").onclick = async () => {
         const h = $("txHash").value.trim(), msg = $("txMsg");
-        if (!/^0x[0-9a-fA-F]{64}$/.test(h)) { msg.textContent = "Hash transaksi tidak valid (diawali 0x, total 66 karakter)."; return; }
+        if (!/^0x[0-9a-fA-F]{64}$/.test(h)) { msg.textContent = t("tx_invalid"); return; }
         if (!order) return;
-        msg.textContent = "Memeriksa di blockchain…";
+        msg.textContent = t("tx_checking");
         try {
           const r = await fetch("/api/order-status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: order.id, contact: order.contact, action: "verify-tx", txhash: h }) });
           const d = await r.json();
-          if (!r.ok) throw new Error(d.error || "Verifikasi gagal");
-          msg.textContent = "✅ Terverifikasi! Akunmu sedang disiapkan…";
+          if (!r.ok) throw new Error(d.error || t("verify_fail"));
+          msg.textContent = t("tx_verified");
           checkStatus();
         } catch (e) { msg.textContent = e.message; }
       };
@@ -189,7 +189,7 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
         clearInterval(countTimer);
         countTimer = setInterval(() => {
           left -= 1;
-          if (left < 0) { clearInterval(countTimer); stopPolling(); $("payErr").textContent = "Waktu habis. Pesanan kedaluwarsa — silakan pesan lagi."; return; }
+          if (left < 0) { clearInterval(countTimer); stopPolling(); $("payErr").textContent = t("expired"); return; }
           $("payTimer").textContent = String(Math.floor(left / 60)).padStart(2, "0") + ":" + String(left % 60).padStart(2, "0");
         }, 1000);
       }
@@ -207,13 +207,13 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
           if (String(d.status).startsWith("sukses")) {
             stopPolling(); clearInterval(countTimer);
             $("stepPay").style.display = "none"; $("stepDone").style.display = "block";
-            $("doneInfo").textContent = `Pesanan ${d.id} — ${d.product_name} (${d.qty} akun)`;
-            $("doneItems").textContent = d.delivered || "Stok baru saja habis — admin sudah diberi tahu dan akan menghubungimu untuk pengiriman manual atau pengembalian dana.";
-            $("doneEmail").textContent = d.email_sent ? "Salinan akun juga sudah dikirim ke email kamu. Cek inbox / folder spam ya." : "";
+            $("doneInfo").textContent = t("order_summary", { id: d.id, name: d.product_name, qty: dnQty(d.qty) });
+            $("doneItems").textContent = d.delivered || t("delivered_fallback");
+            $("doneEmail").textContent = d.email_sent ? t("done_email") : "";
             loadProducts();
           } else if (d.status !== "pending") {
             stopPolling(); clearInterval(countTimer);
-            $("payErr").textContent = "Pesanan berakhir dengan status: " + d.status + ". Tidak ada dana yang terpotong.";
+            $("payErr").textContent = t("order_ended", { status: dnStatus(d.status) });
           }
         } catch {}
       }
@@ -226,11 +226,11 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
       async function lookup() {
         const id = $("lookupId").value.trim(), contact = $("lookupContact").value.trim();
         $("lookupErr").textContent = ""; $("lookupResult").innerHTML = "";
-        if (!id || !contact) { $("lookupErr").textContent = "Isi kode pesanan dan kontaknya dulu."; return; }
+        if (!id || !contact) { $("lookupErr").textContent = t("lookup_empty"); return; }
         const r = await fetch(`/api/order-status?id=${encodeURIComponent(id)}&contact=${encodeURIComponent(contact)}`);
         const d = await r.json();
-        if (!r.ok) { $("lookupErr").textContent = d.error || "Tidak ditemukan"; return; }
-        let html = `<p>Status pesanan <strong>${d.id}</strong> (${d.product_name}): <strong>${d.status}</strong> · total ${rp(d.total)}</p>`;
+        if (!r.ok) { $("lookupErr").textContent = d.error || t("not_found"); return; }
+        let html = "<p>" + t("lookup_status", { id: d.id, name: d.product_name, status: dnStatus(d.status), total: rp(d.total) }) + "</p>";
         if (String(d.status).startsWith("sukses") && d.delivered) html += `<div class="delivered"></div>`;
         $("lookupResult").innerHTML = html;
         const dv = $("lookupResult .delivered"); if (dv) dv.textContent = d.delivered;
@@ -251,16 +251,16 @@ const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
       async function applyVoucher() {
         const code = $("fVoucher").value.trim();
         const msg = $("voucherMsg");
-        if (!code) { msg.textContent = "Masukkan dulu kode vouchernya."; return; }
+        if (!code) { msg.textContent = t("voucher_empty"); return; }
         if (!current) return;
-        msg.textContent = "Mengecek voucher…";
+        msg.textContent = t("voucher_checking");
         try {
           const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "validate-voucher", productId: current.id, qty: Number($("fQty").value), voucher_code: code }) });
           const d = await r.json();
-          if (!r.ok) throw new Error(d.error || "Voucher tidak valid");
+          if (!r.ok) throw new Error(d.error || t("voucher_invalid"));
           appliedVoucher = d.code;
-          msg.textContent = `🎟️ ${d.code}: potongan ${d.discount_type === "percent" ? d.discount_value + "%" : rp(d.discount_value)} (−${rp(d.discount_amount)}) · total jadi ${rp(d.total)}`;
+          msg.textContent = t("voucher_ok", { code: d.code, disc: d.discount_type === "percent" ? d.discount_value + "%" : rp(d.discount_value), amt: rp(d.discount_amount), total: rp(d.total) });
         } catch (e) { appliedVoucher = null; msg.textContent = e.message; }
       }
       const on = (id, fn) => { const el = $(id); if (el) el.onclick = fn; };

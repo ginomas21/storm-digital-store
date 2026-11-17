@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#0d0b18" />
   <meta name="description" content="Jelajahi seluruh katalog akun premium DN Digital Store. Harga dan stok diperbarui langsung." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
-  <title>Semua Produk — DN Digital Store</title>
+  <title data-i18n="title_products">Semua Produk — DN Digital Store</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
@@ -31,90 +31,91 @@
     <symbol id="icon-spark" viewBox="0 0 48 48"><path d="M24 3c2 12 8 18 21 21-13 2-19 8-21 21C22 32 16 26 3 24 16 22 22 16 24 3Z" fill="#fff"/><path d="M38 3c.8 4.6 3.2 7 8 8-4.8.8-7.2 3.2-8 8-.8-4.8-3.2-7.2-8-8 4.8-1 7.2-3.4 8-8Z" fill="#d6ff57"/></symbol>
     <symbol id="icon-claude" viewBox="0 0 48 48"><path d="m24 5 4.3 12.8L41 13l-4.8 12.4L49 30l-13.4 1.2L38 45l-11-7.7L19 49l1.1-13.6L6 38l7.6-11L2 19l13.5 1.4L14 7l11 7.7L24 5Z" fill="#fff" transform="translate(0 -1) scale(.94)"/></symbol>
   </svg>
-  <div class="topline"><div class="shell topline-inner"><span class="preview-dot"></span> Katalog premium digital · proses otomatis 24 jam</div></div>
+  <div class="topline"><div class="shell topline-inner"><span class="preview-dot"></span> <span data-i18n="topline">Katalog premium digital · proses otomatis 24 jam</span></div></div>
   <header>
     <div class="shell nav">
       <a class="brand" href="/#beranda" aria-label="DN Digital Store, beranda"><svg class="brand-symbol" aria-hidden="true"><use href="#dn-mark"/></svg><span class="brand-name"><strong>DN DIGITAL STORE</strong><small>PREMIUM, MADE EASY</small></span></a>
-      <nav class="nav-links" aria-label="Navigasi utama"><a href="/#beranda">Beranda</a><a href="/produk">Produk</a><a href="/cek-pesanan">Cek pesanan</a><a href="/reseller">Reseller</a></nav>
-      <a class="button nav-cta" href="/#produk">Jelajahi katalog <span class="arrow">↗</span></a>
+      <nav class="nav-links" aria-label="Navigasi utama"><a href="/#beranda" data-i18n="nav_home">Beranda</a><a href="/produk" data-i18n="nav_products">Produk</a><a href="/cek-pesanan" data-i18n="nav_check">Cek pesanan</a><a href="/reseller" data-i18n="nav_reseller">Reseller</a></nav>
+      <a class="button nav-cta" href="/#produk"><span data-i18n="explore_catalog">Jelajahi katalog</span> <span class="arrow">↗</span></a>
     </div>
   </header>
   <main id="produk" class="shell catalog-page">
     <section aria-labelledby="catalog-title">
       <div class="section-head">
-        <div><div class="section-kicker">Semua pilihan dalam satu tempat</div><h1 class="section-title" id="catalog-title">Jelajahi <span class="lime">katalog.</span></h1><p class="section-lead">Semua produk akun premium. Harga dan stok mengikuti data live; jika stok habis, tombol beli otomatis nonaktif.</p></div>
-        <div class="catalog-meta"><span class="meta-star">✦</span> Diperbarui langsung dari toko</div>
+        <div><div class="section-kicker" data-i18n="cat_kicker">Semua pilihan dalam satu tempat</div><h1 class="section-title" id="catalog-title" data-i18n-html="cat_title">Jelajahi <span class="lime">katalog.</span></h1><p class="section-lead" data-i18n="cat_lead">Semua produk akun premium. Harga dan stok mengikuti data live; jika stok habis, tombol beli otomatis nonaktif.</p></div>
+        <div class="catalog-meta"><span class="meta-star">✦</span> <span data-i18n="cat_meta">Diperbarui langsung dari toko</span></div>
       </div>
-      <div class="status-banner" id="demoBanner" style="display:none">Mode demo: database belum terhubung — produk dan stok contoh ditampilkan, pembayaran belum aktif.</div>
-      <div class="status-banner" id="payBanner" style="display:none">Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.</div>
+      <div class="status-banner" id="demoBanner" style="display:none" data-i18n="demo_banner">Mode demo: database belum terhubung — produk dan stok contoh ditampilkan, pembayaran belum aktif.</div>
+      <div class="status-banner" id="payBanner" style="display:none" data-i18n="pay_banner">Pembayaran sedang belum aktif. Coba lagi sebentar lagi ya.</div>
       <div class="filters" role="group" aria-label="Filter kategori produk">
-        <button class="filter active" data-filter="all" type="button" aria-pressed="true">Semua pilihan</button>
-        <button class="filter" data-filter="creator" type="button" aria-pressed="false">Kreator &amp; kerja</button>
-        <button class="filter" data-filter="entertainment" type="button" aria-pressed="false">Musik &amp; hiburan</button>
+        <button class="filter active" data-filter="all" type="button" aria-pressed="true" data-i18n="filter_all">Semua pilihan</button>
+        <button class="filter" data-filter="creator" type="button" aria-pressed="false" data-i18n="filter_creator">Kreator &amp; kerja</button>
+        <button class="filter" data-filter="entertainment" type="button" aria-pressed="false" data-i18n="filter_ent">Musik &amp; hiburan</button>
       </div>
-      <div class="product-grid" id="productGrid"><p class="section-lead">Memuat katalog…</p></div>
+      <div class="product-grid" id="productGrid"><p class="section-lead" data-i18n="loading_catalog">Memuat katalog…</p></div>
     </section>
   </main>
 <footer id="tentang">
     <div class="shell footer-inner">
       <div class="footer-brand"><svg class="brand-symbol" aria-hidden="true"><use href="#dn-mark"/></svg><strong>DN DIGITAL STORE</strong></div>
-      <p class="footer-copy">Toko akun premium digital dengan proses otomatis 24 jam. Pembayaran QRIS diverifikasi sistem dan akun dikirim otomatis melalui email. Butuh bantuan? Hubungi <a class="owner-link" href="https://t.me/dndigitalbot">@danielaja2003</a> di Telegram.</p>
+      <p class="footer-copy" data-i18n-html="footer_copy">Toko akun premium digital dengan proses otomatis 24 jam. Pembayaran QRIS diverifikasi sistem dan akun dikirim otomatis melalui email. Butuh bantuan? Hubungi <a class="owner-link" href="https://t.me/dndigitalbot">@danielaja2003</a> di Telegram.</p>
     </div>
   </footer>
 <dialog id="buyDlg">
-      <h3 id="dlgTitle" style="margin-top:0">Beli</h3>
+      <h3 id="dlgTitle" style="margin-top:0" data-i18n="dlg_buy">Beli</h3>
       <div id="stepForm">
-        <label>Jumlah (akun)</label>
+        <label data-i18n="f_qty">Jumlah (akun)</label>
         <select id="fQty"></select>
-        <label>Nama kamu</label>
-        <input id="fName" placeholder="Contoh: Budi" />
-        <label>Email</label>
+        <label data-i18n="f_name">Nama kamu</label>
+        <input id="fName" placeholder="Contoh: Budi" data-i18n-ph="ph_name" />
+        <label data-i18n="f_email">Email</label>
         <input id="fEmail" type="email" inputmode="email" autocomplete="email" placeholder="email@contoh.com" />
-        <p class="hint mail">📩 Produk akan dikirim otomatis melalui email, jadi masukkan alamat email dengan benar.</p>
-        <label>Nomor telepon <span class="opt">(opsional)</span></label>
-        <input id="fPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="081234567890 — boleh dikosongkan" />
-        <label>Kode voucher <span class="opt">(opsional)</span></label>
-        <div style="display:flex;gap:10px"><input id="fVoucher" placeholder="Contoh: HEMAT10" style="flex:1;min-width:0" /><button class="btn ghost" id="btnVoucher" type="button" style="flex:0 0 auto">Terapkan</button></div>
+        <p class="hint mail" data-i18n="f_mail_hint">📩 Produk akan dikirim otomatis melalui email, jadi masukkan alamat email dengan benar.</p>
+        <label data-i18n-html="f_phone">Nomor telepon <span class="opt">(opsional)</span></label>
+        <input id="fPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="081234567890 — boleh dikosongkan" data-i18n-ph="ph_phone" />
+        <label data-i18n-html="f_voucher">Kode voucher <span class="opt">(opsional)</span></label>
+        <div style="display:flex;gap:10px"><input id="fVoucher" placeholder="Contoh: HEMAT10" style="flex:1;min-width:0" data-i18n-ph="ph_voucher" /><button class="btn ghost" id="btnVoucher" type="button" style="flex:0 0 auto" data-i18n="apply">Terapkan</button></div>
         <p class="hint" id="voucherMsg" style="margin-top:6px"></p>
         <div class="disc-row" id="discRow"></div>
         <p class="hint" id="dlgTotal"></p>
         <p class="err" id="formErr"></p>
-        <label>Metode pembayaran</label>
+        <label data-i18n="pay_method">Metode pembayaran</label>
         <div style="display:flex;gap:10px;margin-bottom:10px">
           <button type="button" class="btn" id="methodQris" style="flex:1">📱 QRIS</button>
           <button type="button" class="btn ghost" id="methodUsdt" style="flex:1">🪙 USDT (BEP20)</button>
         </div>
-        <div class="row"><button class="btn ghost" id="btnClose1">Batal</button><button class="btn" id="btnPay">Buat Tagihan QRIS</button></div>
+        <div class="row"><button class="btn ghost" id="btnClose1" data-i18n="cancel">Batal</button><button class="btn" id="btnPay" data-i18n="pay_qris_btn">Buat Tagihan QRIS</button></div>
       </div>
       <div id="stepPay" style="display:none">
         <p class="total" id="payTotal"></p>
         <p class="hint" id="payDisc" style="text-align:center;display:none"></p>
         <div class="qrbox" id="payQrBox"><img id="payQr" alt="QRIS" /></div>
         <div id="cryptoBox" style="display:none">
-          <p class="hint" style="text-align:center">Kirim <strong>persis</strong> sejumlah ini — salin, jangan dibulatkan:</p>
+          <p class="hint" style="text-align:center" data-i18n-html="crypto_send_exact">Kirim <strong>persis</strong> sejumlah ini — salin, jangan dibulatkan:</p>
           <p class="total" id="cryptoAmount" style="text-align:center"></p>
-          <div style="display:flex;gap:8px"><input id="cryptoAddr" readonly style="flex:1;min-width:0" /><button class="btn ghost" id="btnCopyAddr" type="button" style="flex:0 0 auto">Salin</button></div>
-          <button class="btn ghost" id="btnCopyAmount" type="button" style="width:100%;margin-top:8px">Salin Jumlah USDT</button>
+          <div style="display:flex;gap:8px"><input id="cryptoAddr" readonly style="flex:1;min-width:0" /><button class="btn ghost" id="btnCopyAddr" type="button" style="flex:0 0 auto" data-i18n="copy">Salin</button></div>
+          <button class="btn ghost" id="btnCopyAmount" type="button" style="width:100%;margin-top:8px" data-i18n="copy_amount">Salin Jumlah USDT</button>
           <p class="hint" id="cryptoRate" style="text-align:center"></p>
-          <p class="hint" style="text-align:center">⚠️ Hanya jaringan <strong>BEP20 / BNB Smart Chain</strong> — kirim dari jaringan lain, dana hilang. Paling aman dari wallet pribadi (Trust Wallet, dll). Dari exchange, fee potongan bisa membuat jumlah yang sampai meleset.</p>
-          <p class="hint" style="text-align:center">Sudah kirim tapi belum terdeteksi? Tempel hash transaksinya (tx hash) di sini:</p>
-          <div style="display:flex;gap:8px"><input id="txHash" placeholder="0x…" style="flex:1;min-width:0" /><button class="btn ghost" id="btnVerifyTx" type="button" style="flex:0 0 auto">Verifikasi</button></div>
+          <p class="hint" style="text-align:center" data-i18n-html="crypto_warn">⚠️ Hanya jaringan <strong>BEP20 / BNB Smart Chain</strong> — kirim dari jaringan lain, dana hilang. Paling aman dari wallet pribadi (Trust Wallet, dll). Dari exchange, fee potongan bisa membuat jumlah yang sampai meleset.</p>
+          <p class="hint" style="text-align:center" data-i18n="crypto_tx_ask">Sudah kirim tapi belum terdeteksi? Tempel hash transaksinya (tx hash) di sini:</p>
+          <div style="display:flex;gap:8px"><input id="txHash" placeholder="0x…" style="flex:1;min-width:0" /><button class="btn ghost" id="btnVerifyTx" type="button" style="flex:0 0 auto" data-i18n="verify">Verifikasi</button></div>
           <p class="hint" id="txMsg" style="text-align:center"></p>
         </div>
-        <p class="countdown">Kode pesanan <strong id="payOrderId"></strong> · sisa waktu <strong id="payTimer">10:00</strong></p>
-        <p class="hint" id="payHint" style="text-align:center">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Halaman ini mengecek pembayaran otomatis — jangan ditutup dulu.</p>
+        <p class="countdown"><span data-i18n="order_code">Kode pesanan</span> <strong id="payOrderId"></strong> · <span data-i18n="time_left">sisa waktu</span> <strong id="payTimer">10:00</strong></p>
+        <p class="hint" id="payHint" style="text-align:center" data-i18n-html="pay_hint_qris">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Halaman ini mengecek pembayaran otomatis — jangan ditutup dulu.</p>
         <p class="err" id="payErr"></p>
-        <div class="row"><button class="btn danger" id="btnCancelOrder">Batalkan Pesanan</button></div>
+        <div class="row"><button class="btn danger" id="btnCancelOrder" data-i18n="cancel_order">Batalkan Pesanan</button></div>
       </div>
       <div id="stepDone" style="display:none">
-        <p class="ok-msg">🎉 Pembayaran diterima!</p>
+        <p class="ok-msg" data-i18n="done_title">🎉 Pembayaran diterima!</p>
         <p style="text-align:center" id="doneInfo"></p>
         <div class="delivered" id="doneItems"></div>
         <p class="hint" id="doneEmail"></p>
-        <div class="row"><button class="btn" id="btnClose3">Selesai</button></div>
+        <div class="row"><button class="btn" id="btnClose3" data-i18n="done_btn">Selesai</button></div>
       </div>
     </dialog>
-  <button id="toTop" title="Kembali ke atas" aria-label="Kembali ke atas">↑</button>
+  <button id="toTop" title="Kembali ke atas" aria-label="Kembali ke atas" data-i18n-title="back_top" data-i18n-aria="back_top">↑</button>
+  <script src="/i18n.js"></script>
   <script src="/shop.js"></script>
 </body>
 </html>

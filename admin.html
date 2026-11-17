@@ -104,6 +104,7 @@
             <label>Nama produk</label><input id="npName" placeholder="Contoh: Netflix 1 bulan" />
             <label>Harga (Rp, angka saja)</label><input id="npPrice" type="number" min="1" placeholder="30000" />
             <label>Deskripsi (boleh kosong — otomatis terisi template)</label><input id="npDesc" placeholder="Kosongkan untuk template bawaan" />
+            <label>Deskripsi Inggris (English — untuk tampilan EN, boleh kosong)</label><input id="npDescEn" placeholder="English description" />
             <label>Stok awal — satu kotak = satu item (akun atau link, boleh banyak baris, boleh kosong)</label>
             <div id="npAccounts"></div>
             <div class="row"><button class="btn ghost small" id="btnAddAccount" type="button">+ Tambah Akun</button><span class="muted">Tiap item dikirim utuh ke pembeli (akun atau link, boleh banyak baris), bukan terpotong per baris.</span></div>
@@ -118,6 +119,7 @@
             <label>Nama produk</label><input id="peName" />
             <label>Harga (Rp, angka saja)</label><input id="pePrice" type="number" min="1" />
             <label>Deskripsi</label><textarea id="peDesc"></textarea>
+            <label>Deskripsi Inggris (English)</label><textarea id="peDescEn"></textarea>
             <label>Status</label><select id="peActive"><option value="1">Aktif</option><option value="0">Nonaktif</option></select>
             <p class="muted">Harga baru hanya berlaku untuk pesanan berikutnya — pesanan yang sudah dibuat tidak berubah.</p>
             <p class="err" id="peErr"></p>
@@ -455,8 +457,8 @@
         $("npErr").textContent = "";
         const btn = $("btnAddProduct"); btn.disabled = true; btn.textContent = "Menyimpan…";
         try {
-          await api("/api/admin?action=products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: $("npName").value.trim(), price: Number($("npPrice").value), descr: $("npDesc").value.trim(), stock: collectAccounts() }) });
-          $("npName").value = ""; $("npPrice").value = ""; $("npDesc").value = "";
+          await api("/api/admin?action=products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: $("npName").value.trim(), price: Number($("npPrice").value), descr: $("npDesc").value.trim(), descr_en: $("npDescEn").value.trim(), stock: collectAccounts() }) });
+          $("npName").value = ""; $("npPrice").value = ""; $("npDesc").value = ""; $("npDescEn").value = "";
           $("npAccounts").innerHTML = ""; addAccountCard();
           loadProducts(); loadStats();
         } catch (e) { $("npErr").textContent = e.message; }
@@ -469,6 +471,7 @@
         $("peName").value = p.name || "";
         $("pePrice").value = p.price || "";
         $("peDesc").value = p.descr || "";
+        $("peDescEn").value = p.descr_en || "";
         $("peActive").value = p.active ? "1" : "0";
         $("peErr").textContent = ""; $("peMsg").textContent = "";
         $("prodEditCard").style.display = "block";
@@ -479,7 +482,7 @@
         const price = Number($("pePrice").value);
         if (!$("peName").value.trim() || !(price > 0)) { $("peErr").textContent = "Nama dan harga (angka > 0) wajib diisi."; return; }
         try {
-          await api("/api/admin?action=products", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: editingProdId, name: $("peName").value.trim(), price, descr: $("peDesc").value, active: $("peActive").value === "1" }) });
+          await api("/api/admin?action=products", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: editingProdId, name: $("peName").value.trim(), price, descr: $("peDesc").value, descr_en: $("peDescEn").value, active: $("peActive").value === "1" }) });
           $("peMsg").textContent = "Tersimpan"; loadProducts(); loadStats();
         } catch (e) { $("peErr").textContent = e.message; }
       }

@@ -6,9 +6,14 @@ const rp = n => "Rp" + Number(n).toLocaleString(dnLocale());
       let selectedProductFilter = "all";
 
       function productCategory(p) {
-        const value = `${p.name || ""} ${p.category || ""}`.toLowerCase();
-        return /(spotify|youtube|loklok|netflix|vidio|hbo|max|disney|viu|stream|musik)/.test(value) ? "entertainment" : "creator";
+        const name = String(p.name || "").toLowerCase();
+        if (/wise/.test(name)) return "finansial";
+        if (/(adobe|canva|capcut)/.test(name)) return "produktivitas";
+        if (/(spotify|youtube|loklok|netflix|vidio|hbo|disney|viu)/.test(name)) return "hiburan";
+        return "ai";
       }
+      const CAT_TAG_KEYS = { ai: "tag_ai", hiburan: "tag_hiburan", produktivitas: "tag_prod", finansial: "tag_fin" };
+      let selectedSearch = "";
       function productVisual(p) {
         const name = String(p.name || "").toLowerCase();
         if (name.includes("spotify")) return { art: "art-spotify", image: "/product-art/music.svg", icon: "icon-spotify", label: "SOUND ON", kind: "MUSIC" };
@@ -33,7 +38,9 @@ const rp = n => "Rp" + Number(n).toLocaleString(dnLocale());
           button.setAttribute("aria-pressed", active ? "true" : "false");
         });
         document.querySelectorAll(".product-card").forEach(card => {
-          card.hidden = selectedProductFilter !== "all" && card.dataset.category !== selectedProductFilter;
+          const matchFilter = selectedProductFilter === "all" || card.dataset.category === selectedProductFilter;
+          const matchSearch = !selectedSearch || (card.dataset.name || "").includes(selectedSearch);
+          card.hidden = !(matchFilter && matchSearch);
         });
       }
       function cardEl(p, index = 0) {
@@ -41,6 +48,9 @@ const rp = n => "Rp" + Number(n).toLocaleString(dnLocale());
         const sold = Number(p.terjual || 0), category = productCategory(p), visual = productVisual(p);
         const el = document.createElement("article");
         el.className = "product-card"; el.dataset.category = category;
+        el.dataset.name = String(p.name || "").toLowerCase();
+        el.dataset.price = Number(p.price || 0);
+        el.dataset.sold = sold;
         el.innerHTML = `<div class="product-art ${visual.art}"><img class="product-image" alt="" loading="lazy" decoding="async"><span class="art-label"></span><span class="art-mark"><svg aria-hidden="true"><use href="#${visual.icon}"/></svg></span><span class="art-number"></span></div>` +
           `<div class="product-body"><div class="product-flags"><span class="category-tag"></span><span class="sold-tag"></span></div><h3></h3><p class="product-desc"></p>` +
           `<div class="product-bottom"><span><small class="price-label">${t("price_label")}</small><strong class="price"></strong></span><button class="mini-button" type="button"></button></div>` +
@@ -51,7 +61,7 @@ const rp = n => "Rp" + Number(n).toLocaleString(dnLocale());
         productImage.addEventListener("error", () => productImage.remove(), { once: true });
         el.querySelector(".art-label").textContent = visual.label;
         el.querySelector(".art-number").textContent = `${String(index + 1).padStart(2, "0")} / ${visual.kind}`;
-        el.querySelector(".category-tag").textContent = category === "entertainment" ? t("cat_ent") : t("cat_creator");
+        el.querySelector(".category-tag").textContent = t(CAT_TAG_KEYS[category] || "tag_ai");
         el.querySelector(".sold-tag").textContent = sold > 0 ? t("sold_tag", { n: sold.toLocaleString(dnLocale()) }) : t("premium_product");
         el.querySelector("h3").textContent = p.name || t("premium_product");
         el.querySelector(".product-desc").textContent = dnDescr(p) || t("desc_fallback");
@@ -67,6 +77,33 @@ const rp = n => "Rp" + Number(n).toLocaleString(dnLocale());
         selectedProductFilter = button.dataset.filter || "all";
         applyProductFilter();
       }));
+      // Filter awal dari ?f= (kartu kategori di beranda) + pencarian dari ?q= (hero).
+      const urlParams = new URLSearchParams(location.search);
+      const fParam = urlParams.get("f");
+      if (fParam && ["ai", "hiburan", "produktivitas", "finansial"].includes(fParam)) selectedProductFilter = fParam;
+      const katSearchEl = $("katSearch");
+      const qParam = urlParams.get("q");
+      if (qParam) {
+        selectedSearch = qParam.trim().toLowerCase();
+        if (katSearchEl) katSearchEl.value = qParam;
+      }
+      if (katSearchEl) katSearchEl.addEventListener("input", () => {
+        selectedSearch = katSearchEl.value.trim().toLowerCase();
+        applyProductFilter();
+      });
+      const katSortEl = $("katSort");
+      if (katSortEl) katSortEl.addEventListener("change", () => {
+        const g = $("productGrid") || $("featuredGrid");
+        if (!g) return;
+        const modes = {
+          laris: (a, b) => Number(b.dataset.sold || 0) - Number(a.dataset.sold || 0),
+          murah: (a, b) => Number(a.dataset.price || 0) - Number(b.dataset.price || 0),
+          mahal: (a, b) => Number(b.dataset.price || 0) - Number(a.dataset.price || 0),
+          nama: (a, b) => (a.dataset.name || "").localeCompare(b.dataset.name || "")
+        };
+        const cmp = modes[katSortEl.value];
+        if (cmp) [...g.querySelectorAll(".product-card")].sort(cmp).forEach(c => g.appendChild(c));
+      });
       async function loadProducts() {
         const r = await fetch("/api/products"); const d = await r.json();
         products = d.products || [];

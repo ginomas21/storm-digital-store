@@ -5,24 +5,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark" />
-  <meta name="theme-color" content="#0d0b18" />
-  <meta name="description" content="Akun premium digital untuk kerja, kreasi, dan hiburan. Pembayaran QRIS dan pengiriman otomatis dari DN Digital Store." />
+  <meta name="theme-color" content="#050d1f" />
+  <meta name="description" content="Akun premium digital untuk kerja, kreasi, dan hiburan. Pembayaran QRIS dan USDT, pengiriman otomatis dari DN Digital Store." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
   <title data-i18n="title_home">DN Digital Store — Premium Digital, Made Easy</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/style.css" />
-  <link rel="stylesheet" href="/store-redesign.css" />
+  <link rel="stylesheet" href="/dn-modern.css" />
 </head>
 <body>
 <svg aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
-    <symbol id="dn-mark" viewBox="0 0 52 52">
-      <defs><linearGradient id="dn-grad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d6ff57"/><stop offset=".52" stop-color="#58e6e0"/><stop offset="1" stop-color="#ff5b9b"/></linearGradient></defs>
-      <path d="M14 2h24a12 12 0 0 1 12 12v24a12 12 0 0 1-12 12H14A12 12 0 0 1 2 38V14A12 12 0 0 1 14 2Z" fill="url(#dn-grad)"/>
-      <path d="M29 8 14 28h10l-2 16 17-23H29l4-13Z" fill="#12101c"/>
-      <path d="M6 16v22a8 8 0 0 0 8 8h22" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1.5"/>
-    </symbol>
     <symbol id="icon-spotify" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#fff"/><path d="M12 18c8-2 17-1 24 3M14 24c7-2 14-1 20 2M16 30c5-1 10 0 15 2" fill="none" stroke="#178b54" stroke-width="3.4" stroke-linecap="round"/></symbol>
     <symbol id="icon-canva" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="rgba(255,255,255,.95)"/><text x="24" y="33" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-weight="700" font-size="31" fill="#3c72d2">C</text></symbol>
     <symbol id="icon-capcut" viewBox="0 0 48 48"><path d="M10 14h28L10 34h28M10 20l28 14" fill="none" stroke="#fff" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 10 35 38" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></symbol>
@@ -32,42 +25,35 @@
     <symbol id="icon-spark" viewBox="0 0 48 48"><path d="M24 3c2 12 8 18 21 21-13 2-19 8-21 21C22 32 16 26 3 24 16 22 22 16 24 3Z" fill="#fff"/><path d="M38 3c.8 4.6 3.2 7 8 8-4.8.8-7.2 3.2-8 8-.8-4.8-3.2-7.2-8-8 4.8-1 7.2-3.4 8-8Z" fill="#d6ff57"/></symbol>
     <symbol id="icon-claude" viewBox="0 0 48 48"><path d="m24 5 4.3 12.8L41 13l-4.8 12.4L49 30l-13.4 1.2L38 45l-11-7.7L19 49l1.1-13.6L6 38l7.6-11L2 19l13.5 1.4L14 7l11 7.7L24 5Z" fill="#fff" transform="translate(0 -1) scale(.94)"/></symbol>
   </svg>
-  <div class="topline"><div class="shell topline-inner"><span class="preview-dot"></span> <span data-i18n="topline">Katalog premium digital · proses otomatis 24 jam</span></div></div>
-  <header>
+  <div class="topline"><div class="shell topline-inner"><span class="preview-dot"></span> <span data-i18n="topline">Katalog premium digital · proses otomatis 24 jam</span><span class="topline-links"><a href="/cek-pesanan" data-i18n="nav_check">Cek pesanan</a><a href="/reseller" data-i18n="nav_reseller">Reseller</a></span></div></div>
+  <header class="site-header">
     <div class="shell nav">
-      <a class="brand" href="/#beranda" aria-label="DN Digital Store, beranda">
-        <svg class="brand-symbol" aria-hidden="true"><use href="#dn-mark"/></svg>
-        <span class="brand-name"><strong>DN DIGITAL STORE</strong><small>PREMIUM, MADE EASY</small></span>
+      <a class="logo" href="/" aria-label="DN Digital Store, beranda">
+        <span class="logo-mark">DN</span>
+        <span class="logo-name">DN Digital Store<small data-i18n="brand_tag">AKUN PREMIUM</small></span>
       </a>
-      <nav class="nav-links" aria-label="Navigasi utama">
-        <a href="/#beranda" data-i18n="nav_home">Beranda</a><a href="/produk" data-i18n="nav_products">Produk</a><a href="/cek-pesanan" data-i18n="nav_check">Cek pesanan</a><a href="/reseller" data-i18n="nav_reseller">Reseller</a>
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <a href="/" class="active" aria-current="page" data-i18n="nav_home">Beranda</a><a href="/produk" data-i18n="nav_catalog">Katalog</a><a href="/cara-beli" data-i18n="nav_cara">Cara Beli</a><a href="/faq" data-i18n="nav_faq">FAQ</a><a href="/kontak" data-i18n="nav_kontak">Kontak</a>
       </nav>
-      <a class="button nav-cta" href="#produk"><span data-i18n="explore_catalog">Jelajahi katalog</span> <span class="arrow">↗</span></a>
+      <a class="header-cta" href="/produk" data-i18n="cta_shop">Belanja</a>
     </div>
   </header>
   <main id="beranda">
     <div class="shell">
-<section class="hero" aria-labelledby="hero-title">
-        <div class="hero-copy">
-          <span class="eyebrow"><i></i> <span data-i18n="hero_eyebrow">Premium digital, tanpa ribet</span></span>
-          <h1 id="hero-title" data-i18n-html="hero_title">Upgrade cara<br/>kamu <span class="accent">berkreasi.</span><br/><span class="stroke">Nikmati lebih.</span></h1>
-          <p data-i18n="hero_lead">Akun premium untuk kerja, kreasi, dan hiburan. Pilih paket, bayar dengan QRIS, lalu akunmu langsung meluncur ke email—otomatis, 24 jam.</p>
-          <div class="hero-actions">
-            <a class="button" href="#produk"><span data-i18n="hero_cta1">Temukan paketmu</span> <span class="arrow">↗</span></a>
-            <a class="button secondary" href="#cara-pesan"><span data-i18n="hero_cta2">Cara pesan</span> <span class="arrow">↓</span></a>
-          </div>
-          <div class="micro-note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 4 6v5c0 5.1 3.5 8.6 8 10 4.5-1.4 8-4.9 8-10V6l-8-3Z" stroke="currentColor" stroke-width="1.8"/><path d="m8.5 12 2.2 2.2 4.8-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> <span data-i18n="hero_note">Proses otomatis · QRIS · kirim ke email</span></div>
-        </div>
-        <div class="hero-visual" aria-label="Ilustrasi produk premium digital">
-          <div class="visual-halo"></div><div class="orbit"></div>
-          <div class="float-chip top"><span class="chip-glyph cyan">↯</span><span><b data-i18n="chip1_b">Siap dalam hitungan menit</b><small data-i18n="chip1_s">Alur otomatis 24/7</small></span></div>
-          <div class="hero-poster">
-            <div class="poster-meta"><span>DN / digital goods</span><span class="poster-tag" data-i18n="poster_tag">PILIHAN #01</span></div>
-            <div class="poster-art"><div class="poster-disc"></div><svg class="poster-bolt" viewBox="0 0 80 100" aria-hidden="true"><path d="M48 2 12 54h25L28 98l42-59H45L58 2Z" fill="#d6ff57"/></svg><div class="poster-product"><span data-i18n="poster_pick">Pilihan digital</span><strong>Premium digital</strong></div></div>
-            <div class="poster-content"><h2 data-i18n-html="poster_h">Lebih banyak<br/>yang kamu suka.</h2><p data-i18n="poster_p">Premium digital, tinggal pilih dan nikmati.</p></div>
-            <div class="poster-bottom"><span data-i18n="poster_bottom">Musik · Kreativitas · Hiburan</span><span>DN STORE ✦</span></div>
-          </div>
-          <div class="float-chip bottom"><span class="chip-glyph pink">✦</span><span><b data-i18n="chip2_b">Favorit banyak orang</b><small data-i18n="chip2_s">Temukan pilihanmu</small></span></div>
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="hero-badge"><i aria-hidden="true"></i> <span data-i18n="home_badge">TOKO ONLINE · PROSES OTOMATIS 24 JAM</span></p>
+        <h1 id="hero-title" data-i18n-html="home_h1">Akun Premium Favoritmu, <span class="grad">Terkirim Otomatis</span> dalam Hitungan Menit</h1>
+        <p class="hero-sub" data-i18n="home_lead">Claude, ChatGPT, Gemini, Netflix, Spotify, dan puluhan akun premium lain. Bayar pakai QRIS atau USDT, akun langsung dikirim begitu pembayaran terkonfirmasi. Tanpa menunggu admin online.</p>
+        <form class="hero-search" action="/produk" method="get" role="search">
+          <label for="hero-q" style="position:absolute;left:-999px">Cari produk</label>
+          <input id="hero-q" type="search" name="q" data-i18n-ph="home_search_ph" placeholder="Cari Claude, Netflix, Spotify..." autocomplete="off" />
+          <button class="btn" type="submit" data-i18n="home_search_btn">Cari</button>
+        </form>
+        <div class="hero-chips" aria-label="Keunggulan toko">
+          <span data-i18n-html="home_chip1"><b>Otomatis</b> 24 jam</span>
+          <span data-i18n-html="home_chip2">Pembayaran <b>QRIS + USDT</b></span>
+          <span data-i18n-html="home_chip3"><b>2.088</b> akun terjual</span>
+          <span data-i18n-html="home_chip4"><b>22</b> produk pilihan</span>
         </div>
       </section>
       <div class="status-banner" id="demoBanner" style="display:none" data-i18n="demo_banner">Mode demo: database belum terhubung — produk dan stok contoh ditampilkan, pembayaran belum aktif.</div>
@@ -79,39 +65,145 @@
         <div class="row"><a class="button secondary" href="/reseller" style="text-decoration:none;text-align:center" data-i18n="res_my_orders">Pesanan saya</a><button class="button secondary" id="btnResLogout" type="button" data-i18n="logout">Keluar</button></div>
       </div>
       <div class="res-link" id="resLoginLink" data-i18n-html="res_link">Reseller? <a href="/reseller">Login di sini →</a> — diskon otomatis berlaku setelah login.</div>
-      <section id="produk" aria-labelledby="product-title">
+      <section class="section" aria-labelledby="cat-title">
         <div class="section-head">
-          <div><div class="section-kicker" data-i18n="sec_kicker1">Pilih yang paling kamu suka</div><h2 class="section-title" id="product-title" data-i18n-html="sec_title1">Produk <span class="lime">terpopuler.</span></h2><p class="section-lead" data-i18n="sec_lead1">Pilihan favorit untuk streaming, bikin konten, dan produktivitas—semuanya dalam satu tempat.</p></div>
-          <div class="catalog-meta"><span class="meta-star">✦</span> <span data-i18n="catalog_meta">Produk dan stok diperbarui langsung dari katalog toko</span></div>
+          <div><h2 id="cat-title" data-i18n="cat_title">Belanja per Kategori</h2><p data-i18n="cat_lead">Langsung ke jenis akun yang kamu cari.</p></div>
+        </div>
+        <div class="cat-row">
+          <a class="cat-card reveal" href="/produk?f=ai">
+            <span class="ic" style="background:linear-gradient(140deg,#f59e0b,#2563eb)" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3.2"/></svg></span>
+            <span><b>AI</b><small data-i18n="cat_ai_sub">9 produk · Claude, ChatGPT, Gemini</small></span>
+          </a>
+          <a class="cat-card reveal" href="/produk?f=hiburan">
+            <span class="ic" style="background:linear-gradient(140deg,#ef4444,#be185d)" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="5" width="18" height="13" rx="2.5"/><path d="M10 9.5v5l4.5-2.5L10 9.5Z" fill="#fff" stroke="none"/></svg></span>
+            <span><b data-i18n="cat_hiburan">Hiburan</b><small data-i18n="cat_hiburan_sub">8 produk · Netflix, Spotify, Disney+</small></span>
+          </a>
+          <a class="cat-card reveal" href="/produk?f=produktivitas">
+            <span class="ic" style="background:linear-gradient(140deg,#8b5cf6,#2563eb)" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5Z"/></svg></span>
+            <span><b data-i18n="cat_prod">Produktivitas</b><small data-i18n="cat_prod_sub">3 produk · Adobe, Canva, CapCut</small></span>
+          </a>
+          <a class="cat-card reveal" href="/produk?f=finansial">
+            <span class="ic" style="background:linear-gradient(140deg,#34d399,#047857)" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10h19M6 15.5h4"/></svg></span>
+            <span><b data-i18n="cat_fin">Finansial</b><small data-i18n="cat_fin_sub">2 produk · Wise dan bahannya</small></span>
+          </a>
+        </div>
+      </section>
+      <section class="section" id="produk" aria-labelledby="product-title">
+        <div class="section-head">
+          <div><h2 id="product-title" data-i18n="feat_title">Produk Paling Laris</h2><p data-i18n="feat_lead">Diurutkan dari jumlah penjualan asli di toko kami.</p></div>
+          <a class="more" href="/produk" data-i18n="see_all">Lihat semua produk</a>
         </div>
         <div class="filters" role="group" aria-label="Filter kategori produk">
           <button class="filter active" data-filter="all" type="button" aria-pressed="true" data-i18n="filter_all">Semua pilihan</button>
-          <button class="filter" data-filter="creator" type="button" aria-pressed="false" data-i18n="filter_creator">Kreator &amp; kerja</button>
-          <button class="filter" data-filter="entertainment" type="button" aria-pressed="false" data-i18n="filter_ent">Musik &amp; hiburan</button>
+          <button class="filter" data-filter="ai" type="button" aria-pressed="false" data-i18n="filter_ai">AI</button>
+          <button class="filter" data-filter="hiburan" type="button" aria-pressed="false" data-i18n="filter_hiburan">Hiburan</button>
+          <button class="filter" data-filter="produktivitas" type="button" aria-pressed="false" data-i18n="filter_prod">Produktivitas</button>
+          <button class="filter" data-filter="finansial" type="button" aria-pressed="false" data-i18n="filter_fin">Finansial</button>
         </div>
-        <div class="product-grid" id="featuredGrid"><p class="section-lead" data-i18n="loading_products">Memuat produk…</p></div>
+        <div class="product-grid" id="featuredGrid"><p class="lead" data-i18n="loading_products">Memuat produk…</p></div>
         <p class="snapshot-note" data-i18n="snapshot_note">Harga, stok, dan tombol beli mengikuti katalog live. Pembelian diproses melalui checkout QRIS resmi DN Digital Store.</p>
-        <div style="margin-top:22px"><a class="button" href="/produk"><span data-i18n="see_all">Lihat semua produk</span> <span class="arrow">↗</span></a></div>
+      </section>
+      <section class="section" id="cara-pesan" aria-labelledby="steps-title">
+        <div class="section-head">
+          <div><h2 id="steps-title" data-i18n-html="how_title">Pilih. Bayar. <span class="lime">Nikmati.</span></h2><p data-i18n="how_lead">Empat langkah praktis, tanpa perlu membuat akun di toko.</p></div>
+          <a class="more" href="/cara-beli" data-i18n="nav_cara">Cara Beli</a>
+        </div>
+        <div class="steps">
+          <article class="step"><span class="num" aria-hidden="true"></span><div><h3 data-i18n="step1_t">Pilih paket</h3><p data-i18n="step1_p">Tentukan produk yang sesuai dan atur jumlahnya sesuai kebutuhan.</p></div></article>
+          <article class="step"><span class="num" aria-hidden="true"></span><div><h3 data-i18n="step2_t">Isi email aktif</h3><p data-i18n="step2_p">Periksa kembali alamat email tujuan pengiriman akun.</p></div></article>
+          <article class="step"><span class="num" aria-hidden="true"></span><div><h3 data-i18n="step3_t">Bayar dengan QRIS</h3><p data-i18n="step3_p">Scan memakai e-wallet atau mobile banking dan ikuti instruksi pembayaran.</p></div></article>
+          <article class="step"><span class="num" aria-hidden="true"></span><div><h3 data-i18n="step4_t">Cek emailmu</h3><p data-i18n="step4_p">Detail pesanan dikirim otomatis setelah pembayaran terdeteksi.</p></div></article>
+        </div>
+      </section>
+      <section class="section" aria-labelledby="why-title">
+        <div class="section-head">
+          <div><h2 id="why-title" data-i18n="why_title">Kenapa Belanja di DN?</h2><p data-i18n="why_lead">Sistem kami bekerja sendiri, kamu cukup pesan dan bayar.</p></div>
+        </div>
+        <div class="bento">
+          <article class="bento-card wide reveal">
+            <span class="ic" aria-hidden="true"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4.5 13.5H11L9.5 22 19 10h-6.5L13 2Z"/></svg></span>
+            <h3 data-i18n="why1_t">Proses Otomatis 24 Jam</h3>
+            <p data-i18n="why1_p">Pembayaranmu dicek sistem setiap beberapa detik. Begitu terkonfirmasi, akun langsung dikirim ke halaman pesanan dan email kamu, tengah malam sekalipun. Tidak ada istilah menunggu admin bangun.</p>
+          </article>
+          <article class="bento-card reveal">
+            <span class="ic" aria-hidden="true"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><path d="M13.5 13.5h3v3h-3zM18 18h3v3h-3z"/></svg></span>
+            <h3 data-i18n="why2_t">QRIS Semua E-Wallet</h3>
+            <p data-i18n="why2_p">Satu kode QR untuk GoPay, OVO, DANA, ShopeePay, dan semua mobile banking. Invoice berlaku 15 menit.</p>
+          </article>
+          <article class="bento-card reveal">
+            <span class="ic" aria-hidden="true"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c2.8 2.6 4.2 5.8 4.2 9.5s-1.4 6.9-4.2 9.5c-2.8-2.6-4.2-5.8-4.2-9.5s1.4-6.9 4.2-9.5Z"/></svg></span>
+            <h3 data-i18n="why3_t">USDT untuk Pembeli Global</h3>
+            <p data-i18n="why3_p">Dari luar negeri? Bayar pakai USDT jaringan BEP20 dengan nominal unik, terdeteksi otomatis di blockchain.</p>
+          </article>
+          <article class="bento-card reveal">
+            <span class="ic" aria-hidden="true"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12.5v6A2.5 2.5 0 0 1 17.5 21h-11A2.5 2.5 0 0 1 4 18.5v-6"/><path d="m12 3 9 5.5H3L12 3Z"/><path d="M12 12v3"/></svg></span>
+            <h3 data-i18n="why4_t">Voucher dan Reseller</h3>
+            <p data-i18n="why4_p">Kode voucher berkala untuk pembeli tamu, plus harga reseller mulai potongan 25 persen untuk yang jualan lagi.</p>
+          </article>
+          <article class="bento-card reveal">
+            <span class="ic" aria-hidden="true"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-4.4-7.7L21 3l-1 4.2c.6 1.5 1 3.1 1 4.8Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg></span>
+            <h3 data-i18n="why5_t">Bantuan Selalu Ada</h3>
+            <p data-i18n="why5_p">Kendala pesanan? Bot Telegram melayani 24 jam dan owner bisa dihubungi langsung untuk hal yang mendesak.</p>
+          </article>
+        </div>
+      </section>
+      <section class="cta-band">
+        <h2 data-i18n="cta_tg_t">Lebih Suka Belanja Lewat Telegram?</h2>
+        <p data-i18n="cta_tg_p">Bot kami punya katalog dan harga yang sama persis, dengan pembayaran QRIS dan USDT yang sama-sama otomatis.</p>
+        <a class="btn" href="https://t.me/dndigitalbot" target="_blank" rel="noopener" data-i18n="cta_tg_btn">Buka Bot @dndigitalbot</a>
       </section>
     </div>
-    <section class="how" id="cara-pesan" aria-labelledby="steps-title">
-      <div class="shell">
-        <div class="section-head"><div><div class="section-kicker" data-i18n="how_kicker">Semudah itu</div><h2 class="section-title" id="steps-title" data-i18n-html="how_title">Pilih. Bayar. <span class="lime">Nikmati.</span></h2><p class="section-lead" data-i18n="how_lead">Empat langkah praktis, tanpa perlu membuat akun di toko.</p></div></div>
-        <div class="steps">
-          <article class="step"><h3 data-i18n="step1_t">Pilih paket</h3><p data-i18n="step1_p">Tentukan produk yang sesuai dan atur jumlahnya sesuai kebutuhan.</p></article>
-          <article class="step"><h3 data-i18n="step2_t">Isi email aktif</h3><p data-i18n="step2_p">Periksa kembali alamat email tujuan pengiriman akun.</p></article>
-          <article class="step"><h3 data-i18n="step3_t">Bayar dengan QRIS</h3><p data-i18n="step3_p">Scan memakai e-wallet atau mobile banking dan ikuti instruksi pembayaran.</p></article>
-          <article class="step"><h3 data-i18n="step4_t">Cek emailmu</h3><p data-i18n="step4_p">Detail pesanan dikirim otomatis setelah pembayaran terdeteksi.</p></article>
+  </main>
+  <footer class="site-footer">
+    <div class="shell">
+      <div class="footer-grid">
+        <div>
+          <a class="logo" href="/" aria-label="DN Digital Store, beranda"><span class="logo-mark">DN</span><span class="logo-name">DN Digital Store<small data-i18n="brand_tag">AKUN PREMIUM</small></span></a>
+          <p style="margin-top:14px" data-i18n="footer_desc">Toko akun premium dengan proses otomatis 24 jam. Pembayaran QRIS dan USDT, akun terkirim sendiri begitu pembayaran terkonfirmasi.</p>
+        </div>
+        <nav aria-label="Menu footer">
+          <h4 data-i18n="footer_menu">Menu</h4>
+          <ul>
+            <li><a href="/" data-i18n="nav_home">Beranda</a></li>
+            <li><a href="/produk" data-i18n="nav_catalog">Katalog</a></li>
+            <li><a href="/cara-beli" data-i18n="nav_cara">Cara Beli</a></li>
+            <li><a href="/cek-pesanan" data-i18n="nav_check">Cek pesanan</a></li>
+            <li><a href="/reseller" data-i18n="nav_reseller">Reseller</a></li>
+            <li><a href="/faq" data-i18n="nav_faq">FAQ</a></li>
+            <li><a href="/kontak" data-i18n="nav_kontak">Kontak</a></li>
+          </ul>
+        </nav>
+        <div>
+          <h4 data-i18n="footer_pay">Pembayaran</h4>
+          <ul>
+            <li data-i18n="footer_pay_1">QRIS semua e-wallet dan bank</li>
+            <li data-i18n="footer_pay_2">USDT jaringan BEP20</li>
+            <li data-i18n="footer_pay_3">Invoice berlaku 15 menit</li>
+          </ul>
+        </div>
+        <div>
+          <h4 data-i18n="footer_help">Bantuan</h4>
+          <ul>
+            <li><a href="https://t.me/dndigitalbot" target="_blank" rel="noopener" data-i18n="footer_bot">Bot Telegram @dndigitalbot</a></li>
+            <li><a href="https://t.me/danielkedua" target="_blank" rel="noopener" data-i18n="footer_owner">Hubungi Owner</a></li>
+            <li><a href="/faq" data-i18n="footer_faq">Pertanyaan Umum</a></li>
+            <li><a href="/cek-pesanan" data-i18n="nav_check">Cek pesanan</a></li>
+          </ul>
         </div>
       </div>
-    </section>
-  </main>
-  <footer id="tentang">
-    <div class="shell footer-inner">
-      <div class="footer-brand"><svg class="brand-symbol" aria-hidden="true"><use href="#dn-mark"/></svg><strong>DN DIGITAL STORE</strong></div>
-      <p class="footer-copy" data-i18n-html="footer_copy">Toko akun premium digital dengan proses otomatis 24 jam. Pembayaran QRIS diverifikasi sistem dan akun dikirim otomatis melalui email. Butuh bantuan? Hubungi <a class="owner-link" href="https://t.me/dndigitalbot">@danielaja2003</a> di Telegram.</p>
+      <p class="copyright">© 2026 <span data-i18n="footer_rights">DN Digital Store — akun premium, proses otomatis 24 jam.</span></p>
     </div>
   </footer>
+  <a class="fab" href="https://t.me/dndigitalbot" target="_blank" rel="noopener" aria-label="Buka bot Telegram DN Digital Store">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 4.4 19 19.3c-.2 1-.8 1.2-1.6.8l-4.5-3.3-2.2 2.1c-.2.2-.4.4-.9.4l.3-4.6 8.4-7.6c.4-.3-.1-.5-.6-.2L7.6 13.2 3.2 11.8c-1-.3-1-1 .2-1.4l17.2-6.6c.8-.3 1.5.2 1.3.6Z"/></svg>
+  </a>
+  <nav class="bottom-nav" aria-label="Navigasi bawah">
+    <a href="/" class="active" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 9-8 9 8"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="nav_home">Beranda</span></a>
+    <a href="/produk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg><span data-i18n="nav_catalog">Katalog</span></a>
+    <a href="/cara-beli"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1.6"/><circle cx="17" cy="20" r="1.6"/><path d="M3 3h2l2.4 12.5h10.4L20 7H6"/></svg><span data-i18n="nav_cara">Cara Beli</span></a>
+    <a href="/faq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="M9.5 9.3A2.6 2.6 0 1 1 12 12.5v1"/><circle cx="12" cy="17.2" r="0.6" fill="currentColor"/></svg><span data-i18n="nav_faq">FAQ</span></a>
+    <a href="/kontak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-4.4-7.7L21 3l-1 4.2c.6 1.5 1 3.1 1 4.8Z"/></svg><span data-i18n="nav_kontak">Kontak</span></a>
+  </nav>
   <button id="toTop" title="Kembali ke atas" aria-label="Kembali ke atas" data-i18n-title="back_top" data-i18n-aria="back_top">↑</button>
 <dialog id="buyDlg">
       <h3 id="dlgTitle" style="margin-top:0" data-i18n="dlg_buy">Beli</h3>
@@ -131,14 +223,30 @@
         <div class="disc-row" id="discRow"></div>
         <p class="hint" id="dlgTotal"></p>
         <p class="err" id="formErr"></p>
+        <label data-i18n="pay_method">Metode pembayaran</label>
+        <div style="display:flex;gap:10px;margin-bottom:10px">
+          <button type="button" class="btn" id="methodQris" style="flex:1">📱 QRIS</button>
+          <button type="button" class="btn ghost" id="methodUsdt" style="flex:1">🪙 USDT (BEP20)</button>
+        </div>
         <div class="row"><button class="btn ghost" id="btnClose1" data-i18n="cancel">Batal</button><button class="btn" id="btnPay" data-i18n="pay_qris_btn">Buat Tagihan QRIS</button></div>
       </div>
       <div id="stepPay" style="display:none">
         <p class="total" id="payTotal"></p>
         <p class="hint" id="payDisc" style="text-align:center;display:none"></p>
-        <div class="qrbox"><img id="payQr" alt="QRIS" /></div>
+        <div class="qrbox" id="payQrBox"><img id="payQr" alt="QRIS" /></div>
+        <div id="cryptoBox" style="display:none">
+          <p class="hint" style="text-align:center" data-i18n-html="crypto_send_exact">Kirim <strong>persis</strong> sejumlah ini — salin, jangan dibulatkan:</p>
+          <p class="total" id="cryptoAmount" style="text-align:center"></p>
+          <div style="display:flex;gap:8px"><input id="cryptoAddr" readonly style="flex:1;min-width:0" /><button class="btn ghost" id="btnCopyAddr" type="button" style="flex:0 0 auto" data-i18n="copy">Salin</button></div>
+          <button class="btn ghost" id="btnCopyAmount" type="button" style="width:100%;margin-top:8px" data-i18n="copy_amount">Salin Jumlah USDT</button>
+          <p class="hint" id="cryptoRate" style="text-align:center"></p>
+          <p class="hint" style="text-align:center" data-i18n-html="crypto_warn">⚠️ Hanya jaringan <strong>BEP20 / BNB Smart Chain</strong> — kirim dari jaringan lain, dana hilang. Paling aman dari wallet pribadi (Trust Wallet, dll). Dari exchange, fee potongan bisa membuat jumlah yang sampai meleset.</p>
+          <p class="hint" style="text-align:center" data-i18n="crypto_tx_ask">Sudah kirim tapi belum terdeteksi? Tempel hash transaksinya (tx hash) di sini:</p>
+          <div style="display:flex;gap:8px"><input id="txHash" placeholder="0x…" style="flex:1;min-width:0" /><button class="btn ghost" id="btnVerifyTx" type="button" style="flex:0 0 auto" data-i18n="verify">Verifikasi</button></div>
+          <p class="hint" id="txMsg" style="text-align:center"></p>
+        </div>
         <p class="countdown"><span data-i18n="order_code">Kode pesanan</span> <strong id="payOrderId"></strong> · <span data-i18n="time_left">sisa waktu</span> <strong id="payTimer">10:00</strong></p>
-        <p class="hint" style="text-align:center" data-i18n-html="pay_hint_qris">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Halaman ini mengecek pembayaran otomatis — jangan ditutup dulu.</p>
+        <p class="hint" id="payHint" style="text-align:center" data-i18n-html="pay_hint_qris">Scan dengan e-wallet / m-banking apa saja dan bayar <strong>persis</strong> sampai digit terakhir. Halaman ini mengecek pembayaran otomatis — jangan ditutup dulu.</p>
         <p class="err" id="payErr"></p>
         <div class="row"><button class="btn danger" id="btnCancelOrder" data-i18n="cancel_order">Batalkan Pesanan</button></div>
       </div>
@@ -152,5 +260,13 @@
     </dialog>
   <script src="/i18n.js"></script>
   <script src="/shop.js"></script>
+  <script>
+    (function () {
+      var els = document.querySelectorAll(".reveal");
+      if (!("IntersectionObserver" in window)) { els.forEach(function (e) { e.classList.add("in"); }); return; }
+      var io = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }); }, { threshold: 0.12 });
+      els.forEach(function (e) { io.observe(e); });
+    })();
+  </script>
 </body>
 </html>

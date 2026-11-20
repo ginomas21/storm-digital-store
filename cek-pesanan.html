@@ -1,49 +1,98 @@
 <!doctype html>
 <html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#050b1a" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
-    <title data-i18n="title_check">Cek Pesanan — DN Digital Store</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/style.css" />
-  </head>
-  <body>
-    <header>
-      <div class="wrap nav">
-        <div class="brand"><span class="brand-logo"></span> DN <span>Digital Store</span></div>
-        <nav class="nav-links">
-          <a href="/" data-i18n="nav_home">Beranda</a>
-          <a href="/produk" data-i18n="nav_products_all">Semua Produk</a>
-          <a href="/cek-pesanan" data-i18n="nav_check_cap">Cek Pesanan</a>
-          <a href="/reseller" data-i18n="nav_reseller">Reseller</a>
-        </nav>
-      </div>
-    </header>
-    <main class="wrap">
-      <section id="cek-pesanan">
-        <h2 data-i18n-html="check_title">Cek <span class="grad">Pesanan</span></h2>
-        <p class="lead" data-i18n="check_lead">Sudah bayar tapi halaman terutup? Masukkan kode pesanan (contoh SDS-0001) dan email atau nomor telepon yang kamu pakai saat pesan.</p>
+<head>
+  <script>if(location.hostname==='temp.pengagumku.id'){location.replace('/temp-mail');}</script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#050d1f" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <title data-i18n="title_check">Cek Pesanan — DN Digital Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/dn-modern.css" />
+</head>
+<body>
+  <div class="topline"><div class="shell topline-inner"><span class="preview-dot"></span> <span data-i18n="topline">Katalog premium digital · proses otomatis 24 jam</span><span class="topline-links"><a href="/cek-pesanan" data-i18n="nav_check">Cek pesanan</a><a href="/reseller" data-i18n="nav_reseller">Reseller</a></span></div></div>
+  <header class="site-header">
+    <div class="shell nav">
+      <a class="logo" href="/" aria-label="DN Digital Store, beranda">
+        <span class="logo-mark">DN</span>
+        <span class="logo-name">DN Digital Store<small data-i18n="brand_tag">AKUN PREMIUM</small></span>
+      </a>
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <a href="/" data-i18n="nav_home">Beranda</a><a href="/produk" data-i18n="nav_catalog">Katalog</a><a href="/cara-beli" data-i18n="nav_cara">Cara Beli</a><a href="/faq" data-i18n="nav_faq">FAQ</a><a href="/kontak" data-i18n="nav_kontak">Kontak</a>
+      </nav>
+      <a class="header-cta" href="/produk" data-i18n="cta_shop">Belanja</a>
+    </div>
+  </header>
+  <main>
+    <div class="shell">
+      <section class="page-head" id="cek-pesanan">
+        <h1 data-i18n-html="check_title">Cek <span class="grad">Pesanan</span></h1>
+        <p data-i18n="check_lead">Sudah bayar tapi halaman terutup? Masukkan kode pesanan (contoh SDS-0001) dan email atau nomor telepon yang kamu pakai saat pesan.</p>
         <div class="lookup">
           <input id="lookupId" placeholder="Kode pesanan, contoh SDS-0001" data-i18n-ph="ph_order_code" />
           <input id="lookupContact" placeholder="Email / nomor telepon saat pesan" data-i18n-ph="ph_contact" />
         </div>
-        <div class="row"><button class="btn" id="lookupBtn" data-i18n="check_btn">Cek Pesanan</button></div>
+        <div class="row" style="max-width:560px"><button class="btn" id="lookupBtn" data-i18n="check_btn">Cek Pesanan</button></div>
         <p class="err" id="lookupErr"></p>
         <div id="lookupResult"></div>
       </section>
-    </main>
-    <footer>
-      <div class="wrap" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <span>© 2026 DN Digital Store ⚡</span><span data-i18n-html="footer_check">DN Digital Store menjual akun premium dengan proses otomatis 24 jam: pembayaran QRIS terverifikasi sistem, akun langsung dikirim ke email tanpa menunggu admin online. Kendala? Hubungi owner: <a class="owner-link" href="https://t.me/dndigitalbot">@danielaja2003</a> (Telegram).</span>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="shell">
+      <div class="footer-grid">
+        <div>
+          <a class="logo" href="/" aria-label="DN Digital Store, beranda"><span class="logo-mark">DN</span><span class="logo-name">DN Digital Store<small data-i18n="brand_tag">AKUN PREMIUM</small></span></a>
+          <p style="margin-top:14px" data-i18n="footer_desc">Toko akun premium dengan proses otomatis 24 jam. Pembayaran QRIS dan USDT, akun terkirim sendiri begitu pembayaran terkonfirmasi.</p>
+        </div>
+        <nav aria-label="Menu footer">
+          <h4 data-i18n="footer_menu">Menu</h4>
+          <ul>
+            <li><a href="/" data-i18n="nav_home">Beranda</a></li>
+            <li><a href="/produk" data-i18n="nav_catalog">Katalog</a></li>
+            <li><a href="/cara-beli" data-i18n="nav_cara">Cara Beli</a></li>
+            <li><a href="/cek-pesanan" data-i18n="nav_check">Cek pesanan</a></li>
+            <li><a href="/reseller" data-i18n="nav_reseller">Reseller</a></li>
+            <li><a href="/faq" data-i18n="nav_faq">FAQ</a></li>
+            <li><a href="/kontak" data-i18n="nav_kontak">Kontak</a></li>
+          </ul>
+        </nav>
+        <div>
+          <h4 data-i18n="footer_pay">Pembayaran</h4>
+          <ul>
+            <li data-i18n="footer_pay_1">QRIS semua e-wallet dan bank</li>
+            <li data-i18n="footer_pay_2">USDT jaringan BEP20</li>
+            <li data-i18n="footer_pay_3">Invoice berlaku 15 menit</li>
+          </ul>
+        </div>
+        <div>
+          <h4 data-i18n="footer_help">Bantuan</h4>
+          <ul>
+            <li><a href="https://t.me/dndigitalbot" target="_blank" rel="noopener" data-i18n="footer_bot">Bot Telegram @dndigitalbot</a></li>
+            <li><a href="https://t.me/danielkedua" target="_blank" rel="noopener" data-i18n="footer_owner">Hubungi Owner</a></li>
+            <li><a href="/faq" data-i18n="footer_faq">Pertanyaan Umum</a></li>
+            <li><a href="/cek-pesanan" data-i18n="nav_check">Cek pesanan</a></li>
+          </ul>
+        </div>
       </div>
-    </footer>
-
-    <script src="/i18n.js"></script>
-    <script src="/shop.js"></script>
-  </body>
+      <p class="copyright">© 2026 <span data-i18n="footer_rights">DN Digital Store — akun premium, proses otomatis 24 jam.</span></p>
+    </div>
+  </footer>
+  <a class="fab" href="https://t.me/dndigitalbot" target="_blank" rel="noopener" aria-label="Buka bot Telegram DN Digital Store">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 4.4 19 19.3c-.2 1-.8 1.2-1.6.8l-4.5-3.3-2.2 2.1c-.2.2-.4.4-.9.4l.3-4.6 8.4-7.6c.4-.3-.1-.5-.6-.2L7.6 13.2 3.2 11.8c-1-.3-1-1 .2-1.4l17.2-6.6c.8-.3 1.5.2 1.3.6Z"/></svg>
+  </a>
+  <nav class="bottom-nav" aria-label="Navigasi bawah">
+    <a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 9-8 9 8"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="nav_home">Beranda</span></a>
+    <a href="/produk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg><span data-i18n="nav_catalog">Katalog</span></a>
+    <a href="/cara-beli"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1.6"/><circle cx="17" cy="20" r="1.6"/><path d="M3 3h2l2.4 12.5h10.4L20 7H6"/></svg><span data-i18n="nav_cara">Cara Beli</span></a>
+    <a href="/faq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="M9.5 9.3A2.6 2.6 0 1 1 12 12.5v1"/><circle cx="12" cy="17.2" r="0.6" fill="currentColor"/></svg><span data-i18n="nav_faq">FAQ</span></a>
+    <a href="/kontak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-4.4-7.7L21 3l-1 4.2c.6 1.5 1 3.1 1 4.8Z"/></svg><span data-i18n="nav_kontak">Kontak</span></a>
+  </nav>
+  <script src="/i18n.js"></script>
+  <script src="/shop.js"></script>
+</body>
 </html>
